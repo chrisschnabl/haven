@@ -1,0 +1,15 @@
+[package]
+name = "test_program"
+version = "0.1.1"
+authors = ["Chris Schnabl"]
+description = "TODO"
+license = "Apache-2.0"
+edition = "2018"
+
+[dependencies]
+clap = "2.33.0"
+futures = "0.3.5"
+libc = "0.2.79"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "io-util",] }
+tokio-vsock = "0.7.0"
+# tokio-vsock = { path = "../" }
