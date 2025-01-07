@@ -1,0 +1,4 @@
+FROM alpine:latest
+COPY haven .
+COPY example.txt .
+CMD ["haven", "--mode", "host", "--port", "1337", "--file", "example.txt"]

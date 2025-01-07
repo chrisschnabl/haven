@@ -31,6 +31,9 @@ install:
 build:
 	cargo build --manifest-path=$(RUST_DIR)/Cargo.toml --target=$(TOOLCHAIN) --release
 
+build-enclave:
+	../../scripts/ec2/
+
 run-server:
 	./target/$(TOOLCHAIN)/release/$(BIN_NAME) --mode enclave --port 1337
 

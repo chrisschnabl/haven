@@ -143,7 +143,8 @@ async fn run_server(port: u32) -> Result<(), Box<dyn std::error::Error>> {
 }
 
 async fn run_client(port: u32, file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let addr = VsockAddr::new(tokio_vsock::VMADDR_CID_LOCAL, port);
+    // let addr = VsockAddr::new(tokio_vsock::VMADDR_CID_LOCAL, port);
+    let addr = VsockAddr::new(3, port);
     let mut stream = VsockStream::connect(addr)
         .await
         .expect("Failed to connect to server");
