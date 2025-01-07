@@ -14,7 +14,7 @@ libc = "0.2.79"
 # Cannot use this, type mismatch with rust version 
 # 553 | ...TemplateError>(CStr::from_ptr(buff.as_mut_ptr()).to_string_lossy().to_st...
 # llama-cpp-2 = { version = "0.1.86"}
-llama_cpp = "0.3.2"
+#llama_cpp = "0.3.2"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "io-std", "io-util", "fs"] }
 tokio-vsock = "0.7.0"
 
