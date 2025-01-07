@@ -1,8 +1,11 @@
 use clap::{App, Arg};
 use futures::StreamExt as _;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use tokio_vsock::{VsockAddr, VsockListener, VsockStream};
 use tokio::fs::File;
+use tokio_vsock::{VsockAddr, VsockListener, VsockStream};
+
+const BUFFER_SIZE: usize = 65536;
+
 
 /*
 We use this to transfer data between a Host and an Enclave. We do this to avoid baking data into the secure Nitro image. 
@@ -111,10 +114,10 @@ async fn run_server(port: u32) -> Result<(), Box<dyn std::error::Error>> {
                         .expect("Failed to create file");
 
                     loop {
-                        let mut buf = vec![0u8; 5000];
+                        let mut buf = vec![0u8; BUFFER_SIZE];
                         let len = match stream.read(&mut buf).await {
                             Ok(len) if len > 0 => len,
-                            _ => break, // Stop if client disconnects or EOF is reached
+                            _ => break, // EOF or connection closed
                         };
 
                         buf.resize(len, 0);
@@ -155,7 +158,7 @@ async fn run_client(port: u32, file_path: &str) -> Result<(), Box<dyn std::error
         .await
         .expect("Failed to open file for reading");
 
-    let mut buf = vec![0u8; 5000];
+    let mut buf = vec![0u8; BUFFER_SIZE]; // 64 KB buffer
     loop {
         let len = file.read(&mut buf).await?;
         if len == 0 {
@@ -170,16 +173,7 @@ async fn run_client(port: u32, file_path: &str) -> Result<(), Box<dyn std::error
         println!("Sent {} bytes to server", len);
     }
 
-    // Receive the echoed response from the server
-    let mut buf = vec![0u8; 5000];
-    let len = stream.read(&mut buf).await.expect("Failed to read data");
-
-    if len > 0 {
-        buf.resize(len, 0);
-        println!("Received: {:?}", &buf);
-    } else {
-        println!("No data received from server");
-    }
+    println!("File transfer complete");
 
     Ok(())
 }
