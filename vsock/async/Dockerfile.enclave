@@ -1,0 +1,3 @@
+FROM alpine:latest
+COPY . .
+CMD ["make", "run-server"]

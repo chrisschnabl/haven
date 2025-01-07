@@ -2,7 +2,7 @@ use clap::{App, Arg};
 use futures::StreamExt as _;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio_vsock::{VsockAddr, VsockListener, VsockStream};
-
+use tokio::fs::File;
 
 /*
 We use this to transfer data between a Host and an Enclave. We do this to avoid baking data into the secure Nitro image. 
@@ -32,22 +32,20 @@ Next steps:
 -> Test inference on AWS nitro
 
 Next steps after that:
-->
-
+-> Do the same with datasets
 */
-
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let matches = App::new("test_program")
+    let matches = App::new("file_transfer_program")
         .version("1.0")
         .author("Chris Schnabl <chris.schnabl.cs@gmail.com>")
-        .about("Tokio Virtio socket test program (server and client)")
+        .about("Tokio Virtio socket file transfer program (enclave and host)")
         .arg(
             Arg::with_name("mode")
                 .long("mode")
                 .short("m")
-                .help("Mode of operation: server or client")
+                .help("Mode of operation: 'enclave' (server) or 'host' (client)")
                 .required(true)
                 .takes_value(true),
         )
@@ -59,6 +57,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .required(true)
                 .takes_value(true),
         )
+        .arg(
+            Arg::with_name("file")
+                .long("file")
+                .short("f")
+                .help("Path to the file to send (required in 'host' mode)")
+                .required_if("mode", "host")
+                .takes_value(true),
+        )
         .get_matches();
 
     let mode = matches.value_of("mode").expect("Mode is required");
@@ -68,12 +74,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .parse::<u32>()
         .expect("Port must be a valid integer");
 
-    if mode == "server" {
+    if mode == "enclave" {
+        println!("Starting in enclave (server) mode...");
         run_server(port).await?;
-    } else if mode == "client" {
-        run_client(port).await?;
+    } else if mode == "host" {
+        let file_path = matches
+            .value_of("file")
+            .expect("File path is required in 'host' mode");
+        println!("Starting in host (client) mode...");
+        run_client(port, file_path).await?;
     } else {
-        eprintln!("Invalid mode. Use 'server' or 'client'.");
+        eprintln!("Invalid mode. Use 'enclave' or 'host'.");
         std::process::exit(1);
     }
 
@@ -81,6 +92,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 async fn run_server(port: u32) -> Result<(), Box<dyn std::error::Error>> {
+    use tokio::fs::File;
+    use tokio::io::AsyncWriteExt;
+
     let addr = VsockAddr::new(libc::VMADDR_CID_ANY, port);
     let listener = VsockListener::bind(addr).expect("Unable to bind Virtio listener");
 
@@ -92,22 +106,32 @@ async fn run_server(port: u32) -> Result<(), Box<dyn std::error::Error>> {
             Ok(mut stream) => {
                 println!("Got connection ============");
                 tokio::spawn(async move {
+                    let mut file = File::create("received_file.txt")
+                        .await
+                        .expect("Failed to create file");
+
                     loop {
                         let mut buf = vec![0u8; 5000];
-                        let len = stream.read(&mut buf).await.unwrap();
+                        let len = match stream.read(&mut buf).await {
+                            Ok(len) if len > 0 => len,
+                            _ => break, // Stop if client disconnects or EOF is reached
+                        };
 
-                        if len == 0 {
+                        buf.resize(len, 0);
+
+                        if let Err(e) = file.write_all(&buf).await {
+                            eprintln!("Failed to write to file: {:?}", e);
                             break;
                         }
 
-                        buf.resize(len, 0);
-                        println!("Got data: {:?}", &buf);
-                        stream.write_all(&buf).await.unwrap();
+                        println!("Wrote {} bytes to file", len);
                     }
+
+                    println!("File transfer complete");
                 });
             }
             Err(e) => {
-                println!("Got error: {:?}", e);
+                println!("Error: {:?}", e);
             }
         }
     }
@@ -115,7 +139,7 @@ async fn run_server(port: u32) -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-async fn run_client(port: u32) -> Result<(), Box<dyn std::error::Error>> {
+async fn run_client(port: u32, file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
     let addr = VsockAddr::new(tokio_vsock::VMADDR_CID_LOCAL, port);
     let mut stream = VsockStream::connect(addr)
         .await
@@ -127,13 +151,24 @@ async fn run_client(port: u32) -> Result<(), Box<dyn std::error::Error>> {
         port
     );
 
-    let message = b"Hello from client!";
-    stream
-        .write_all(message)
+    let mut file = File::open(file_path)
         .await
-        .expect("Failed to send data");
+        .expect("Failed to open file for reading");
 
-    println!("Sent: {:?}", message);
+    let mut buf = vec![0u8; 5000];
+    loop {
+        let len = file.read(&mut buf).await?;
+        if len == 0 {
+            break; // EOF reached
+        }
+
+        stream
+            .write_all(&buf[..len])
+            .await
+            .expect("Failed to send data");
+
+        println!("Sent {} bytes to server", len);
+    }
 
     // Receive the echoed response from the server
     let mut buf = vec![0u8; 5000];

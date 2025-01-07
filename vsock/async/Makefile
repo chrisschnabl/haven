@@ -32,11 +32,11 @@ build:
 	cargo build --manifest-path=$(RUST_DIR)/Cargo.toml --target=$(TOOLCHAIN) --release
 
 run-server:
-	./target/$(TOOLCHAIN)/release/$(BIN_NAME) --mode server --port 1337
+	./target/$(TOOLCHAIN)/release/$(BIN_NAME) --mode enclave --port 1337
 
 
 run-client:
-	./target/$(TOOLCHAIN)/release/$(BIN_NAME) --mode client --port 1337
+	./target/$(TOOLCHAIN)/release/$(BIN_NAME) --mode host --port 1337 --file example.txt
 
 help:
 	@echo "Available commands:"
