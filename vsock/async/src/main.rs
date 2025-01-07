@@ -1,42 +1,13 @@
 use clap::{App, Arg};
 use futures::StreamExt as _;
+
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::fs::File;
 use tokio_vsock::{VsockAddr, VsockListener, VsockStream};
+use llama_cpp::{LlamaModel, LlamaParams, SessionParams, standard_sampler::StandardSampler};
 
 const BUFFER_SIZE: usize = 65536;
 
-
-/*
-We use this to transfer data between a Host and an Enclave. We do this to avoid baking data into the secure Nitro image. 
-
-Client runs on Host 
-Server runs on Enclave
-
-Host
-- stores model
-- stores datasets
-
-Enclave
-- contains llama.cpp
-- contains evaluation code 
-
-Start-Up
-- Host sends model to enclave
--> How big is it? How long does it take to run?
-- Server receives model 
--> Uses llama crate to run model
-
-Next steps:
--> Test transfer of model locally
--> Test hello world exchange on AWS Nitro
--> Test transfer of model on AWS nitro
--> Test inference of model locally
--> Test inference on AWS nitro
-
-Next steps after that:
--> Do the same with datasets
-*/
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -80,6 +51,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     if mode == "enclave" {
         println!("Starting in enclave (server) mode...");
         run_server(port).await?;
+        //test_llama().await?;
     } else if mode == "host" {
         let file_path = matches
             .value_of("file")
@@ -93,6 +65,44 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+
+/*
+async fn test_llama() -> Result<(), Box<dyn std::error::Error>> {
+    let model = LlamaModel::load_from_file("path_to_model.gguf", LlamaParams::default())?;
+    let mut ctx = model.create_session(SessionParams::default())?;
+
+    ctx.advance_context("This is the story of a man named Stanley.")?;
+
+    let max_tokens = 1024;
+    let mut decoded_tokens = 0;
+
+    /*let mut completions = match ctx.start_completing_with(StandardSampler::default(), 1024) {
+        Ok(handle) => handle.into_strings(),
+        Err(e) => {
+            eprintln!("Error: {:?}", e);
+            return Err(e.into());
+        }
+    };*/
+
+    let mut completions = ctx.start_completing_with(StandardSampler::default(), max_tokens)?
+        .into_strings();
+
+    let mut stdout = tokio::io::stdout(); // Use Tokio's asynchronous stdout
+
+    while let Some(completion) = futures::StreamExt::next(&mut completions).await {
+        stdout.write_all(completion.as_bytes()).await?;
+        stdout.flush().await?;
+
+        decoded_tokens += 1;
+
+        if decoded_tokens >= max_tokens {
+            break;
+        }
+    }
+
+    Ok(())
+}*/
+
 
 async fn run_server(port: u32) -> Result<(), Box<dyn std::error::Error>> {
     use tokio::fs::File;
