@@ -1,0 +1,1 @@
+nitro-cli run-enclave --cpu-count 2 --memory 512 --enclave-cid 16 --eif-path enclave.eif --debug-mode

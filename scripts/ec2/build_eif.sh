@@ -1,0 +1,1 @@
+nitro-cli build-enclave --docker-uri enclave:latest --output-file enclave.eif

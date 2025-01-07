@@ -33,7 +33,7 @@ build:
 
 run-server:
 	./target/$(TOOLCHAIN)/release/$(BIN_NAME) --mode enclave --port 1337
-
+-
 
 run-client:
 	./target/$(TOOLCHAIN)/release/$(BIN_NAME) --mode host --port 1337 --file example.txt
