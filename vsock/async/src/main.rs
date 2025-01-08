@@ -4,7 +4,7 @@ use futures::StreamExt as _;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::fs::File;
 use tokio_vsock::{VsockAddr, VsockListener, VsockStream};
-use llama_cpp::{LlamaModel, LlamaParams, SessionParams, standard_sampler::StandardSampler};
+//use llama_cpp::{LlamaModel, LlamaParams, SessionParams, standard_sampler::StandardSampler};
 
 const BUFFER_SIZE: usize = 65536;
 
@@ -153,7 +153,8 @@ async fn run_server(port: u32) -> Result<(), Box<dyn std::error::Error>> {
 }
 
 async fn run_client(port: u32, file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let addr = VsockAddr::new(tokio_vsock::VMADDR_CID_LOCAL, port);
+    // let addr = VsockAddr::new(tokio_vsock::VMADDR_CID_LOCAL, port);
+    let addr = VsockAddr::new(16, port);
     let mut stream = VsockStream::connect(addr)
         .await
         .expect("Failed to connect to server");

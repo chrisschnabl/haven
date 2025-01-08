@@ -20,4 +20,3 @@ else
   echo "Failed to stop instance: $INSTANCE_ID."
   exit 1
 fi
-
