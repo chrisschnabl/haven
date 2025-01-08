@@ -26,6 +26,7 @@ use std::path::PathBuf;
 use std::pin::pin;
 use std::str::FromStr;
 use std::time::Duration;
+use std::convert::TryFrom;
 
 #[derive(clap::Parser, Debug, Clone)]
 struct Args {
@@ -171,11 +172,12 @@ fn main() -> Result<()> {
         .get_or_load()
         .with_context(|| "failed to get model from args")?;
 
+
     let model = LlamaModel::load_from_file(&backend, model_path, &model_params)
         .with_context(|| "unable to load model")?;
 
     // initialize the context
-    let mut ctx_params =
+    let mut ctx_params =    
         LlamaContextParams::default().with_n_ctx(ctx_size.or(Some(NonZeroU32::new(2048).unwrap())));
 
     if let Some(threads) = threads {
