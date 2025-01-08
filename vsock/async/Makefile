@@ -38,10 +38,13 @@ build-eif:
 	nitro-cli build-enclave --docker-uri enclave:latest --output-file enclave.eif
 
 run-enclave:
-	nitro-cli run-enclave --cpu-count 2 --memory 512 --enclave-cid 16 --eif-path enclave.eif --debug-mode
+	nitro-cli run-enclave --cpu-count 2 --memory 5000 --enclave-cid 16 --eif-path enclave.eif --debug-mode
 
 run-server:
 	./target/$(TOOLCHAIN)/release/$(BIN_NAME) --mode enclave --port 1337
+
+restart-alloc:
+	sudo systemctl restart nitro-enclaves-allocator.service
 
 run-client:
 	./target/$(TOOLCHAIN)/release/$(BIN_NAME) --mode host --port 1337 --file example.txt
