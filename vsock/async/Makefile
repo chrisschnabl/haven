@@ -47,7 +47,7 @@ restart-alloc:
 	sudo systemctl restart nitro-enclaves-allocator.service
 
 run-client:
-	./target/$(TOOLCHAIN)/release/$(BIN_NAME) --mode host --port 1337 --file example.txt
+	./haven --mode host --port 1337 --file example.txt
 
 help:
 	@echo "Available commands:"

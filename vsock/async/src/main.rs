@@ -19,6 +19,7 @@ use std::convert::TryInto;
 use std::io::Write;
 
 const BUFFER_SIZE: usize = 65536;
+// TODO can we increase the buffer size here
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -115,7 +116,7 @@ async fn run_server(port: u32) -> Result<()> {
                     println!("File transfer complete");
 
                     println!("Test model now: ");
-                    //test_model();
+                    test_model();
                 });
             }
             Err(e) => {
@@ -128,8 +129,8 @@ async fn run_server(port: u32) -> Result<()> {
 }
 
 async fn run_client(port: u32, file_path: &str) -> Result<()> {
-    //let addr = VsockAddr::new(16, port);
-    let addr = VsockAddr::new(libc::VMADDR_CID_ANY, port);
+    let addr = VsockAddr::new(16, port);
+    //let addr = VsockAddr::new(libc::VMADDR_CID_ANY, port);
     let mut stream = VsockStream::connect(addr)
         .await
         .context("Failed to connect to server")?;

@@ -1,3 +1,5 @@
-FROM debian:buster-slim
+FROM ubuntu:latest
+RUN apt-get update && apt-get install -y libgomp1
+
 COPY haven .
-CMD ["./haven", "--mode", "enclave", "--port", "5005"]
+CMD ["./haven", "--mode", "enclave", "--port", "5005"].
