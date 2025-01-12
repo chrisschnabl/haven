@@ -103,6 +103,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "bincode"
+version = "1.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b1f45e9417d87227c7a56d22e471c6206462cba514c7590c09aff4cf6d1ddcad"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "bindgen"
 version = "0.69.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -790,12 +799,14 @@ name = "test_program"
 version = "0.1.1"
 dependencies = [
  "anyhow",
+ "bincode",
  "clap",
  "futures",
  "libc",
  "llama-cpp-2",
  "nsm-driver",
  "nsm-io",
+ "serde",
  "tokio",
  "tokio-vsock",
 ]

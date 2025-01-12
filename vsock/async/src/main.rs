@@ -17,9 +17,53 @@ use std::num::NonZeroU32;
 use std::time::Duration;
 use std::convert::TryInto;
 use std::io::Write;
+use serde::{Serialize, Deserialize};
+// TOOD CS: reorganize
 
 const BUFFER_SIZE: usize = 65536;
 
+#[derive(Debug, Serialize, Deserialize)]
+enum Operation {
+    SendFile,
+    EofFile,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Message {
+    op: Operation,
+    data: Vec<u8>,
+}
+
+// We'll use a 4-byte length prefix before the bincode payload.
+async fn read_message(stream: &mut VsockStream) -> Result<Message> {
+    // 1. Read the 4-byte length
+    let mut len_buf = [0u8; 4];
+    let n = stream.read_exact(&mut len_buf).await?;
+    if n == 0 {
+        bail!("EOF reached (no length bytes)");
+    }
+    let msg_len = u32::from_be_bytes(len_buf) as usize;
+
+    // 2. Read the payload
+    let mut buf = vec![0u8; msg_len];
+    stream.read_exact(&mut buf).await?;
+
+    // 3. Deserialize
+    let msg: Message = bincode::deserialize(&buf)?;
+    Ok(msg)
+}
+
+async fn write_message(stream: &mut VsockStream, msg: &Message) -> Result<()> {
+    let encoded = bincode::serialize(msg)?;
+
+    let len_bytes = (encoded.len() as u32).to_be_bytes();
+    tokio::io::AsyncWriteExt::write_all(stream, &len_bytes).await?;
+    tokio::io::AsyncWriteExt::write_all(stream, &encoded).await?;
+
+    Ok(())
+}
+
+// ---------------------------------------------------------------------
 
 #[derive(Parser)]
 #[command(name = "file_transfer_program")]
@@ -39,8 +83,7 @@ struct Cli {
     #[arg(long, short, required_if_eq("mode", "host"))]
     file: Option<String>,
 
-    /// CID for the client (only required in 'host' mode, default is VMADDR_CID_ANY)
-    #[arg(long, short, default_value_t = libc::VMADDR_CID_ANY, required_if_eq("mode", "host"))]
+    #[arg(long, short, default_value_t = libc::VMADDR_CID_ANY)]
     cid: u32,
 }
 
@@ -83,31 +126,9 @@ async fn run_server(port: u32) -> Result<()> {
             Ok(mut stream) => {
                 println!("Got connection ============");
                 tokio::spawn(async move {
-                    let mut file = File::create("model.gguf")
-                        .await
-                        .expect("Failed to create file");
-
-                    loop {
-                        let mut buf = vec![0u8; BUFFER_SIZE];
-                        let len = match stream.read(&mut buf).await {
-                            Ok(len) if len > 0 => len,
-                            _ => break, // EOF or connection closed
-                        };
-
-                        buf.resize(len, 0);
-
-                        tokio::io::AsyncWriteExt::write_all(&mut file, &buf)
-                        .await
-                        .expect("Failed to write to file");
-
-                        println!("Wrote {} bytes to file", len);
-                        // TODO CS: better tracing here
+                    if let Err(e) = handle_incoming_messages(&mut stream).await {
+                        eprintln!("Error handling client: {:?}", e);
                     }
-
-                    println!("File transfer complete");
-
-                    println!("Test model now: ");
-                    test_model();
                 });
             }
             Err(e) => {
@@ -119,9 +140,47 @@ async fn run_server(port: u32) -> Result<()> {
     Ok(())
 }
 
+/// Receives `Message` structs from the client. If `op == SendFile`, writes the data
+/// to `model.gguf`. If `op == EofFile`, stops receiving and calls `test_model()`.
+async fn handle_incoming_messages(stream: &mut VsockStream) -> Result<()> {
+    let mut file = File::create("model.gguf")
+        .await
+        .expect("Failed to create file 'model.gguf'");
+
+    loop {
+        let msg = match read_message(stream).await {
+            Ok(m) => m,
+            Err(e) => {
+                // If we can't read a message properly, let's just break out.
+                eprintln!("Error reading bincode message: {:?}", e);
+                break;
+            }
+        };
+
+        match msg.op {
+            Operation::SendFile => {
+                // Write the incoming bytes to disk
+                file.write_all(&msg.data).await?;
+                println!("Wrote {} bytes to 'model.gguf'", msg.data.len());
+            }
+            Operation::EofFile => {
+                println!("Received end-of-file marker. Stopping file reception.");
+                // Once done, we can call `test_model()`
+                println!("File transfer complete. Now let's test the model...");
+                if let Err(e) = test_model() {
+                    eprintln!("Error running test_model: {:?}", e);
+                }
+                break;
+            }
+        }
+    }
+    Ok(())
+}
+
 async fn run_client(port: u32, cid: u32, file_path: &str) -> Result<()> {
-    let addr = VsockAddr::new(cid, port);
-    //let addr = VsockAddr::new(libc::VMADDR_CID_ANY, port);
+    //let addr = VsockAddr::new(cid, port);
+    let addr = VsockAddr::new(libc::VMADDR_CID_ANY, port);
+
     let mut stream = VsockStream::connect(addr)
         .await
         .context("Failed to connect to server")?;
@@ -132,25 +191,35 @@ async fn run_client(port: u32, cid: u32, file_path: &str) -> Result<()> {
         port
     );
 
+    // Send the file in chunks as Message
     let mut file = File::open(file_path)
         .await
         .context("Failed to open file for reading")?;
 
-    let mut buf = vec![0u8; BUFFER_SIZE]; // 64 KB buffer
+    let mut buf = vec![0u8; BUFFER_SIZE];
+
     loop {
         let len = file.read(&mut buf).await?;
         if len == 0 {
-            break; // EOF reached
+            // EOF reached => send EofFile
+            let msg = Message {
+                op: Operation::EofFile,
+                data: vec![],
+            };
+            write_message(&mut stream, &msg).await?;
+            println!("File transfer complete. Sent EOF marker.");
+            break;
         }
 
-        tokio::io::AsyncWriteExt::write_all(&mut stream, &buf[..len])
-            .await
-            .context("Failed to send data")?;
-
+        // Create a Message to hold this chunk
+        let msg = Message {
+            op: Operation::SendFile,
+            data: buf[..len].to_vec(),
+        };
+        // Send it
+        write_message(&mut stream, &msg).await?;
         println!("Sent {} bytes to server", len);
     }
-
-    println!("File transfer complete");
 
     Ok(())
 }
