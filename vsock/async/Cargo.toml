@@ -15,7 +15,6 @@ anyhow = "1.0.95"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "io-std", "io-util", "fs"] }
 tokio-vsock = "0.7.0"
 
-
 [dependencies.nsm-driver]
 git = "https://github.com/aws/aws-nitro-enclaves-nsm-api.git"
 rev = "4f468c4"

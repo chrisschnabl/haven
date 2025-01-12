@@ -19,7 +19,7 @@ use std::convert::TryInto;
 use std::io::Write;
 
 const BUFFER_SIZE: usize = 65536;
-// TODO can we increase the buffer size here
+
 
 #[derive(Parser)]
 #[command(name = "file_transfer_program")]
@@ -97,6 +97,7 @@ async fn run_server(port: u32) -> Result<()> {
                         .expect("Failed to write to file");
 
                         println!("Wrote {} bytes to file", len);
+                        // TODO CS: better tracing here
                     }
 
                     println!("File transfer complete");
@@ -168,7 +169,7 @@ fn test_model() -> Result<()> {
 
     let ctx_params = LlamaContextParams::default()
         .with_n_ctx(Some(ctx_size))
-        .with_n_threads(threads);
+        .with_n_th reads(threads);
     let mut ctx = model
         .new_context(&backend, ctx_params)
         .context("Unable to create the llama_context")?;
