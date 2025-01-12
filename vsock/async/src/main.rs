@@ -1,4 +1,4 @@
-use clap::{App, Arg};
+use clap::{Parser, ArgValue};
 use futures::StreamExt as _;
 
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
@@ -21,60 +21,46 @@ use std::io::Write;
 const BUFFER_SIZE: usize = 65536;
 // TODO can we increase the buffer size here
 
+#[derive(Parser)]
+#[command(name = "file_transfer_program")]
+#[command(version = "0.0.1")]
+#[command(author = "Chris Schnabl <chris.schnabl.cs@gmail.com>")]
+#[command(about = "Tokio Virtio socket file transfer program (enclave and host)")]
+struct Cli {
+    /// Mode of operation: 'enclave' (server) or 'host' (client)
+    #[arg(long, short)]
+    mode: Mode,
+
+    /// Port for the server or client
+    #[arg(long, short)]
+    port: u32,
+
+    /// Path to the file to send (required in 'host' mode)
+    #[arg(long, short, required_if_eq("mode", "host"))]
+    file: Option<String>,
+}
+
+#[derive(ArgValue, Clone)]
+enum Mode {
+    Enclave,
+    Host,
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
-    let matches = App::new("file_transfer_program")
-        .version("1.0")
-        .author("Chris Schnabl <chris.schnabl.cs@gmail.com>")
-        .about("Tokio Virtio socket file transfer program (enclave and host)")
-        .arg(
-            Arg::with_name("mode")
-                .long("mode")
-                .short("m")
-                .help("Mode of operation: 'enclave' (server) or 'host' (client)")
-                .required(true)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::with_name("port")
-                .long("port")
-                .short("p")
-                .help("Port for the server or client")
-                .required(true)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::with_name("file")
-                .long("file")
-                .short("f")
-                .help("Path to the file to send (required in 'host' mode)")
-                .required_if("mode", "host")
-                .takes_value(true),
-        )
-        .get_matches();
+    let args = Cli::parse();
 
-    let mode = matches.value_of("mode").expect("Mode is required");
-    let port = matches
-        .value_of("port")
-        .expect("Port is required")
-        .parse::<u32>()
-        .expect("Port must be a valid integer");
-
-    match mode {
-        "enclave" => {
+    match args.mode {
+        Mode::Enclave => {
             println!("Starting in enclave (server) mode...");
-            run_server(port).await?;
+            run_server(args.port).await?;
         }
-        "host" => {
-            let file_path = matches
-                .value_of("file")
+        Mode::Host => {
+            let file_path = args
+                .file
                 .expect("File path is required in 'host' mode");
             println!("Starting in host (client) mode...");
-            run_client(port, file_path).await?;
-        }
-        _ => {
-            eprintln!("Invalid mode. Use 'enclave' or 'host'.");
-            std::process::exit(1);
+            run_client(args.port, &file_path).await?;
         }
     }
 

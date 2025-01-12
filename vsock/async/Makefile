@@ -1,10 +1,12 @@
+# TODO CS: simplify since we do not need musl anymore
+
 ARCH := $(shell uname -m)
 TOOLCHAIN ?= $(ARCH)-unknown-linux-musl
 RUST_DIR := $(shell readlink -m $(shell dirname $(firstword $(MAKEFILE_LIST))))
 VPATH = target/$(TOOLCHAIN)/debug target/$(TOOLCHAIN)/release
 
 SRCS := $(shell find . -type f -name '*.rs' | grep -v 'tests')
-BIN_NAME = test_program
+BIN_NAME = haven
 
 .PHONY: all check clean build run-server run-client help
 
@@ -38,7 +40,7 @@ build-eif:
 	nitro-cli build-enclave --docker-uri enclave:latest --output-file enclave.eif
 
 run-enclave:
-	nitro-cli run-enclave --cpu-count 2 --memory 5000 --enclave-cid 16 --eif-path enclave.eif --debug-mode
+	nitro-cli run-enclave --cpu-count 2 --memory 10000 --enclave-cid 16 --eif-path enclave.eif --debug-mode
 
 run-server:
 	./target/$(TOOLCHAIN)/release/$(BIN_NAME) --mode enclave --port 1337
