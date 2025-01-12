@@ -1,4 +1,4 @@
-use clap::{Parser, ArgValue};
+use clap::{Parser, ValueEnum};
 use futures::StreamExt as _;
 
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
@@ -38,9 +38,13 @@ struct Cli {
     /// Path to the file to send (required in 'host' mode)
     #[arg(long, short, required_if_eq("mode", "host"))]
     file: Option<String>,
+
+    /// CID for the client (only required in 'host' mode, default is VMADDR_CID_ANY)
+    #[arg(long, short, default_value_t = libc::VMADDR_CID_ANY, required_if_eq("mode", "host"))]
+    cid: u32,
 }
 
-#[derive(ArgValue, Clone)]
+#[derive(ValueEnum, Clone)]
 enum Mode {
     Enclave,
     Host,
@@ -60,7 +64,7 @@ async fn main() -> Result<()> {
                 .file
                 .expect("File path is required in 'host' mode");
             println!("Starting in host (client) mode...");
-            run_client(args.port, &file_path).await?;
+            run_client(args.port, args.cid, &file_path).await?;
         }
     }
 
@@ -115,8 +119,8 @@ async fn run_server(port: u32) -> Result<()> {
     Ok(())
 }
 
-async fn run_client(port: u32, file_path: &str) -> Result<()> {
-    let addr = VsockAddr::new(16, port);
+async fn run_client(port: u32, cid: u32, file_path: &str) -> Result<()> {
+    let addr = VsockAddr::new(cid, port);
     //let addr = VsockAddr::new(libc::VMADDR_CID_ANY, port);
     let mut stream = VsockStream::connect(addr)
         .await
@@ -169,7 +173,7 @@ fn test_model() -> Result<()> {
 
     let ctx_params = LlamaContextParams::default()
         .with_n_ctx(Some(ctx_size))
-        .with_n_th reads(threads);
+        .with_n_threads(threads);
     let mut ctx = model
         .new_context(&backend, ctx_params)
         .context("Unable to create the llama_context")?;
