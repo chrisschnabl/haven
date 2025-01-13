@@ -104,9 +104,18 @@ impl LlamaRunner {
         // on_token: gets each new token as soon as it's available
         F: FnMut(&str),
     {
-        let model = self.model.as_ref().expect("Model not loaded. Call load_model() first!");
-        let ctx = self.context.as_mut().expect("Context not loaded. Call load_model() first!");
-        let sampler = self.sampler.as_mut().expect("Sampler not loaded. Call load_model() first!");
+        let model = self
+            .model
+            .as_ref()
+            .expect("Model not loaded. Call load_model() first!");
+        let ctx = self
+            .context
+            .as_mut()
+            .expect("Context not loaded. Call load_model() first!");
+        let sampler = self
+            .sampler
+            .as_mut()
+            .expect("Sampler not loaded. Call load_model() first!");
 
         let mut output = String::new();
         let n_len = self.config.n_len;
