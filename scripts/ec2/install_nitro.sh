@@ -8,3 +8,8 @@ sudo usermod -aG docker ec2-user
 sudo systemctl enable --now nitro-enclaves-allocator.service
 sudo systemctl enable --now docker
 
+sudo usermod -aG ne ec2-user
+sudo usermod -aG docker ec2-user
+
+sudo yum install -y llvm llvm-devel clang cmake
+sudo yum groupinstall "Development Tools" -y

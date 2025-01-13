@@ -178,8 +178,8 @@ async fn handle_incoming_messages(stream: &mut VsockStream) -> Result<()> {
 }
 
 async fn run_client(port: u32, cid: u32, file_path: &str) -> Result<()> {
-    //let addr = VsockAddr::new(cid, port);
-    let addr = VsockAddr::new(libc::VMADDR_CID_ANY, port);
+    let addr = VsockAddr::new(cid, port);
+    //let addr = VsockAddr::new(libc::VMADDR_CID_ANY, port);
 
     let mut stream = VsockStream::connect(addr)
         .await
@@ -219,6 +219,7 @@ async fn run_client(port: u32, cid: u32, file_path: &str) -> Result<()> {
         // Send it
         write_message(&mut stream, &msg).await?;
         println!("Sent {} bytes to server", len);
+        // TODO CS: build better progress bar
     }
 
     Ok(())
