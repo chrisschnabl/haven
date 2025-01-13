@@ -1,0 +1,9 @@
+[workspace]
+members = [    
+    "llama_runner",
+    "enclave"
+]
+
+[workspace.dependencies]
+anyhow = "1.0.95"
+llama-cpp-2 = "0.1.69"

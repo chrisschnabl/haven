@@ -1,0 +1,19 @@
+[package]
+name = "llama_runner"
+version = "0.1.1"
+edition = "2018"
+authors = ["Chris Schnabl"]
+description = "TODO"
+license = "Apache-2.0"
+
+[dependencies]
+anyhow = { workspace = true }
+llama-cpp-2 = { workspace = true }
+
+[lib]
+name = "llama_runner"
+path = "src/lib.rs"
+
+[[bin]]
+name = "llama_runner_example"
+path = "src/main.rs"
