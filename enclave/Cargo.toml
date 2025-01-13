@@ -18,6 +18,8 @@ serde = { version = "1.0", features = ["derive"] }
 indicatif = "0.17.9"
 anyhow = { workspace = true }
 llama-cpp-2 = { workspace = true }
+tracing = "0.1.41"
+tracing-subscriber = "0.3.19"
 
 # For attestation
 [dependencies.nsm-driver]

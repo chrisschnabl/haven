@@ -38,9 +38,14 @@ enum Mode {
     Host,
 }
 
+use tracing_subscriber;
+
 #[tokio::main]
 async fn main() -> Result<()> {
     let args = Cli::parse();
+
+    tracing_subscriber::fmt()
+        .init();
 
     match args.mode {
         Mode::Enclave => {

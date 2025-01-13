@@ -6,6 +6,7 @@ use std::time::Duration;
 use tokio::fs::File;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio_vsock::{VsockAddr, VsockListener, VsockStream};
+use tracing::{error, info, instrument};
 
 /// The size of each chunk to read/write (10 MB).
 pub const BUFFER_SIZE: usize = 10 * 1024 * 1024;
@@ -27,6 +28,7 @@ pub struct Message {
 // ----------------------------------
 
 /// Read a `Message` from the stream using a 4-byte length prefix before the bincode payload.
+#[instrument(skip(stream))]
 pub async fn read_message(stream: &mut VsockStream) -> Result<Message> {
     let mut len_buf = [0u8; 4];
     stream.read_exact(&mut len_buf).await?;
@@ -40,6 +42,7 @@ pub async fn read_message(stream: &mut VsockStream) -> Result<Message> {
 }
 
 /// Write a `Message` to the stream using a 4-byte length prefix before the bincode payload.
+#[instrument(skip(stream, msg))]
 pub async fn write_message(stream: &mut VsockStream, msg: &Message) -> Result<()> {
     let encoded = bincode::serialize(msg)?;
     let len_bytes = (encoded.len() as u32).to_be_bytes();
@@ -56,24 +59,25 @@ pub async fn write_message(stream: &mut VsockStream, msg: &Message) -> Result<()
 
 /// Listens on the specified port for incoming `VsockStream` connections.
 /// Spawns a new task to handle each connection.
+#[instrument]
 pub async fn run_server(port: u32) -> Result<()> {
     let addr = VsockAddr::new(libc::VMADDR_CID_ANY, port);
     let listener = VsockListener::bind(addr).context("Unable to bind Virtio listener")?;
-    println!("Listening for connections on port: {}", port);
+    info!("Listening for connections on port: {}", port);
 
     let mut incoming = listener.incoming();
     while let Some(stream_result) = incoming.next().await {
         match stream_result {
             Ok(mut stream) => {
-                println!("Got connection ============");
+                info!("Got connection from client");
                 tokio::spawn(async move {
                     if let Err(e) = handle_incoming_messages(&mut stream).await {
-                        eprintln!("Error handling client: {:?}", e);
+                        error!("Error handling client: {:?}", e);
                     }
                 });
             }
             Err(e) => {
-                eprintln!("Error accepting connection: {:?}", e);
+                error!("Error accepting connection: {:?}", e);
             }
         }
     }
@@ -84,6 +88,7 @@ pub async fn run_server(port: u32) -> Result<()> {
 /// Receives `Message` structs from a client.
 /// - If `op == SendFile`, writes the data to `model.gguf`.
 /// - If `op == EofFile`, stops receiving.
+#[instrument(skip(stream))]
 async fn handle_incoming_messages(stream: &mut VsockStream) -> Result<()> {
     let mut file = File::create("model.gguf")
         .await
@@ -103,8 +108,7 @@ async fn handle_incoming_messages(stream: &mut VsockStream) -> Result<()> {
         let msg = match read_message(stream).await {
             Ok(m) => m,
             Err(e) => {
-                // If we can't read a message properly, break out.
-                eprintln!("Error reading bincode message: {:?}", e);
+                error!("Error reading bincode message: {:?}", e);
                 break;
             }
         };
@@ -117,8 +121,8 @@ async fn handle_incoming_messages(stream: &mut VsockStream) -> Result<()> {
             }
             Operation::EofFile => {
                 pb.finish_with_message("File transfer complete. Received EOF marker.");
-                println!("Received end-of-file marker. Stopping file reception.");
-                println!("File transfer complete.");
+                info!("Received end-of-file marker. Stopping file reception.");
+                info!("File transfer complete.");
                 break;
             }
         }
@@ -133,13 +137,14 @@ async fn handle_incoming_messages(stream: &mut VsockStream) -> Result<()> {
 
 /// Connects to a server at the provided CID/port and sends the specified file in chunks.
 /// After fully sending the file, an `EofFile` message is transmitted.
+#[instrument]
 pub async fn run_client(port: u32, cid: u32, file_path: &str) -> Result<()> {
     let addr = VsockAddr::new(cid, port);
     let mut stream = VsockStream::connect(addr)
         .await
         .context("Failed to connect to server")?;
 
-    println!(
+    info!(
         "Connected to server at CID {}:PORT {}",
         tokio_vsock::VMADDR_CID_LOCAL,
         port
