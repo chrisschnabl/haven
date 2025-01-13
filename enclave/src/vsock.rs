@@ -8,6 +8,8 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio_vsock::{VsockAddr, VsockListener, VsockStream};
 use tracing::{error, info, instrument};
 
+use llama_runner::{LlamaRunner, LlamaConfig};
+
 /// The size of each chunk to read/write (10 MB).
 pub const BUFFER_SIZE: usize = 10 * 1024 * 1024;
 
@@ -15,6 +17,7 @@ pub const BUFFER_SIZE: usize = 10 * 1024 * 1024;
 pub enum Operation {
     SendFile,
     EofFile,
+    Prompt,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -90,19 +93,9 @@ pub async fn run_server(port: u32) -> Result<()> {
 /// - If `op == EofFile`, stops receiving.
 #[instrument(skip(stream))]
 async fn handle_incoming_messages(stream: &mut VsockStream) -> Result<()> {
-    let mut file = File::create("model.gguf")
-        .await
-        .context("Failed to create file 'model.gguf'")?;
-
+    let mut file = None;
+    let mut pb = None;
     let mut total_received = 0;
-    let pb = ProgressBar::new_spinner();
-    pb.set_style(
-        ProgressStyle::default_spinner()
-            .template("{spinner} [{elapsed_precise}] {msg}")
-            .unwrap(),
-    );
-    pb.set_message("Receiving data...");
-    pb.enable_steady_tick(Duration::from_millis(100));
 
     loop {
         let msg = match read_message(stream).await {
@@ -115,14 +108,59 @@ async fn handle_incoming_messages(stream: &mut VsockStream) -> Result<()> {
 
         match msg.op {
             Operation::SendFile => {
-                file.write_all(&msg.data).await?;
-                total_received += msg.data.len() as u64;
-                pb.set_message(format!("Wrote {} bytes to 'model.gguf'", total_received));
+                if file.is_none() {
+                    file = Some(File::create("model.gguf")
+                        .await
+                        .context("Failed to create file 'model.gguf'")?);
+                    
+                    pb = Some(ProgressBar::new_spinner());
+                    pb.as_ref().unwrap().set_style(
+                        ProgressStyle::default_spinner()
+                            .template("{spinner} [{elapsed_precise}] {msg}")
+                            .unwrap(),
+                    );
+                    pb.as_ref().unwrap().set_message("Receiving data...");
+                    pb.as_ref().unwrap().enable_steady_tick(Duration::from_millis(100));
+                }
+
+                if let Some(ref mut f) = file {
+                    f.write_all(&msg.data).await?;
+                    total_received += msg.data.len() as u64;
+                    if let Some(ref pb) = pb {
+                        pb.set_message(format!("Wrote {} bytes to 'model.gguf'", total_received));
+                    }
+                }
             }
             Operation::EofFile => {
-                pb.finish_with_message("File transfer complete. Received EOF marker.");
+                if let Some(ref pb) = pb {
+                    pb.finish_with_message("File transfer complete. Received EOF marker.");
+                }
                 info!("Received end-of-file marker. Stopping file reception.");
                 info!("File transfer complete.");
+
+                break;
+            }
+            Operation::Prompt => {     
+                let config = LlamaConfig::new("model.gguf");
+
+                let mut runner = LlamaRunner::new(config);
+
+                runner.load_model()?;
+                info!("Loaded model.");
+
+                println!("---- Streaming tokens for prompt");
+                let prompt = match String::from_utf8(msg.data.clone()) {
+                    Ok(p) => p,
+                    Err(_) => "Default prompt.".to_string(),
+                };
+                
+                let final_text_1 = runner.generate_stream(&prompt, |_token| {
+                    // Here we just print again, but you could do something else,
+                    // like sending tokens over a channel or a websocket.
+                    // For example: ws.send(token).await? if you had an async context
+                })?;
+                println!("Final text #1:\n{final_text_1}");
+
                 break;
             }
         }
@@ -138,7 +176,7 @@ async fn handle_incoming_messages(stream: &mut VsockStream) -> Result<()> {
 /// Connects to a server at the provided CID/port and sends the specified file in chunks.
 /// After fully sending the file, an `EofFile` message is transmitted.
 #[instrument]
-pub async fn run_client(port: u32, cid: u32, file_path: &str) -> Result<()> {
+pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Option<&str>) -> Result<()> {
     let addr = VsockAddr::new(cid, port);
     let mut stream = VsockStream::connect(addr)
         .await
@@ -150,49 +188,61 @@ pub async fn run_client(port: u32, cid: u32, file_path: &str) -> Result<()> {
         port
     );
 
-    let mut file = File::open(file_path)
-        .await
-        .context("Failed to open file for reading")?;
+    if file_path.is_some() {
+        let file_path = file_path.unwrap();
+        let mut file = File::open(file_path)
+            .await
+            .context("Failed to open file for reading")?;
+    
+        let file_metadata = tokio::fs::metadata(file_path).await?;
+        let total_size = file_metadata.len();
+        let mut total_sent = 0;
+    
+        let pb = ProgressBar::new(total_size);
+        pb.set_style(
+            ProgressStyle::default_bar()
+                .template(
+                    "{msg} [{elapsed_precise}] [{bar:40.cyan/blue}] {bytes}/{total_bytes} ({eta})",
+                )
+                .expect("Failed to set template for progress bar")
+                .progress_chars("#>-"),
+        );
+        pb.set_message(format!("Transferring '{}'...", file_path));   
 
-    let file_metadata = tokio::fs::metadata(file_path).await?;
-    let total_size = file_metadata.len();
-    let mut total_sent = 0;
+        let mut buf = vec![0u8; BUFFER_SIZE];
 
-    let pb = ProgressBar::new(total_size);
-    pb.set_style(
-        ProgressStyle::default_bar()
-            .template(
-                "{msg} [{elapsed_precise}] [{bar:40.cyan/blue}] {bytes}/{total_bytes} ({eta})",
-            )
-            .expect("Failed to set template for progress bar")
-            .progress_chars("#>-"),
-    );
-    pb.set_message(format!("Transferring '{}'...", file_path));
+        loop {
+            let len = file.read(&mut buf).await?;
+            if len == 0 {
+                // EOF => send EofFile
+                let msg = Message {
+                    op: Operation::EofFile,
+                    data: vec![],
+                };
+                write_message(&mut stream, &msg).await?;
+                pb.finish_with_message("File transfer complete. Sent EOF marker.");
+                break;
+            }
 
-    let mut buf = vec![0u8; BUFFER_SIZE];
-
-    loop {
-        let len = file.read(&mut buf).await?;
-        if len == 0 {
-            // EOF => send EofFile
             let msg = Message {
-                op: Operation::EofFile,
-                data: vec![],
+                op: Operation::SendFile,
+                data: buf[..len].to_vec(),
             };
             write_message(&mut stream, &msg).await?;
-            pb.finish_with_message("File transfer complete. Sent EOF marker.");
-            break;
-        }
 
+            total_sent += len as u64;
+            pb.set_position(total_sent);
+        }
+    }
+
+    if let Some(prompt) = prompt {
         let msg = Message {
-            op: Operation::SendFile,
-            data: buf[..len].to_vec(),
+            op: Operation::Prompt,
+            data: prompt.as_bytes().to_vec(),
         };
         write_message(&mut stream, &msg).await?;
-
-        total_sent += len as u64;
-        pb.set_position(total_sent);
     }
+    
 
     Ok(())
 }

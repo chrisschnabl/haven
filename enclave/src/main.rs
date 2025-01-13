@@ -20,12 +20,12 @@ struct Cli {
     port: u32,
 
     /// Path to the file to send (required in 'host' mode)
-    #[arg(long, short, required_if_eq("mode", "host"))]
+    #[arg(long, short)]
     file: Option<String>,
 
     /// Alternative option to specify data directly (required in 'host' mode if file is not provided)
     #[arg(long, default_value = "Default prompt.")]
-    prompt: String,
+    prompt: Option<String>,
 
     /// CID (defaults to ANY for the server, but you can specify for the client)
     #[arg(long, short, default_value_t = libc::VMADDR_CID_ANY)]
@@ -53,9 +53,8 @@ async fn main() -> Result<()> {
             run_server(args.port).await?;
         }
         Mode::Host => {
-            let file_path = args.file.expect("File path is required in 'host' mode");
             println!("Starting in host (client) mode...");
-            run_client(args.port, args.cid, &file_path).await?;
+            run_client(args.port, args.cid, args.file.as_deref(), args.prompt.as_deref()).await?;
         }
     }
 
