@@ -40,8 +40,17 @@ build-eif:
 	nitro-cli build-enclave --docker-uri enclave:latest --output-file enclave.eif
 
 run-enclave:
-	nitro-cli run-enclave --cpu-count 2 --memory 10000 --enclave-cid 16 --eif-path enclave.eif --debug-mode
-
+	@echo "Starting the enclave..."
+	@ENCLAVE_ID=$$(nitro-cli run-enclave --cpu-count 2 --memory 10000 --enclave-cid 16 --eif-path enclave.eif --debug-mode | \
+		jq -r '.EnclaveID') && \
+	if [ -n "$$ENCLAVE_ID" ]; then \
+		echo "Enclave started with ID: $$ENCLAVE_ID"; \
+		echo "Connecting to the enclave console..."; \
+		nitro-cli console --enclave-id $$ENCLAVE_ID; \
+	else \
+		echo "Failed to retrieve EnclaveID"; \
+		exit 1; \
+	fi
 run-server:
 	./target/$(TOOLCHAIN)/release/$(BIN_NAME) --mode enclave --port 1337
 

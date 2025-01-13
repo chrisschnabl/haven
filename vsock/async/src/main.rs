@@ -18,9 +18,10 @@ use std::time::Duration;
 use std::convert::TryInto;
 use std::io::Write;
 use serde::{Serialize, Deserialize};
+use indicatif::{ProgressBar, ProgressStyle};
 // TOOD CS: reorganize
 
-const BUFFER_SIZE: usize = 65536;
+const BUFFER_SIZE: usize = 10 * 1024 * 1024; // 10 MB
 
 #[derive(Debug, Serialize, Deserialize)]
 enum Operation {
@@ -83,6 +84,10 @@ struct Cli {
     #[arg(long, short, required_if_eq("mode", "host"))]
     file: Option<String>,
 
+    /// Alternative option to specify data directly (required in 'host' mode if file is not provided)
+    #[arg(long, default_value = "This is the default prompt. Please tell a story.")]
+    prompt: String,
+
     #[arg(long, short, default_value_t = libc::VMADDR_CID_ANY)]
     cid: u32,
 }
@@ -107,7 +112,7 @@ async fn main() -> Result<()> {
                 .file
                 .expect("File path is required in 'host' mode");
             println!("Starting in host (client) mode...");
-            run_client(args.port, args.cid, &file_path).await?;
+            run_client(args.port, args.cid, &file_path, &args.prompt).await?;
         }
     }
 
@@ -157,13 +162,20 @@ async fn handle_incoming_messages(stream: &mut VsockStream) -> Result<()> {
             }
         };
 
+        let mut total_received = 0;
+        let pb = ProgressBar::new_spinner();
+        pb.set_message("Receiving file...");
+        pb.enable_steady_tick(Duration::from_millis(100));
+
         match msg.op {
             Operation::SendFile => {
                 // Write the incoming bytes to disk
                 file.write_all(&msg.data).await?;
-                println!("Wrote {} bytes to 'model.gguf'", msg.data.len());
+                total_received += msg.data.len() as u64;
+                pb.set_message(format!("Wrote {} bytes to 'model.gguf'", total_received));
             }
             Operation::EofFile => {
+                pb.finish_with_message("File transfer complete. Received EOF marker.");
                 println!("Received end-of-file marker. Stopping file reception.");
                 // Once done, we can call `test_model()`
                 println!("File transfer complete. Now let's test the model...");
@@ -177,9 +189,8 @@ async fn handle_incoming_messages(stream: &mut VsockStream) -> Result<()> {
     Ok(())
 }
 
-async fn run_client(port: u32, cid: u32, file_path: &str) -> Result<()> {
+async fn run_client(port: u32, cid: u32, file_path: &str, prompt: &str) -> Result<()> {
     let addr = VsockAddr::new(cid, port);
-    //let addr = VsockAddr::new(libc::VMADDR_CID_ANY, port);
 
     let mut stream = VsockStream::connect(addr)
         .await
@@ -197,6 +208,17 @@ async fn run_client(port: u32, cid: u32, file_path: &str) -> Result<()> {
         .context("Failed to open file for reading")?;
 
     let mut buf = vec![0u8; BUFFER_SIZE];
+    let file_metadata = tokio::fs::metadata(file_path).await?;
+    let total_size = file_metadata.len();
+    let mut total_sent = 0;
+
+    let pb = ProgressBar::new(total_size);
+    pb.set_style(
+        ProgressStyle::default_bar()
+            .template("{msg} [{elapsed_precise}] [{bar:40.cyan/blue}] {bytes}/{total_bytes} ({eta})")
+            .expect("Failed to set template for progress bar")
+            .progress_chars("#>-")
+    );
 
     loop {
         let len = file.read(&mut buf).await?;
@@ -207,7 +229,7 @@ async fn run_client(port: u32, cid: u32, file_path: &str) -> Result<()> {
                 data: vec![],
             };
             write_message(&mut stream, &msg).await?;
-            println!("File transfer complete. Sent EOF marker.");
+            pb.finish_with_message("File transfer complete. Sent EOF marker.");
             break;
         }
 
@@ -218,8 +240,8 @@ async fn run_client(port: u32, cid: u32, file_path: &str) -> Result<()> {
         };
         // Send it
         write_message(&mut stream, &msg).await?;
-        println!("Sent {} bytes to server", len);
-        // TODO CS: build better progress bar
+        total_sent += len as u64;
+        pb.set_position(total_sent);
     }
 
     Ok(())
