@@ -8,6 +8,10 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio_vsock::{VsockAddr, VsockListener, VsockStream};
 use tracing::{error, info, instrument};
 
+use nsm_io::{Request as NsmRequest, Response as NsmResponse};
+use serde_bytes::ByteBuf;
+use sha2::{Digest, Sha384};
+
 use llama_runner::{LlamaRunner, LlamaConfig};
 
 /// The size of each chunk to read/write (10 MB).
@@ -24,6 +28,50 @@ pub enum Operation {
 pub struct Message {
     pub op: Operation,
     pub data: Vec<u8>,
+}
+fn generate_attestation(
+    input_prompt: &str,
+    output_prompt: &str,
+    model_id: &str,
+) -> Result<Vec<u8>> {
+    // Calculate hashes
+    let input_hash = Sha384::digest(input_prompt.as_bytes());
+    let output_hash = Sha384::digest(output_prompt.as_bytes());
+    let model_hash = Sha384::digest(model_id.as_bytes());
+
+    // Concatenate hashes into user_data
+    let mut user_data = Vec::new();
+    user_data.extend_from_slice(&input_hash);
+    user_data.extend_from_slice(&output_hash);
+    user_data.extend_from_slice(&model_hash);
+
+    // Initialize NSM
+    let nsm_fd = nsm_driver::nsm_init();
+    if nsm_fd < 0 {
+        return Err(anyhow::anyhow!("Failed to initialize NSM"));
+    }
+
+    // Create attestation request
+    let request = NsmRequest::Attestation {
+        public_key: None,
+        user_data: Some(ByteBuf::from(user_data)),
+        nonce: None,
+    };
+
+    // Process the attestation request
+    let response = nsm_driver::nsm_process_request(nsm_fd, request);
+
+    // Match against the correct variants
+    let result = match response {
+        NsmResponse::Attestation { document, .. } => Ok(document),
+        NsmResponse::Error(error_code) => Err(anyhow::anyhow!("NSM Error: {:?}", error_code)),
+        _ => Err(anyhow::anyhow!("Unexpected NSM response")),
+    };
+
+    // Clean up
+    nsm_driver::nsm_exit(nsm_fd);
+
+    result
 }
 
 // ----------------------------------
@@ -160,6 +208,19 @@ async fn handle_incoming_messages(stream: &mut VsockStream) -> Result<()> {
                     // For example: ws.send(token).await? if you had an async context
                 })?;
                 println!("Final text #1:\n{final_text_1}");
+                    
+                // Perform attestation, TODO CS: make async
+                match tokio::task::block_in_place(|| {
+                    // TODO CS: these are just example parameterrs, think about the sensible choices
+                    generate_attestation(&prompt, &final_text_1, "model-123")
+                }) {
+                    Ok(attestation_response) => {
+                        info!("Attestation Response: {:?}", attestation_response);
+                    }
+                    Err(e) => {
+                        error!("Failed to generate attestation: {:?}", e);
+                    }
+                }
 
                 break;
             }
