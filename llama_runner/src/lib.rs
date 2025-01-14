@@ -208,10 +208,4 @@ impl LlamaRunner {
 
         Ok(output)
     }
-
-    /// (Optional) If you want a blocking version that just returns the final string
-    /// (just calls `generate_stream` internally).
-    pub fn generate(&mut self, prompt: &str) -> Result<String> {
-        self.generate_stream(prompt, |_| {})
-    }
 }
