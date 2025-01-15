@@ -1,40 +1,28 @@
-# Build
+# Enclave
 
-```make build``
+## Build 
 
-# Run 
+### Prerequisites
 
-In two different terminals: 
-```make run-server```
-```make run-client```
+- Rust 
+- EC2 with Nitro Enclaves enabled and nitro-cli installed, see `scripts/ec2` for more context.
+- Download a (quantized) llama model of your choice, e.g. `wget https://huggingface.co/TheBloke/Llama-2-7B-GGUF/resolve/main/llama-2-7b.Q4_K_M.gguf?download=true`
 
+```bash
+make build && build-docker && make build-eif
+```
 
-We use this to transfer data between a Host and an Enclave. We do this to avoid baking data into the secure Nitro image. 
+## Run 
 
-Client runs on Host 
-Server runs on Enclave
+### Host
 
-Host
-- stores model
-- stores datasets
+```bash
+./target/release/enclave --mode host --port 5005 --cid 16 --file model.gguf
+./target/release/enclave --mode host --port 5005 --cid 16 --prompt "Hello, how are you?"
+```
 
-Enclave
-- contains llama.cpp
-- contains evaluation code 
+### Enclave
 
-Start-Up
-- Host sends model to enclave
--> How big is it? How long does it take to run?
-- Server receives model 
--> Uses llama crate to run model
-
-Next steps:
--> Test transfer of model locally
--> Test hello world exchange on AWS Nitro
--> Test transfer of model on AWS nitro
--> Test inference of model locally
--> Test inference on AWS nitro
-
-Next steps after that:
--> Do the same with datasets
-*/
+```bash
+make run-enclaves
+```
