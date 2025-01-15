@@ -1,9 +1,13 @@
 use anyhow::Result;
 use clap::{Parser, ValueEnum};
 
-/// Import all vsock server/client logic from vsock.rs
 mod vsock;
-use vsock::{run_client, run_server};
+mod server;
+mod client;
+mod attestation;
+
+use server::run_server;
+use client::run_client;
 
 #[derive(Parser)]
 #[command(name = "file_transfer_program")]
@@ -37,8 +41,6 @@ enum Mode {
     Enclave,
     Host,
 }
-
-use tracing_subscriber;
 
 #[tokio::main]
 async fn main() -> Result<()> {
