@@ -9,6 +9,7 @@ license = "Apache-2.0"
 [dependencies]
 anyhow = { workspace = true }
 llama-cpp-2 = { workspace = true }
+tokio = { workspace = true }
 
 [lib]
 name = "llama_runner"
