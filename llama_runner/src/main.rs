@@ -1,30 +1,39 @@
-use llama_runner::{start_llama_thread, LlamaConfig};
+use anyhow::Result;
+use llama_runner::{
+    LlamaConfig, 
+    start_llama_thread
+};
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
-    // 1) Create a config
+async fn main() -> Result<()> {
+
+    tracing_subscriber::fmt()
+    .init();
+
     let config = LlamaConfig::new("llama-2-7b.Q4_K_M.gguf");
+    let (actor_handle, _thread_join_handle) = start_llama_thread(config);
 
-    // 2) Start the dedicated thread
-    let (actor_handle, _thread_handle) = start_llama_thread(config);
+    actor_handle.load_model("llama-2-7b.Q4_K_M.gguf".into()).await?;
+    println!("Model loaded successfully!\n");
 
-    // 3) Load a model (optional if already loaded)
-    actor_handle.load_model("llama-2-7b.Q4_K_M.gguf".to_string()).await?;
+    let prompt = "What is the meaning of life?".to_string();
+    let full_text = actor_handle.generate(prompt).await?;
+    println!("---- Full output ----\n{full_text}\n");
 
-    // 4) Generate
-    let text = actor_handle.generate("Hello llama!".to_string()).await?;
-    println!("Final generation:\n{text}");
-
-    // 5) Or do streaming
-    let mut token_stream = actor_handle.generate_stream("Say a joke:".to_string()).await?;
-    while let Some(token) = token_stream.recv().await {
+    let stream_prompt = "Please write a short poem:".to_string();
+    let (mut token_rx, final_rx) = actor_handle.generate_stream(stream_prompt).await?;
+    println!("---- Streaming tokens ----");
+    while let Some(token) = token_rx.recv().await {
         print!("{token}");
     }
-    println!("\nDone streaming.");
+    println!("\n---- End of stream ----");
+
+    // Check final status from the actor
+    match final_rx.await {
+        Ok(Ok(())) => println!("Generation completed successfully."),
+        Ok(Err(e)) => eprintln!("Generation error: {e:?}"),
+        Err(_)     => eprintln!("Actor dropped final result channel."),
+    }
 
     Ok(())
 }
-
-
-// TODO CS: make this tokio compatible
-// TOOD CS: do not take this from a file but already from memory  

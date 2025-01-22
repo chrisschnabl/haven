@@ -10,6 +10,8 @@ license = "Apache-2.0"
 anyhow = { workspace = true }
 llama-cpp-2 = { workspace = true }
 tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
 
 [lib]
 name = "llama_runner"

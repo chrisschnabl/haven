@@ -621,6 +621,8 @@ dependencies = [
  "anyhow",
  "llama-cpp-2",
  "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]

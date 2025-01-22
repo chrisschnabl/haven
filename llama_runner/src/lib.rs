@@ -9,12 +9,13 @@ use llama_cpp_2::sampling::LlamaSampler;
 use std::convert::TryInto;
 use std::io::Write;
 use std::num::NonZeroU32;
-use std::sync::mpsc::{self, Sender, Receiver};
+use std::sync::mpsc::{self, Receiver, Sender};
 use std::thread;
 use std::time::Duration;
 use tokio::sync::{mpsc as tokio_mpsc, oneshot};
+use tracing::{error, info};
 
-/// Configuration for your LlamaRunner
+/// Configuration for the runner
 pub struct LlamaConfig {
     pub model_path: String,
     pub seed: i64,
@@ -35,7 +36,7 @@ impl LlamaConfig {
     }
 }
 
-/// A simple blocking Llama runner
+/// A blocking Llama runner that is **not Send**.
 pub struct LlamaRunner {
     pub config: LlamaConfig,
     backend: Option<LlamaBackend>,
@@ -56,17 +57,16 @@ impl LlamaRunner {
     }
 
     pub fn load_model(&mut self) -> Result<()> {
-        let backend = LlamaBackend::init().context("Failed to initialize LlamaBackend")?;
+        info!("Loading model from path: {}", self.config.model_path);
 
+        let backend = LlamaBackend::init().context("Failed to initialize LlamaBackend")?;
         let model_params = LlamaModelParams::default();
-        println!("Loading model from path: {:?}", self.config.model_path);
+
         let model_box = Box::new(
             LlamaModel::load_from_file(&backend, &self.config.model_path, &model_params)
                 .context("Unable to load model")?,
         );
-        // Box::leak -> &'static LlamaModel
         let model: &'static LlamaModel = Box::leak(model_box);
-        println!("Model loaded successfully!");
 
         let ctx_params = LlamaContextParams::default()
             .with_n_ctx(Some(self.config.context_size))
@@ -86,51 +86,49 @@ impl LlamaRunner {
         self.context = Some(context);
         self.sampler = Some(sampler);
 
+        info!("Model loaded successfully!");
         Ok(())
     }
 
-    /// **Blocking** generation loop; calls a callback on each new token.
-    pub fn generate_blocking<F>(&mut self, prompt: &str, mut on_token: F) -> Result<String>
+    /// Blocking generation. Calls `on_token` for each new token.
+    pub fn generate_blocking<F>(&mut self, prompt: &str, mut on_token: F) -> Result<()>
     where
         F: FnMut(&str),
     {
-        let model = self
-            .model
-            .as_ref()
-            .expect("Model not loaded. Call load_model() first!");
-        let ctx = self
-            .context
-            .as_mut()
-            .expect("Context not loaded. Call load_model() first!");
-        let sampler = self
-            .sampler
-            .as_mut()
-            .expect("Sampler not loaded. Call load_model() first!");
+        let model = match self.model.as_ref() {
+            Some(m) => m,
+            None => bail!("Model not loaded; call load_model() first."),
+        };
+        let ctx = match self.context.as_mut() {
+            Some(c) => c,
+            None => bail!("Context not loaded; call load_model() first."),
+        };
+        let sampler = match self.sampler.as_mut() {
+            Some(s) => s,
+            None => bail!("Sampler not loaded; call load_model() first."),
+        };
 
-        let mut output = String::new();
         let n_len = self.config.n_len;
-
         let tokens_list = model
             .str_to_token(prompt, AddBos::Always)
-            .context(format!("Failed to tokenize '{prompt}'"))?;
+            .context(format!("Failed to tokenize prompt: {prompt}"))?;
 
         let n_ctx = ctx.n_ctx() as i32;
         let n_kv_req = tokens_list.len() as i32 + (n_len - tokens_list.len() as i32);
         if n_kv_req > n_ctx {
-            bail!("n_kv_req > n_ctx: required KV cache size is too big.");
+            bail!("n_kv_req > n_ctx (required KV cache size is too big)");
         }
         if tokens_list.len() >= n_len.try_into()? {
-            bail!("The prompt is too long; it has more tokens than n_len.");
+            bail!("Prompt is too long; more tokens than n_len.");
         }
 
-        // Print/stream the prompt tokens first
+        // Output the prompt tokens
         for &token in &tokens_list {
             let token_str = model.token_to_str(token, Special::Tokenize)?;
             on_token(&token_str);
-            output.push_str(&token_str);
         }
-        std::io::stdout().flush()?;
 
+        // Prepare a batch
         let mut batch = LlamaBatch::new(512, 1);
         let last_index = (tokens_list.len() - 1) as i32;
         for (i, token) in (0_i32..).zip(tokens_list.into_iter()) {
@@ -139,7 +137,7 @@ impl LlamaRunner {
         }
 
         // Initial decode
-        ctx.decode(&mut batch).context("llama_decode() failed")?;
+        ctx.decode(&mut batch).context("Failed to decode prompt tokens")?;
 
         let mut n_cur = batch.n_tokens();
         let mut n_decode = 0;
@@ -149,157 +147,185 @@ impl LlamaRunner {
             let token = sampler.sample(ctx, batch.n_tokens() - 1);
             sampler.accept(token);
 
+            // End if EOG
             if model.is_eog_token(token) {
                 break;
             }
 
-            let output_bytes = model.token_to_bytes(token, Special::Tokenize)?;
-            let output_str = String::from_utf8(output_bytes)?;
+            let output_bytes = model
+                .token_to_bytes(token, Special::Tokenize)
+                .context("Failed to convert token to bytes")?;
+            let output_str = String::from_utf8(output_bytes)
+                .context("Invalid UTF-8 from token")?;
+
             on_token(&output_str);
-            output.push_str(&output_str);
 
             batch.clear();
             batch.add(token, n_cur, &[0], true)?;
             n_cur += 1;
 
-            ctx.decode(&mut batch).context("Failed to eval")?;
+            ctx.decode(&mut batch).context("Failed to decode next token")?;
             n_decode += 1;
         }
 
         let t_main_end = ggml_time_us();
         let duration = Duration::from_micros((t_main_end - t_main_start) as u64);
 
-        println!(
-            "\nDecoded {} tokens in {:.2} s, speed {:.2} t/s",
+        info!(
+            "Decoded {} tokens in {:.2}s, speed {:.2} t/s\n{}",
             n_decode,
             duration.as_secs_f32(),
-            n_decode as f32 / duration.as_secs_f32()
+            n_decode as f32 / duration.as_secs_f32(),
+            ctx.timings()
         );
 
-        println!("{}", ctx.timings());
-
-        Ok(output)
+        Ok(())
     }
 }
 
-/// Commands to send to our dedicated thread
+/// Commands the dedicated thread can process
 pub enum LlamaCommand {
-    /// Load a new model path
     LoadModel {
         model_path: String,
         reply: oneshot::Sender<Result<()>>,
     },
-    /// Generate text for a prompt (full output)
+    /// Always generate tokens, sending them to `token_tx`. 
+    /// After finishing or error, send the final Result via `reply`.
     Generate {
-        prompt: String,
-        reply: oneshot::Sender<Result<String>>,
-    },
-    /// Streaming generation: send tokens on `token_tx`, then send Ok/Err on `reply`
-    GenerateStream {
         prompt: String,
         token_tx: tokio_mpsc::Sender<String>,
         reply: oneshot::Sender<Result<()>>,
     },
 }
 
-/// A handle you can use to send commands to the single-threaded actor.
-/// These methods are async only because they await the `oneshot` reply.
+/// A handle you can clone to send commands from async code.
 #[derive(Clone)]
 pub struct LlamaActorHandle {
-    /// The standard library channel to our dedicated thread
-    tx: Sender<LlamaCommand>,
+    cmd_tx: Sender<LlamaCommand>,
 }
 
 impl LlamaActorHandle {
-    pub fn new(tx: Sender<LlamaCommand>) -> Self {
-        Self { tx }
+    pub fn new(cmd_tx: Sender<LlamaCommand>) -> Self {
+        Self { cmd_tx }
     }
 
-    /// Tell the actor to load a model. Await the Result.
+    /// Load a model, awaiting the final result
     pub async fn load_model(&self, model_path: String) -> Result<()> {
         let (reply_tx, reply_rx) = oneshot::channel();
         let cmd = LlamaCommand::LoadModel {
             model_path,
             reply: reply_tx,
         };
-        // Send the command (blocking send)
-        self.tx.send(cmd)
-            .map_err(|_| anyhow::anyhow!("Actor thread has closed"))?;
-        // Await the reply
-        reply_rx.await?
+
+        // Send the command via std::sync::mpsc (blocking), 
+        // because we're *outside* the dedicated thread. That’s fine.
+        self.cmd_tx
+            .send(cmd)
+            .map_err(|_| anyhow::anyhow!("Actor thread is closed"))?;
+
+        // Now wait for the final result in an async oneshot
+        reply_rx
+            .await
+            .map_err(|_| anyhow::anyhow!("Actor dropped the reply"))?
     }
 
-    /// Request a blocking generation, returning the final text
+    /// Generate the entire output. Collect tokens from the channel into one String.
     pub async fn generate(&self, prompt: String) -> Result<String> {
+        let (token_tx, mut token_rx) = tokio_mpsc::channel(64);
         let (reply_tx, reply_rx) = oneshot::channel();
+
         let cmd = LlamaCommand::Generate {
-            prompt,
-            reply: reply_tx,
-        };
-        self.tx.send(cmd)
-            .map_err(|_| anyhow::anyhow!("Actor thread has closed"))?;
-        reply_rx.await?
-    }
-
-    /// Request streaming generation. Return a receiver that yields tokens as they appear.
-    pub async fn generate_stream(&self, prompt: String) -> Result<tokio_mpsc::Receiver<String>> {
-        // Where we’ll push tokens
-        let (token_tx, token_rx) = tokio_mpsc::channel(32);
-
-        let (reply_tx, reply_rx) = oneshot::channel();
-        let cmd = LlamaCommand::GenerateStream {
             prompt,
             token_tx,
             reply: reply_tx,
         };
-        self.tx.send(cmd)
-            .map_err(|_| anyhow::anyhow!("Actor thread has closed"))?;
-        // Return the token receiver immediately. 
-        // The final success/failure is in the `reply_rx` if you want to await it.
-        Ok(token_rx)
+
+        // Send the command
+        self.cmd_tx
+            .send(cmd)
+            .map_err(|_| anyhow::anyhow!("Actor thread is closed"))?;
+
+        // Collect tokens as they arrive
+        let mut output = String::new();
+        while let Some(token) = token_rx.recv().await {
+            output.push_str(&token);
+        }
+
+        // Then check final success/failure
+        reply_rx
+            .await
+            .map_err(|_| anyhow::anyhow!("Actor dropped the reply"))??;
+
+        Ok(output)
+    }
+
+    /// Generate as a stream: return (token receiver, final status oneshot)
+    pub async fn generate_stream(
+        &self,
+        prompt: String,
+    ) -> Result<(tokio_mpsc::Receiver<String>, oneshot::Receiver<Result<()>>)> {
+        let (token_tx, token_rx) = tokio_mpsc::channel(64);
+        let (reply_tx, reply_rx) = oneshot::channel();
+
+        let cmd = LlamaCommand::Generate {
+            prompt,
+            token_tx,
+            reply: reply_tx,
+        };
+
+        self.cmd_tx
+            .send(cmd)
+            .map_err(|_| anyhow::anyhow!("Actor thread is closed"))?;
+
+        Ok((token_rx, reply_rx))
     }
 }
 
-/// Start the Llama “actor” in a dedicated std thread. 
-/// The returned handle can be cloned and used from any async context.
-pub fn start_llama_thread(
-    initial_config: LlamaConfig,
-) -> (LlamaActorHandle, thread::JoinHandle<()>) {
-    // std::sync::mpsc channel for commands
+/// Spawn a dedicated OS thread that owns `LlamaRunner` and processes commands in a loop (blocking).
+pub fn start_llama_thread(config: LlamaConfig) -> (LlamaActorHandle, thread::JoinHandle<()>) {
+    // std::sync::mpsc for commands
     let (cmd_tx, cmd_rx) = mpsc::channel::<LlamaCommand>();
 
-    // Spawn the single dedicated thread
-    let handle = std::thread::spawn(move || {
-        // Build LlamaRunner *inside* the thread
-        let mut runner = LlamaRunner::new(initial_config);
+    let handle = LlamaActorHandle::new(cmd_tx);
 
-        // Actor loop: read commands, handle them
+    // Spawn the dedicated thread
+    let join_handle = thread::spawn(move || {
+        // Create & own the runner in this thread
+        let mut runner = LlamaRunner::new(config);
+
+        // Process commands in a blocking loop
         while let Ok(cmd) = cmd_rx.recv() {
             match cmd {
                 LlamaCommand::LoadModel { model_path, reply } => {
                     runner.config.model_path = model_path;
                     let res = runner.load_model();
+                    if let Err(e) = &res {
+                        error!("Failed to load model: {:?}", e);
+                    }
                     let _ = reply.send(res);
                 }
-                LlamaCommand::Generate { prompt, reply } => {
-                    let res = runner.generate_blocking(&prompt, |_| {});
-                    let _ = reply.send(res);
-                }
-                LlamaCommand::GenerateStream { prompt, token_tx, reply } => {
-                    let res = runner.generate_blocking(&prompt, |token| {
-                        // For each token, push it into the async channel
-                        // If the receiver is closed, ignore the error
-                        let _ = token_tx.blocking_send(token.to_string());
+                LlamaCommand::Generate {
+                    prompt,
+                    token_tx,
+                    reply,
+                } => {
+                    let res = runner.generate_blocking(&prompt, |token_str| {
+                        // push tokens to the async channel
+                        let _ = token_tx.blocking_send(token_str.to_owned());
                     });
-                    // Map Ok(...) => Ok(()) so the caller sees success or failure
-                    let _ = reply.send(res.map(|_| ()));
+                    // Dropping token_tx => no more tokens
+                    drop(token_tx);
+
+                    if let Err(e) = &res {
+                        error!("Generate error: {:?}", e);
+                    }
+                    let _ = reply.send(res);
                 }
             }
         }
 
-        eprintln!("Llama actor thread: command channel closed, exiting.");
+        info!("Actor thread: command channel closed, exiting.");
     });
 
-    // Return a handle so user can send commands
-    (LlamaActorHandle::new(cmd_tx), handle)
+    (handle, join_handle)
 }
