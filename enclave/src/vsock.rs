@@ -11,6 +11,7 @@ pub enum Operation {
     SendFile,
     EofFile,
     Prompt,
+    Attestation,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use tokio_vsock::{VsockAddr, VsockStream};
 use tracing::{info};
-use crate::vsock::{write_message, Message, Operation};
+use crate::vsock::{write_message, read_message, Message, Operation};
 use tokio::fs::File;
 use indicatif::{ProgressBar, ProgressStyle};
 use tokio::io::{AsyncReadExt};
@@ -71,7 +71,31 @@ pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Op
         };
         write_message(&mut stream, &msg).await?;
     }
-    
 
+    // TODO expect response here
+    loop {
+        let msg = match read_message(&mut   stream).await {
+            Ok(msg) => msg,
+            Err(e) => {
+                anyhow::bail!("Failed to read message: {}", e);
+            }
+        };
+        match msg.op {
+            Operation::Prompt => {
+                let response = String::from_utf8(msg.data)?;
+                    info!("Prompt response: {}", response);
+                    break;
+                }
+            _ => {
+                anyhow::bail!("Unexpected operation: {:?}", msg.op);
+            }
+        }
+    }
+
+    // TODO CS: handle attestatin here, and check it
+    // TODO CS: tihnk about the system picture more 
+    // TODO CS: fix client not waiting for the response
+    // TOOD CS: fix streaming being slow
+    // TODO CS: make reload work
     Ok(())
 }

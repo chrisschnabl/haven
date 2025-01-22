@@ -1,19 +1,30 @@
+// src/server.rs
 use anyhow::{Context, Result};
-use tokio_vsock::{VsockAddr, VsockListener};
+use tokio_vsock::{VsockAddr, VsockListener, VsockStream};
 use tracing::{error, info, instrument};
-use crate::vsock::{read_message, Operation};
+use futures::StreamExt;
 use tokio::fs::File;
+use tokio::io::AsyncWriteExt;
 use indicatif::{ProgressBar, ProgressStyle};
 use std::time::Duration;
-use tokio::io::{AsyncWriteExt};
-use futures::StreamExt;
-use tokio_vsock::VsockStream;
-use llama_runner::LlamaConfig;
-use llama_runner::LlamaRunner;
+use crate::vsock::{read_message, write_message, Operation, Message};
 use crate::attestation::generate_attestation;
+
+use llama_runner::{
+    LlamaConfig,
+    start_llama_thread,
+    LlamaActorHandle,
+};
 
 #[instrument]
 pub async fn run_server(port: u32) -> Result<()> {
+    // 1) Start the dedicated llama thread here
+    //    Initially, you might not have "model.gguf" yet (since you're about to receive it),
+    //    so just create a default config. 
+    let config = LlamaConfig::new(); // TODO CS: make config transparent for API
+    let (actor_handle, _actor_thread) = start_llama_thread(config);
+
+    // 2) Bind vsock server
     let addr = VsockAddr::new(libc::VMADDR_CID_ANY, port);
     let listener = VsockListener::bind(addr).context("Unable to bind Virtio listener")?;
     info!("Listening for connections on port: {}", port);
@@ -23,8 +34,10 @@ pub async fn run_server(port: u32) -> Result<()> {
         match stream_result {
             Ok(mut stream) => {
                 info!("Got connection from client");
+                // Pass actor_handle.clone() to each new connection
+                let actor_clone = actor_handle.clone();
                 tokio::spawn(async move {
-                    if let Err(e) = handle_incoming_messages(&mut stream).await {
+                    if let Err(e) = handle_incoming_messages(actor_clone, &mut stream).await {
                         error!("Error handling client: {:?}", e);
                     }
                 });
@@ -38,11 +51,14 @@ pub async fn run_server(port: u32) -> Result<()> {
     Ok(())
 }
 
-#[instrument(skip(stream))]
-async fn handle_incoming_messages(stream: &mut VsockStream) -> Result<()> {
+#[instrument(skip(stream, actor))]
+async fn handle_incoming_messages(
+    actor: LlamaActorHandle,
+    stream: &mut VsockStream,
+) -> Result<()> {
     let mut file = None;
     let mut pb = None;
-    let mut total_received = 0;
+    let mut total_received = 0u64;
 
     loop {
         let msg = match read_message(stream).await {
@@ -55,71 +71,105 @@ async fn handle_incoming_messages(stream: &mut VsockStream) -> Result<()> {
 
         match msg.op {
             Operation::SendFile => {
+                // If not already open, create "model.gguf"
                 if file.is_none() {
-                    file = Some(File::create("model.gguf")
-                        .await
-                        .context("Failed to create file 'model.gguf'")?);
-                    
-                    pb = Some(ProgressBar::new_spinner());
-                    pb.as_ref().unwrap().set_style(
-                        ProgressStyle::default_spinner()
-                            .template("{spinner} [{elapsed_precise}] {msg}")
-                            .unwrap(),
+                    file = Some(
+                        File::create("model.gguf")
+                            .await
+                            .context("Failed to create file 'model.gguf'")?,
                     );
-                    pb.as_ref().unwrap().set_message("Receiving data...");
-                    pb.as_ref().unwrap().enable_steady_tick(Duration::from_millis(100));
+                    pb = Some(ProgressBar::new_spinner());
+                    if let Some(ref bar) = pb {
+                        bar.set_style(
+                            ProgressStyle::default_spinner()
+                                .template("{spinner} [{elapsed_precise}] {msg}")
+                                .unwrap(),
+                        );
+                        bar.set_message("Receiving data...");
+                        bar.enable_steady_tick(Duration::from_millis(100));
+                    }
                 }
 
+                // Write incoming chunk to file
                 if let Some(ref mut f) = file {
                     f.write_all(&msg.data).await?;
                     total_received += msg.data.len() as u64;
-                    if let Some(ref pb) = pb {
-                        pb.set_message(format!("Wrote {} bytes to 'model.gguf'", total_received));
+                    if let Some(ref bar) = pb {
+                        bar.set_message(format!("Wrote {} bytes to 'model.gguf'", total_received));
                     }
                 }
             }
+
             Operation::EofFile => {
-                if let Some(ref pb) = pb {
-                    pb.finish_with_message("File transfer complete. Received EOF marker.");
+                if let Some(ref bar) = pb {
+                    bar.finish_with_message("File transfer complete. Received EOF marker.");
                 }
                 info!("Received end-of-file marker. Stopping file reception.");
-                info!("File transfer complete.");
 
+                // We can now load the model if we want, or wait until Operation::Prompt
+                // For example, do nothing here, or do:
+                // actor.load_model("model.gguf".to_string()).await?;
+                // info!("Model loaded after file reception.");
                 break;
             }
-            Operation::Prompt => {     
-                let config = LlamaConfig::new("model.gguf");
 
-                let mut runner = LlamaRunner::new(config);
+            Operation::Prompt => {
+                // 1) If we haven't loaded the model yet, do it now:
+                if file.is_none() {
+                    actor.load_model("model.gguf".to_string()).await?;
+                    info!("Loaded model in actor thread.");
+                }
 
-                runner.load_model()?;
-                info!("Loaded model.");
-
-                println!("---- Streaming tokens for prompt");
+                // 2) Convert the prompt from bytes
                 let prompt = match String::from_utf8(msg.data.clone()) {
                     Ok(p) => p,
                     Err(_) => "Default prompt.".to_string(),
                 };
+                info!("Received prompt: {}", prompt);
+
+                let (mut token_rx, final_rx) = actor.generate_stream(prompt).await?;
+                info!("--- Streaming tokens ---");
+                let mut collected = String::new();
+                // TODO CS: the stream is not working somehow
+                while let Some(token) = token_rx.recv().await {
+                    // Could forward token to client if you want
+                    //print!("{token}");
+                    collected.push_str(&token);
+                }
+                println!("\n--- Done streaming tokens ---");
                 
-                let text = runner.generate_stream(&prompt, |_token| {
-                    // TODO CS: stream token to client
-                })?;
-                println!("Output :\n{text}");
-                    
-                // Perform attestation, TODO CS: make async
+                let msg = Message {
+                    op: Operation::Prompt,
+                    data: collected.as_bytes().to_vec(),
+                };
+                write_message(stream, &msg).await?;
+
+                // Wait for final success or error
+                match final_rx.await {
+                    Ok(Ok(())) => info!("Generation succeeded."),
+                    Ok(Err(e)) => error!("Generation error: {:?}", e),
+                    Err(_) => error!("Actor dropped the final result channel."),
+                }
+
+                // 4) Perform attestation if needed
+                // (this might be blocking, so you can do block_in_place or a separate spawn_blocking)
                 match tokio::task::block_in_place(|| {
-                    // TODO CS: these are just example parameterrs, think about the sensible choices
-                    generate_attestation(&prompt, &text, "model-123")
+                    generate_attestation("my-model-id", "input", &collected)
                 }) {
                     Ok(attestation_response) => {
                         info!("Attestation Response: {:?}", attestation_response);
-                        // TODO CS: stream attestation response to client
+                        // TODO: send attestation response to client
+                        
                     }
                     Err(e) => {
                         error!("Failed to generate attestation: {:?}", e);
                     }
                 }
 
+                break;
+            }
+            _ => {
+                error!("Unexpected operation: {:?}", msg.op);
                 break;
             }
         }
