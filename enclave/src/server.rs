@@ -34,6 +34,7 @@ pub async fn run_server(port: u32) -> Result<()> {
                 info!("Got connection from client");
                 // Pass actor_handle.clone() to each new connection
                 // TODO CS: well I haven't actually tested this yet, lol 
+                // TODO CS: ok I have tested it and we only handle one connection at a time (which **should** be fine)
                 let actor_clone = actor_handle.clone();
                 tokio::spawn(async move {
                     if let Err(e) = handle_incoming_messages(actor_clone, &mut stream).await {

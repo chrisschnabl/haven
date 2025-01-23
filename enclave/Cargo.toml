@@ -23,3 +23,9 @@ libc = "0.2.79"
 serde = { version = "1.0", features = ["derive"] }
 serde_bytes = { workspace = true }
 tokio-vsock = "0.7.0"
+
+# To verify attestation
+# Fuck this does not work
+#[dependencies.aws-nitro-enclaves-attestation]
+#git = "https://github.com/ppmag/aws-nitro-enclaves-attestation.git"
+#rev = "83ca872"
