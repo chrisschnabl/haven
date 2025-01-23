@@ -132,19 +132,23 @@ async fn handle_incoming_messages(
                 let mut collected = String::new();
                 // TODO CS: the stream is not working somehow
                 while let Some(token) = token_rx.recv().await {
-                    // Could forward token to client if you want
-                    //print!("{token}");
+                    let token_msg = Message {
+                        op: Operation::Prompt,
+                        data: token.as_bytes().to_vec(),
+                    };
+                    write_message(stream, &token_msg).await?;
                     collected.push_str(&token);
                 }
+
+                // TODO CS: tracing here
                 println!("\n--- Done streaming tokens ---");
                 
                 let msg = Message {
-                    op: Operation::Prompt,
-                    data: collected.as_bytes().to_vec(),
+                    op: Operation::EofPrompt,
+                    data: vec![],
                 };
                 write_message(stream, &msg).await?;
 
-                // Wait for final success or error
                 match final_rx.await {
                     Ok(Ok(())) => info!("Generation succeeded."),
                     Ok(Err(e)) => error!("Generation error: {:?}", e),
@@ -157,9 +161,13 @@ async fn handle_incoming_messages(
                     generate_attestation("my-model-id", "input", &collected)
                 }) {
                     Ok(attestation_response) => {
-                        info!("Attestation Response: {:?}", attestation_response);
+                        info!("Attestation Response successfully generated");
                         // TODO: send attestation response to client
-                        
+                        let msg = Message {
+                            op: Operation::Attestation,
+                            data: attestation_response,
+                        };
+                        write_message(stream, &msg).await?;
                     }
                     Err(e) => {
                         error!("Failed to generate attestation: {:?}", e);
@@ -175,5 +183,6 @@ async fn handle_incoming_messages(
         }
     }
 
+    // TODO CS: do evaluation here, e.g. run BERT
     Ok(())
 }

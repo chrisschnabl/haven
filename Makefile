@@ -23,7 +23,7 @@ clippy:
 # Build in release mode
 .PHONY: build
 build:
-	cargo build --workspace --release
+	cargo build --workspace --release && cp target/release/enclave haven
 
 # Test everything in the workspace
 .PHONY: test

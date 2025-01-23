@@ -1,10 +1,10 @@
 use anyhow::{Context, Result};
 use tokio_vsock::{VsockAddr, VsockStream};
-use tracing::{info};
+use tracing::{info, error};
 use crate::vsock::{write_message, read_message, Message, Operation};
 use tokio::fs::File;
 use indicatif::{ProgressBar, ProgressStyle};
-use tokio::io::{AsyncReadExt};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Option<&str>) -> Result<()> {
     let addr = VsockAddr::new(cid, port);
@@ -70,32 +70,63 @@ pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Op
             data: prompt.as_bytes().to_vec(),
         };
         write_message(&mut stream, &msg).await?;
-    }
-
-    // TODO expect response here
-    loop {
-        let msg = match read_message(&mut   stream).await {
-            Ok(msg) => msg,
-            Err(e) => {
-                anyhow::bail!("Failed to read message: {}", e);
-            }
-        };
-        match msg.op {
-            Operation::Prompt => {
-                let response = String::from_utf8(msg.data)?;
-                    info!("Prompt response: {}", response);
+    
+        let mut collected = String::new();
+        loop {
+            let msg = match read_message(&mut stream).await {
+                Ok(msg) => {
+                    info!("Received message: {:?}", msg);
+                    msg
+                }
+                Err(e) => {
+                    error!("Failed to read message: {}", e);
+                    anyhow::bail!("Failed to read message: {}", e);
+                }
+            };
+            match msg.op {
+                Operation::Prompt => {
+                    let token = String::from_utf8(msg.data)?;
+                    info!("Received token: {}", token);
+                    collected.push_str(&token);
+                }
+                Operation::EofPrompt => {
+                    info!("Token stream completed.");
+                    // TODO CS: make sure we trace everything here
+                    // Expect attestation here
+                    let _ = match read_message(&mut stream).await {
+                        Ok(msg) => match msg.op {
+                            Operation::Attestation => {
+                                let attestation_response_file = "attestation_response.txt";
+                                let mut file = File::create(attestation_response_file).await?;
+                                file.write_all(&msg.data).await?;
+                                info!("Attestation response written to file: {}", attestation_response_file);
+                                // TODO CS, once we have the file create an attestation sub project that does handle this
+                            },
+                            _ => anyhow::bail!("Unexpected operation: {:?}", msg.op),
+                        },
+                        Err(e) => {
+                            anyhow::bail!("Failed to read message: {}", e);
+                        }
+                    };
                     break;
                 }
-            _ => {
-                anyhow::bail!("Unexpected operation: {:?}", msg.op);
+                _ => {
+                    anyhow::bail!("Unexpected operation: {:?}", msg.op);
+                }
             }
-        }
+        }    
     }
 
+  
     // TODO CS: handle attestatin here, and check it
     // TODO CS: tihnk about the system picture more 
     // TODO CS: fix client not waiting for the response
     // TOOD CS: fix streaming being slow
     // TODO CS: make reload work
+    // TODO CS: the protocol includes quite some boilerplate, think about how to fix this
+    // -- we kind of like have a series of operations, that depend (in terms of time) on each other
+    // TODO CS: also think about the throughput of prompt requests, once we do run evaluations on scale
+
+    // TODO CS: what would be nice is to basically do an interactive terminal chat gpt mode
     Ok(())
 }

@@ -25,12 +25,10 @@ def main():
     store_ctx = x509.CertificateStoreContext(store, cert)
     store_ctx.verify_certificate()
 
-    # Verify the COSE message signature using the public key from the certificate
     public_key = cert.public_key()
     cose_msg.key = public_key
     cose_msg.verify_signature()
 
-    # Extract and verify user_data
     user_data = attestation_payload.get('user_data')
     if user_data:
         input_hash = user_data[:48]
