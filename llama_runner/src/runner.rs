@@ -31,6 +31,10 @@ impl LlamaRunner {
         }
     }
 
+    pub fn is_model_loaded(&self) -> bool {
+        self.model.is_some()
+    }
+
     /// Load the model from `self.config.model_path`.
     pub fn load_model(&mut self) -> Result<()> {
         // Start of Selection
@@ -39,6 +43,7 @@ impl LlamaRunner {
         
         info!("Loading model from path: {}", model_path);
         let backend = LlamaBackend::init().context("Failed to initialize LlamaBackend")?;
+        // TODO CS: handle this more gracefully 
 
         let model_params = LlamaModelParams::default();
         let model_box = Box::new(

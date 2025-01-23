@@ -4,7 +4,7 @@ BIN_NAME = haven
 
 # 'all' target: run formatting, linting, and build
 .PHONY: all
-all: fmt clippy build
+all: build build-docker build-eif #fmt clippy build 
 
 # 'check' target: build + test
 .PHONY: check

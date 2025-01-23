@@ -113,11 +113,16 @@ fn actor_loop(runner: &mut LlamaRunner, cmd_rx: Receiver<LlamaCommand>) {
         match cmd {
             LlamaCommand::LoadModel { model_path, reply } => {
                 runner.config.model_path = Some(model_path);
-                let res = runner.load_model();
-                if let Err(e) = &res {
-                    error!("Load model error: {:?}", e);
+                if runner.is_model_loaded() {
+                    info!("Model already loaded; skipping load.");
+                    let _ = reply.send(Ok(()));
+                } else {
+                    let res = runner.load_model();
+                    if let Err(e) = &res {
+                        error!("Load model error: {:?}", e);
+                    }
+                    let _ = reply.send(res);
                 }
-                let _ = reply.send(res);
             }
             LlamaCommand::Generate {
                 prompt,
