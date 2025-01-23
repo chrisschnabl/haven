@@ -18,10 +18,8 @@ use llama_runner::{
 
 #[instrument]
 pub async fn run_server(port: u32) -> Result<()> {
-    // 1) Start the dedicated llama thread here
-    //    Initially, you might not have "model.gguf" yet (since you're about to receive it),
-    //    so just create a default config. 
-    let config = LlamaConfig::new(); // TODO CS: make config transparent for API
+    // 1) Start the dedicated llama thread here, without loading the model yet
+    let config = LlamaConfig::new(); // TODO CS: make config transparent for API, we might be able to simplify this
     let (actor_handle, _actor_thread) = start_llama_thread(config);
 
     // 2) Bind vsock server
@@ -35,6 +33,7 @@ pub async fn run_server(port: u32) -> Result<()> {
             Ok(mut stream) => {
                 info!("Got connection from client");
                 // Pass actor_handle.clone() to each new connection
+                // TODO CS: well I haven't actually tested this yet, lol 
                 let actor_clone = actor_handle.clone();
                 tokio::spawn(async move {
                     if let Err(e) = handle_incoming_messages(actor_clone, &mut stream).await {
@@ -72,6 +71,7 @@ async fn handle_incoming_messages(
         match msg.op {
             Operation::SendFile => {
                 // If not already open, create "model.gguf"
+                // TODO CS: can we store this in the memory and not on disk (since disk is just memory-mapped to RAM anyways
                 if file.is_none() {
                     file = Some(
                         File::create("model.gguf")
@@ -105,11 +105,6 @@ async fn handle_incoming_messages(
                     bar.finish_with_message("File transfer complete. Received EOF marker.");
                 }
                 info!("Received end-of-file marker. Stopping file reception.");
-
-                // We can now load the model if we want, or wait until Operation::Prompt
-                // For example, do nothing here, or do:
-                // actor.load_model("model.gguf".to_string()).await?;
-                // info!("Model loaded after file reception.");
                 break;
             }
 
@@ -130,7 +125,6 @@ async fn handle_incoming_messages(
                 let (mut token_rx, final_rx) = actor.generate_stream(prompt).await?;
                 info!("--- Streaming tokens ---");
                 let mut collected = String::new();
-                // TODO CS: the stream is not working somehow
                 while let Some(token) = token_rx.recv().await {
                     let token_msg = Message {
                         op: Operation::Prompt,
@@ -156,13 +150,13 @@ async fn handle_incoming_messages(
                 }
 
                 // 4) Perform attestation if needed
-                // (this might be blocking, so you can do block_in_place or a separate spawn_blocking)
+                // TODO CS: reviist if this needs to be blocked
                 match tokio::task::block_in_place(|| {
+                    // TODO CS: make this meanignful
                     generate_attestation("my-model-id", "input", &collected)
                 }) {
                     Ok(attestation_response) => {
                         info!("Attestation Response successfully generated");
-                        // TODO: send attestation response to client
                         let msg = Message {
                             op: Operation::Attestation,
                             data: attestation_response,

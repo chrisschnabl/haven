@@ -1,6 +1,7 @@
 use anyhow::Result;
 use llama_runner::{LlamaConfig, start_llama_thread};
 
+// Example how to use the actor handle
 #[tokio::main]
 async fn main() -> Result<()> {
     tracing_subscriber::fmt()

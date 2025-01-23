@@ -9,6 +9,7 @@ pub struct LlamaConfig {
 }
 
 impl LlamaConfig {
+    // TODO CS: optimize config parameters
     pub fn new() -> Self {
         Self {
             model_path: None,
