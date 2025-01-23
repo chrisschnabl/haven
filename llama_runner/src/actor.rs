@@ -31,7 +31,6 @@ impl LlamaActorHandle {
         Self { cmd_tx }
     }
 
-    /// Load a model, awaiting the final result
     pub async fn load_model(&self, model_path: String) -> Result<()> {
         let (reply_tx, reply_rx) = oneshot::channel();
         let cmd = LlamaCommand::LoadModel {
@@ -42,11 +41,10 @@ impl LlamaActorHandle {
             .send(cmd)
             .map_err(|_| anyhow::anyhow!("Actor thread closed"))?;
 
-        // Wait for the final result
         reply_rx.await.map_err(|_| anyhow::anyhow!("Actor dropped reply"))?
     }
 
-    /// Generate the entire output. Collect tokens into a single String.
+    // Uses the same interface as the streaming version, just collects them 
     pub async fn generate(&self, prompt: String) -> Result<String> {
         let (token_tx, mut token_rx) = tokio_mpsc::channel(64);
         let (reply_tx, reply_rx) = oneshot::channel();
@@ -66,7 +64,6 @@ impl LlamaActorHandle {
             output.push_str(&token);
         }
 
-        // Check final success/failure
         reply_rx.await.map_err(|_| anyhow::anyhow!("Actor dropped reply"))??;
 
         Ok(output)
@@ -98,13 +95,10 @@ impl LlamaActorHandle {
 /// Start a dedicated thread that owns `LlamaRunner`.
 /// We do not require `Send` for the runner because it never leaves that thread.
 pub fn start_llama_thread(config: LlamaConfig) -> (LlamaActorHandle, thread::JoinHandle<()>) {
-    // We use std::sync::mpsc for the commands
     let (cmd_tx, cmd_rx) = mpsc::channel();
-
-    // The user handle
     let handle = LlamaActorHandle::new(cmd_tx);
 
-    // The dedicated thread
+    // Start a dedicated thread here that owns the runner
     let join_handle = thread::spawn(move || {
         let mut runner = LlamaRunner::new(config);
         actor_loop(&mut runner, cmd_rx);

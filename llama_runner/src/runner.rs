@@ -34,6 +34,7 @@ impl LlamaRunner {
     /// Load the model from `self.config.model_path`.
     pub fn load_model(&mut self) -> Result<()> {
         // Start of Selection
+        // TODO CS: revisit semantics of storing the model path in config
         let model_path = self.config.model_path.as_ref().context("Model path is not set")?;
         
         info!("Loading model from path: {}", model_path);

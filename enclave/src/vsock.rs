@@ -11,6 +11,7 @@ pub enum Operation {
     SendFile,
     EofFile,
     Prompt,
+    EofPrompt,
     Attestation,
 }
 
