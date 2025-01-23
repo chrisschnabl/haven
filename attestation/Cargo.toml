@@ -1,0 +1,27 @@
+[package]
+name = "attestation"
+version = "0.1.1"
+edition = "2018"
+authors = ["Chris Schnabl"]
+description = "TODO"
+license = "Apache-2.0"
+
+[dependencies]
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+sha2 = "0.10.8"
+serde_bytes = { workspace = true }
+
+# For attestation
+[dependencies.nsm-driver]
+git = "https://github.com/aws/aws-nitro-enclaves-nsm-api.git"
+rev = "4f468c4"
+
+[dependencies.nsm-io]
+git = "https://github.com/aws/aws-nitro-enclaves-nsm-api.git"
+rev = "4f468c4"
+
+[lib]
+name = "attestation"
+path = "src/lib.rs"

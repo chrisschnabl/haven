@@ -8,7 +8,7 @@ use tokio::io::AsyncWriteExt;
 use indicatif::{ProgressBar, ProgressStyle};
 use std::time::Duration;
 use crate::vsock::{read_message, write_message, Operation, Message};
-use crate::attestation::generate_attestation;
+use attestation::generate_attestation;
 
 use llama_runner::{
     LlamaConfig,

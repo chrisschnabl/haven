@@ -4,7 +4,6 @@ use clap::{Parser, ValueEnum};
 mod vsock;
 mod server;
 mod client;
-mod attestation;
 
 use server::run_server;
 use client::run_client;
