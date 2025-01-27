@@ -7,10 +7,14 @@ from cryptography.hazmat.primitives.asymmetric import ec
 
 def main():
 
-    attestation_doc_b64 = "..."  
-    attestation_doc = base64.b64decode(attestation_doc_b64)
+    attesstation_doc_path = "attestation_response.txt"
+    with open(attestation_doc_path, "rb") as f:
+        attestation_doc_b64 = f.read()
+    #attestation_doc = base64.b64decode(attestation_doc_b64)
 
-    cose_msg = CoseMessage.decode(attestation_doc)
+    cose_msg = CoseMessage.decode(attestation_doc_b64)
+    print(cose_msg)
+    return
     attestation_payload = cbor2.loads(cose_msg.payload)
 
     # Extract the certificate
