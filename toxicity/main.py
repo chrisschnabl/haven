@@ -3,6 +3,7 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipe
 
 
 def main():
+    # This will fail because we do not have the model in the enclave
     tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
 
     def preprocess_function(examples):
