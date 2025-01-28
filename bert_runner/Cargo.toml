@@ -9,14 +9,16 @@ license = "Apache-2.0"
 [dependencies]
 anyhow = { workspace = true }
 llama-cpp-2 = { workspace = true }
+# llama-cpp-2 = "0.1.90"
+# FUck we need the newest version for BERT to work 
 tokio = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 
 [lib]
-name = "llama_runner"
+name = "bert_runner"
 path = "src/lib.rs"
 
 [[bin]]
-name = "llama_runner_example"
+name = "bert_runner_example"
 path = "src/main.rs"

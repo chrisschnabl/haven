@@ -1,0 +1,1 @@
+https://huggingface.co/ggml-org/bert-base-uncased/resolve/main/bert-base-uncased-Q8_0.gguf?download=true
