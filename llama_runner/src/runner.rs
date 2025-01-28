@@ -39,6 +39,7 @@ impl LlamaRunner {
     pub fn load_model(&mut self) -> Result<()> {
         // Start of Selection
         // TODO CS: revisit semantics of storing the model path in config
+        // TODO CS: wait for PR to be merged: https://github.com/ggerganov/llama.cpp/discussions/10990
         let model_path = self.config.model_path.as_ref().context("Model path is not set")?;
         
         info!("Loading model from path: {}", model_path);
@@ -75,7 +76,8 @@ impl LlamaRunner {
         Ok(())
     }
 
-    /// Blocking generation that calls `on_token` for each token produced.
+    // Blocking generation that calls `on_token` for each token produced.
+    // TODO CS: return a tokio stream
     pub fn generate_blocking<F>(&mut self, prompt: &str, mut on_token: F) -> Result<()>
     where
         F: FnMut(&str),

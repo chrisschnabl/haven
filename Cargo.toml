@@ -2,7 +2,8 @@
 members = [    
     "llama_runner",
     "enclave",
-    "attestation"
+    "attestation",
+    "bert_runner"
 ]
 
 [workspace.dependencies]

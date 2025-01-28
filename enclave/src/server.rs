@@ -72,7 +72,7 @@ async fn handle_incoming_messages(
         match msg.op {
             Operation::SendFile => {
                 // If not already open, create "model.gguf"
-                // TODO CS: can we store this in the memory and not on disk (since disk is just memory-mapped to RAM anyways
+                // TODO CS: can we store this in the memory and not on disk (since disk is just memory-mapped to RAM anyways)
                 if file.is_none() {
                     file = Some(
                         File::create("model.gguf")

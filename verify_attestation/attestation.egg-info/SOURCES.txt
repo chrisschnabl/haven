@@ -1,8 +1,0 @@
-README.md
-main.py
-pyproject.toml
-attestation.egg-info/PKG-INFO
-attestation.egg-info/SOURCES.txt
-attestation.egg-info/dependency_links.txt
-attestation.egg-info/requires.txt
-attestation.egg-info/top_level.txt
