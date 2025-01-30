@@ -1,4 +1,4 @@
-# Haven
+# ⚓ Haven
 
 The following repository contains all artifacts for this MPhil project, which is a mix of rust and python (and too many scripts too glue stuff together). A good starting point is to look at root `Makefile` and the `README.md` files in all the subdirectories:
 
