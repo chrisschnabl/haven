@@ -96,12 +96,25 @@ pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Op
                     let _ = match read_message(&mut stream).await {
                         Ok(msg) => match msg.op {
                             Operation::Attestation => {
-                                let attestation_response_file = "attestation_response.txt";
-                                let mut file = File::create(attestation_response_file).await?;
-                                file.write_all(&msg.data).await?;
-                                info!("Attestation response written to file: {}", attestation_response_file);
-                                // TODO CS verify attestation here, well there 
-                            },
+                                info!("Attestation response received");
+                                let nonce = hex::decode("0000000000000000000000000000000000000000").expect("decode nonce failed");
+                                
+                                let document_data = msg.data;
+                                let document = parse_document(&document_data).expect("parse document failed");
+                                let payload = parse_payload(&document.payload).expect("parse payload failed");
+                            
+                                match parse_verify_with(document_data, nonce, unix_time) {
+                                    Ok((payload, attestation_document)) => {
+                                        // TODO CS: check PCRs against expectation
+                                        info!("payload {:?}", payload.pcrs);
+                                    }
+                                    // TODO CS: do not panic here, but bail
+                                    Err(e) => panic!("parse_verify_with failed: {:?}", e.to_string()),
+                                }
+                            
+                                println!("user data {:?}", payload.user_data);
+                                // TODO CS: verify user data against expectation
+                                },
                             _ => anyhow::bail!("Unexpected operation: {:?}", msg.op),
                         },
                         Err(e) => {

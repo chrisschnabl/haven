@@ -33,7 +33,6 @@ pub async fn run_server(port: u32) -> Result<()> {
             Ok(mut stream) => {
                 info!("Got connection from client");
                 // Pass actor_handle.clone() to each new connection
-                // TODO CS: well I haven't actually tested this yet, lol 
                 // TODO CS: ok I have tested it and we only handle one connection at a time (which **should** be fine)
                 let actor_clone = actor_handle.clone();
                 tokio::spawn(async move {
@@ -64,15 +63,15 @@ async fn handle_incoming_messages(
         let msg = match read_message(stream).await {
             Ok(m) => m,
             Err(e) => {
-                error!("Error reading bincode message: {:?}", e);
+                bail!("Error reading bincode message: {:?}", e);
                 break;
             }
         };
 
         match msg.op {
             Operation::SendFile => {
-                // If not already open, create "model.gguf"
-                // TODO CS: can we store this in the memory and not on disk (since disk is just memory-mapped to RAM anyways)
+                // If not already open, create "model.gguf", there is an open PR to directly load the model from memory
+                // https://github.com/ggerganov/llama.cpp/pull/9125/files
                 if file.is_none() {
                     file = Some(
                         File::create("model.gguf")
@@ -91,7 +90,6 @@ async fn handle_incoming_messages(
                     }
                 }
 
-                // Write incoming chunk to file
                 if let Some(ref mut f) = file {
                     f.write_all(&msg.data).await?;
                     total_received += msg.data.len() as u64;
@@ -151,9 +149,9 @@ async fn handle_incoming_messages(
                 }
 
                 // 4) Perform attestation if needed
-                // TODO CS: reviist if this needs to be blocked
+                // TODO CS: revisit if this needs to be blocked
                 match tokio::task::block_in_place(|| {
-                    // TODO CS: make this meanignful
+                    // TODO CS: make this meaningful
                     generate_attestation("my-model-id", "input", &collected)
                 }) {
                     Ok(attestation_response) => {

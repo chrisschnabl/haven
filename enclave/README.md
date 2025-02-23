@@ -26,3 +26,8 @@ make build && build-docker && make build-eif
 ```bash
 make run-enclaves
 ```
+
+
+TODO
+- library code: thiserror
+- application code: anyhow 
