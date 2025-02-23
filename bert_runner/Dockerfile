@@ -28,3 +28,4 @@ COPY ./target/debug/bert_runner_example bert_runner
 RUN mkdir model
 COPY ./bert_runner/model/ /model/
 CMD ["./bert_runner"]
+# 20156

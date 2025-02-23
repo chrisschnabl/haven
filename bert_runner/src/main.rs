@@ -35,5 +35,10 @@ fn main() -> anyhow::Result<()> {
         println!("{label:?}");
     }
 
+    loop {
+        println!("Hello, world!");
+        std::thread::sleep(std::time::Duration::from_secs(1));
+    }
+
     Ok(())
 }

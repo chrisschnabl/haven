@@ -51,9 +51,9 @@ run-enclave:
 	@echo "Starting the enclave..."
 	@ENCLAVE_ID=$$(nitro-cli run-enclave \
 			--cpu-count 2 \
-			--memory 10000 \
+			--memory 24000 \
 			--enclave-cid 16 \
-			--eif-path enclave.eif \
+			--eif-path bert.eif \
 			--debug-mode | jq -r '.EnclaveID') && \
 	if [ -n "$$ENCLAVE_ID" ]; then \
 		echo "Enclave started with ID: $$ENCLAVE_ID"; \
