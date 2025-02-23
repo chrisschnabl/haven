@@ -1,10 +1,11 @@
 use anyhow::{Context, Result};
 use tokio_vsock::{VsockAddr, VsockStream};
 use tracing::{info, error};
-use crate::vsock::{write_message, read_message, Message, Operation};
+use crate::vsock::{write_message, read_message, Message};
 use tokio::fs::File;
 use indicatif::{ProgressBar, ProgressStyle};
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::io::{AsyncReadExt};
+use tee_attestation_verifier::{parse_verify_with, parse_document, parse_payload};
 
 pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Option<&str>) -> Result<()> {
     let addr = VsockAddr::new(cid, port);
@@ -44,17 +45,14 @@ pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Op
             let len = file.read(&mut buf).await?;
             if len == 0 {
                 // EOF => send EofFile
-                let msg = Message {
-                    op: Operation::EofFile,
-                    data: vec![],
-                };
+                let msg = Message::EofFile;
                 write_message(&mut stream, &msg).await?;
                 pb.finish_with_message("File transfer complete. Sent EOF marker.");
                 break;
             }
 
-            let msg = Message {
-                op: Operation::SendFile,
+            let msg = Message::SendFile {
+                file_name: file_path.to_string(),
                 data: buf[..len].to_vec(),
             };
             write_message(&mut stream, &msg).await?;
@@ -65,8 +63,7 @@ pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Op
     }
 
     if let Some(prompt) = prompt {
-        let msg = Message {
-            op: Operation::Prompt,
+        let msg = Message::Prompt {
             data: prompt.as_bytes().to_vec(),
         };
         write_message(&mut stream, &msg).await?;
@@ -83,28 +80,29 @@ pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Op
                     anyhow::bail!("Failed to read message: {}", e);
                 }
             };
-            match msg.op {
-                Operation::Prompt => {
-                    let token = String::from_utf8(msg.data)?;
+            match msg {
+                Message::Prompt { data } => {
+                    let token = String::from_utf8(data)?;
                     info!("Received token: {}", token);
                     collected.push_str(&token);
                 }
-                Operation::EofPrompt => {
+                Message::EofPrompt => {
                     info!("Token stream completed.");
                     // TODO CS: make sure we trace everything here
                     // Expect attestation here
                     let _ = match read_message(&mut stream).await {
-                        Ok(msg) => match msg.op {
-                            Operation::Attestation => {
+                        Ok(msg) => match msg {
+                            Message::Attestation { data } => {
                                 info!("Attestation response received");
                                 let nonce = hex::decode("0000000000000000000000000000000000000000").expect("decode nonce failed");
                                 
-                                let document_data = msg.data;
+                                let document_data = data;
                                 let document = parse_document(&document_data).expect("parse document failed");
                                 let payload = parse_payload(&document.payload).expect("parse payload failed");
-                            
+                                let unix_time = std::time::UNIX_EPOCH.elapsed().unwrap().as_secs();
+                                
                                 match parse_verify_with(document_data, nonce, unix_time) {
-                                    Ok((payload, attestation_document)) => {
+                                    Ok((payload, _attestation_document)) => {
                                         // TODO CS: check PCRs against expectation
                                         info!("payload {:?}", payload.pcrs);
                                     }
@@ -115,7 +113,7 @@ pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Op
                                 println!("user data {:?}", payload.user_data);
                                 // TODO CS: verify user data against expectation
                                 },
-                            _ => anyhow::bail!("Unexpected operation: {:?}", msg.op),
+                            _ => anyhow::bail!("Unexpected operation"),
                         },
                         Err(e) => {
                             anyhow::bail!("Failed to read message: {}", e);
@@ -124,7 +122,7 @@ pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Op
                     break;
                 }
                 _ => {
-                    anyhow::bail!("Unexpected operation: {:?}", msg.op);
+                    anyhow::bail!("Unexpected operation:");
                 }
             }
         }    
@@ -135,7 +133,6 @@ pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Op
     // TODO CS: tihnk about the system picture more 
     // TODO CS: the protocol includes quite some boilerplate, think about how to fix this
     // -- we kind of like have a series of operations, that depend (in terms of time) on each other
-    // TODO CS: also think about the throughput of prompt requests, once we do run evaluations on scale
 
     // TODO CS: what would be nice is to basically do an interactive terminal chat gpt mode
     Ok(())

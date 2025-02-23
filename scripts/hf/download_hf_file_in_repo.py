@@ -6,3 +6,4 @@ file_path = hf_hub_download(
 )
 
 print(f"File downloaded to: {file_path}")
+# TODO CS: dowmload llama 3 at some point

@@ -12,19 +12,10 @@ tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 serde_bytes = { workspace = true }
 serde = { workspace = true }
-sha2 = "0.10.8"
-openssl = "0.10.68"
-serde_json = "1.0.137"
-serde_cbor = "0.11.2"
-webpki = "0.22.4"
-chrono = { version = "0.4.39", features = ["serde"] }
 hex = "0.4.3"
-thiserror = "2.0.11"
-aws-nitro-enclaves-cose = "0.5.2"
-x509-parser = "0.16.0"
-itertools = "0.14.0"
 tee-attestation-verifier = "0.1.4"
 base64 = "0.22.1"
+sha2 = "0.10.8"
 
 # For attestation
 [dependencies.nsm-driver]

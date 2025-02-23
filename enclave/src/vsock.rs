@@ -7,19 +7,24 @@ use tracing::instrument;
 pub const BUFFER_SIZE: usize = 10 * 1024 * 1024;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub enum Operation {
-    SendFile,
+#[serde(tag = "op", content = "payload")]
+pub enum Message {
+    SendFile {
+        file_name: String,
+        data: Vec<u8>,
+    },
     EofFile,
-    Prompt,
+    Prompt {
+        data: Vec<u8>,
+    },
     EofPrompt,
-    Attestation,
+    Attestation {
+        data: Vec<u8>,
+    }
 }
+/// We want to have a protocol that enforces i.e. order of messages
+/// to reduce the attack surface of the enclave.
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Message {
-    pub op: Operation,
-    pub data: Vec<u8>,
-}
 
 /// Read a `Message` from the stream using a 4-byte length prefix before the bincode payload.
 #[instrument(skip(stream))]

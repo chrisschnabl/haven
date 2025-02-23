@@ -1,5 +1,5 @@
 // src/server.rs
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, bail};
 use tokio_vsock::{VsockAddr, VsockListener, VsockStream};
 use tracing::{error, info, instrument};
 use futures::StreamExt;
@@ -7,8 +7,9 @@ use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
 use indicatif::{ProgressBar, ProgressStyle};
 use std::time::Duration;
-use crate::vsock::{read_message, write_message, Operation, Message};
+use crate::vsock::{read_message, write_message, Message};
 use attestation::generate_attestation;
+
 
 use llama_runner::{
     LlamaConfig,
@@ -64,19 +65,20 @@ async fn handle_incoming_messages(
             Ok(m) => m,
             Err(e) => {
                 bail!("Error reading bincode message: {:?}", e);
-                break;
             }
         };
 
-        match msg.op {
-            Operation::SendFile => {
+        match msg {
+            Message::SendFile { file_name, data } => {
                 // If not already open, create "model.gguf", there is an open PR to directly load the model from memory
                 // https://github.com/ggerganov/llama.cpp/pull/9125/files
+                let name = file_name.clone();
+
                 if file.is_none() {
-                    file = Some(
-                        File::create("model.gguf")
+                    file = Some(    
+                        File::create(file_name)
                             .await
-                            .context("Failed to create file 'model.gguf'")?,
+                            .context("Failed to create file")? // TODO CS: error handling
                     );
                     pb = Some(ProgressBar::new_spinner());
                     if let Some(ref bar) = pb {
@@ -91,23 +93,23 @@ async fn handle_incoming_messages(
                 }
 
                 if let Some(ref mut f) = file {
-                    f.write_all(&msg.data).await?;
-                    total_received += msg.data.len() as u64;
+                    f.write_all(&data).await?;
+                    total_received += data.len() as u64;
                     if let Some(ref bar) = pb {
-                        bar.set_message(format!("Wrote {} bytes to 'model.gguf'", total_received));
+                        bar.set_message(format!("Wrote {} bytes to '{}'", total_received, name));
                     }
                 }
             }
 
-            Operation::EofFile => {
+            Message::EofFile => {
                 if let Some(ref bar) = pb {
-                    bar.finish_with_message("File transfer complete. Received EOF marker.");
+                    bar.finish_with_message(format!("File transfer complete. Received EOF marker. Received {} bytes.", total_received));
                 }
-                info!("Received end-of-file marker. Stopping file reception.");
+                info!("Received end-of-file marker. Stopping file reception. Received {} bytes.", total_received);
                 break;
             }
 
-            Operation::Prompt => {
+            Message::Prompt { data } => {
                 // 1) If we haven't loaded the model yet, do it now:
                 if file.is_none() {
                     actor.load_model("model.gguf".to_string()).await?;
@@ -115,7 +117,7 @@ async fn handle_incoming_messages(
                 }
 
                 // 2) Convert the prompt from bytes
-                let prompt = match String::from_utf8(msg.data.clone()) {
+                let prompt = match String::from_utf8(data.clone()) {
                     Ok(p) => p,
                     Err(_) => "Default prompt.".to_string(),
                 };
@@ -125,8 +127,7 @@ async fn handle_incoming_messages(
                 info!("--- Streaming tokens ---");
                 let mut collected = String::new();
                 while let Some(token) = token_rx.recv().await {
-                    let token_msg = Message {
-                        op: Operation::Prompt,
+                    let token_msg = Message::Prompt {
                         data: token.as_bytes().to_vec(),
                     };
                     write_message(stream, &token_msg).await?;
@@ -136,10 +137,7 @@ async fn handle_incoming_messages(
                 // TODO CS: tracing here
                 println!("\n--- Done streaming tokens ---");
                 
-                let msg = Message {
-                    op: Operation::EofPrompt,
-                    data: vec![],
-                };
+                let msg = Message::EofPrompt;
                 write_message(stream, &msg).await?;
 
                 match final_rx.await {
@@ -156,8 +154,7 @@ async fn handle_incoming_messages(
                 }) {
                     Ok(attestation_response) => {
                         info!("Attestation Response successfully generated");
-                        let msg = Message {
-                            op: Operation::Attestation,
+                        let msg = Message::Attestation {
                             data: attestation_response,
                         };
                         write_message(stream, &msg).await?;
@@ -170,7 +167,7 @@ async fn handle_incoming_messages(
                 break;
             }
             _ => {
-                error!("Unexpected operation: {:?}", msg.op);
+                error!("Unexpected operation:");
                 break;
             }
         }
