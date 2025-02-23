@@ -8,12 +8,10 @@ license = "Apache-2.0"
 
 [dependencies]
 anyhow = { workspace = true }
-#llama-cpp-2 = { workspace = true }
-llama-cpp-2 = "0.1.98"
-# FUck we need the newest version for BERT to work 
-tokio = { workspace = true }
-tracing = { workspace = true }
-tracing-subscriber = { workspace = true }
+rust-bert = "0.23.0"
+#tokio = { workspace = true }
+#tracing = { workspace = true }
+#tracing-subscriber = { workspace = true }
 
 [lib]
 name = "bert_runner"

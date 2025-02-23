@@ -1,55 +1,39 @@
-use llama_cpp_2::context::params::LlamaContextParams;
-use llama_cpp_2::llama_backend::LlamaBackend;
-use llama_cpp_2::llama_batch::LlamaBatch;
-use llama_cpp_2::model::params::LlamaModelParams;
-use llama_cpp_2::model::LlamaModel;
-use llama_cpp_2::model::{AddBos, Special};
-use std::io::Write;
+use rust_bert::resources::{LocalResource};
+use rust_bert::pipelines::sequence_classification::{SequenceClassificationConfig, SequenceClassificationModel};
+use rust_bert::pipelines::common::{ModelResource};
 
-#[allow(clippy::cast_possible_wrap, clippy::cast_possible_truncation)]
-fn main() {
-    // Set the model path to your BERT embedding GGUF model
-    let model_path = "bert-base-uncased-Q8_0.gguf";
-    let backend = LlamaBackend::init().expect("failed to init backend");
-    let params = LlamaModelParams::default();
+fn main() -> anyhow::Result<()> {
+    // Define your custom resources (local or remote)
+    let model_resource = ModelResource::Torch(Box::new(LocalResource {
+        local_path: "model/rust_model.ot".into(),
+    }));
+    let config_resource = Box::new(LocalResource {
+        local_path: "model/config.json".into(),
+    });
+    let vocab_resource = Box::new(LocalResource {
+        local_path: "model/vocab.txt".into(),
+    });
+    // Create a custom configuration. (Set model_type if needed.)
+    let custom_config = SequenceClassificationConfig {
+        model_resource,
+        vocab_resource,
+        config_resource,
+        ..Default::default()
+    };
 
-    // Use a prompt for which we want to compute embeddings.
-    let prompt = "<|im_start|>user\nHello! how are you?<|im_end|>\n<|im_start|>assistant\n".to_string();
+    // Instantiate the model using your custom configuration.
+    let sequence_classification_model = SequenceClassificationModel::new(custom_config)?;
 
-    // Load the model
-    let model = LlamaModel::load_from_file(&backend, model_path, &params)
-        .expect("unable to load model");
+    // Define your input text.
+    let input = [
+        "I love programming in Rust.",
+    ];
 
-    // Create a context with embeddings enabled
-    let ctx_params = LlamaContextParams::default().with_embeddings(true);
-    let mut ctx = model
-        .new_context(&backend, ctx_params)
-        .expect("unable to create the llama_context");
-
-    // Tokenize the prompt with AddBos to ensure proper tokenization
-    let tokens_list = model
-        .str_to_token(&prompt, AddBos::Always)
-        .unwrap_or_else(|_| panic!("failed to tokenize {prompt}"));
-
-    let mut batch = LlamaBatch::new(512, 1);
-
-    let last_index = tokens_list.len() as i32 - 1;
-    for (i, token) in (0_i32..).zip(tokens_list.into_iter()) {
-        let is_last = i == last_index;
-        batch.add(token, i, &[0], is_last)
-            .expect("failed to add token to batch");
+    // Run model inference.
+    let output = sequence_classification_model.predict(input);
+    for label in output {
+        println!("{label:?}");
     }
-    // Decode the batch to compute embeddings
-    ctx.decode(&mut batch).expect("llama_decode() failed");
 
-    // Instead of generating text, extract the embedding vector for the sequence (sequence 0)
-    let embedding = ctx
-        .embeddings_seq_ith(0)
-        .expect("failed to get embeddings for sequence");
-
-    // Print the resulting embedding vector
-    println!("Embeddings:\n{:?}", embedding);
-
-    // Optionally, print timing information
-    println!("{}", ctx.timings());
+    Ok(())
 }
