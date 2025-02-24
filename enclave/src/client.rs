@@ -4,7 +4,8 @@ use tracing::{info, error};
 use crate::vsock::{write_message, read_message, Message, Operation};
 use tokio::fs::File;
 use indicatif::{ProgressBar, ProgressStyle};
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::io::{AsyncReadExt};
+use tee_attestation_verifier::{parse_verify_with, parse_document, parse_payload};
 
 pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Option<&str>) -> Result<()> {
     let addr = VsockAddr::new(cid, port);
@@ -46,6 +47,7 @@ pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Op
                 // EOF => send EofFile
                 let msg = Message {
                     op: Operation::EofFile,
+                    file_path: Some(file_path.to_string()),
                     data: vec![],
                 };
                 write_message(&mut stream, &msg).await?;
@@ -55,6 +57,7 @@ pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Op
 
             let msg = Message {
                 op: Operation::SendFile,
+                file_path: Some(file_path.to_string()),
                 data: buf[..len].to_vec(),
             };
             write_message(&mut stream, &msg).await?;
@@ -67,6 +70,7 @@ pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Op
     if let Some(prompt) = prompt {
         let msg = Message {
             op: Operation::Prompt,
+            file_path: Some("llama.gguf".to_string()),
             data: prompt.as_bytes().to_vec(),
         };
         write_message(&mut stream, &msg).await?;
@@ -102,7 +106,7 @@ pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Op
                                 let document_data = msg.data;
                                 let document = parse_document(&document_data).expect("parse document failed");
                                 let payload = parse_payload(&document.payload).expect("parse payload failed");
-                            
+                                let unix_time = std::time::UNIX_EPOCH.elapsed().unwrap().as_secs();
                                 match parse_verify_with(document_data, nonce, unix_time) {
                                     Ok((payload, attestation_document)) => {
                                         // TODO CS: check PCRs against expectation

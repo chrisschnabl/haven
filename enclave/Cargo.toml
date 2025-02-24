@@ -9,7 +9,9 @@ edition = "2018"
 [dependencies]
 llama_runner = { path = "../llama_runner" }
 attestation = { path = "../attestation" }
+bert_runner = { path = "../bert_runner", features = ["use_rust_bert"] }
 
+hex = "0.4.3"
 anyhow = { workspace = true }
 tokio = { workspace = true }
 llama-cpp-2 = { workspace = true }

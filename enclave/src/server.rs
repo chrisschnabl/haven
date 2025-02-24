@@ -9,7 +9,7 @@ use indicatif::{ProgressBar, ProgressStyle};
 use std::time::Duration;
 use crate::vsock::{read_message, write_message, Operation, Message};
 use attestation::generate_attestation;
-
+use bert_runner::start_bert_actor;
 use llama_runner::{
     LlamaConfig,
     start_llama_thread,
@@ -63,7 +63,7 @@ async fn handle_incoming_messages(
         let msg = match read_message(stream).await {
             Ok(m) => m,
             Err(e) => {
-                bail!("Error reading bincode message: {:?}", e);
+                error!("Error reading bincode message: {:?}", e);
                 break;
             }
         };
@@ -74,9 +74,9 @@ async fn handle_incoming_messages(
                 // https://github.com/ggerganov/llama.cpp/pull/9125/files
                 if file.is_none() {
                     file = Some(
-                        File::create("model.gguf")
+                        File::create(msg.file_path.unwrap())
                             .await
-                            .context("Failed to create file 'model.gguf'")?,
+                            .context("Failed to create file")?,
                     );
                     pb = Some(ProgressBar::new_spinner());
                     if let Some(ref bar) = pb {
@@ -110,7 +110,7 @@ async fn handle_incoming_messages(
             Operation::Prompt => {
                 // 1) If we haven't loaded the model yet, do it now:
                 if file.is_none() {
-                    actor.load_model("model.gguf".to_string()).await?;
+                    actor.load_model(msg.file_path.unwrap()).await?;
                     info!("Loaded model in actor thread.");
                 }
 
@@ -127,6 +127,7 @@ async fn handle_incoming_messages(
                 while let Some(token) = token_rx.recv().await {
                     let token_msg = Message {
                         op: Operation::Prompt,
+                        file_path: None,
                         data: token.as_bytes().to_vec(),
                     };
                     write_message(stream, &token_msg).await?;
@@ -138,6 +139,7 @@ async fn handle_incoming_messages(
                 
                 let msg = Message {
                     op: Operation::EofPrompt,
+                    file_path: None,
                     data: vec![],
                 };
                 write_message(stream, &msg).await?;
@@ -146,6 +148,16 @@ async fn handle_incoming_messages(
                     Ok(Ok(())) => info!("Generation succeeded."),
                     Ok(Err(e)) => error!("Generation error: {:?}", e),
                     Err(_) => error!("Actor dropped the final result channel."),
+                }
+
+                // 3) Run BERT
+                let (bert_actor, _join_handle) = start_bert_actor();
+                bert_actor.load_model().await?;
+                        
+                let collected_vec = vec![collected.clone()];
+                let predictions = bert_actor.predict(collected_vec).await?;
+                for prediction in predictions {
+                    println!("BERT prediction: {:?}", prediction);
                 }
 
                 // 4) Perform attestation if needed
@@ -158,6 +170,7 @@ async fn handle_incoming_messages(
                         info!("Attestation Response successfully generated");
                         let msg = Message {
                             op: Operation::Attestation,
+                            file_path: None,
                             data: attestation_response,
                         };
                         write_message(stream, &msg).await?;

@@ -18,6 +18,7 @@ pub enum Operation {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Message {
     pub op: Operation,
+    pub file_path: Option<String>,
     pub data: Vec<u8>,
 }
 

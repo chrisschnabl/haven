@@ -824,9 +824,11 @@ version = "0.1.1"
 dependencies = [
  "anyhow",
  "attestation",
+ "bert_runner",
  "bincode",
  "clap",
  "futures",
+ "hex",
  "indicatif 0.17.9",
  "libc",
  "llama-cpp-2",
