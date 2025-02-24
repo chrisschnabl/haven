@@ -1,11 +1,11 @@
 sequenceDiagram
   actor MD as Model Developer
-  actor V as Verifier
   participant Enclave as Trusted Enclave
+  actor V as Verifier
   participant R as Registry 
 
-  V ->> V: (0) C', D' <- Enc(D, K_E), Enc(C, K_E)
   MD ->> MD: (0) M' <- Enc(M, K_E)
+  V ->> V: (0) C', D' <- Enc(D, K_E), Enc(C, K_E)
   Enclave ->> Enclave: (0) Init enclave
   MD ->> Enclave: (1) Send enc model M'
   V ->> Enclave: (1) Send enc eval datatset D' and code C'
