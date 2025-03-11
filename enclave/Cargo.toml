@@ -26,3 +26,4 @@ serde = { workspace = true }
 serde_bytes = { workspace = true }
 tokio-vsock = "0.7.0"
 tee-attestation-verifier = "0.1.4"
+structopt = "0.3.26"

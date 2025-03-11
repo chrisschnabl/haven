@@ -1,4 +1,3 @@
-// src/server.rs
 use anyhow::{Context, Result};
 use tokio_vsock::{VsockAddr, VsockListener, VsockStream};
 use tracing::{error, info, instrument};
@@ -164,6 +163,7 @@ async fn handle_incoming_messages(
                 // TODO CS: revisit if this needs to be blocked
                 match tokio::task::block_in_place(|| {
                     // TODO CS: make this meaningful
+                    // TODO CS: this should be a hash of the model, has of
                     generate_attestation("my-model-id", "input", &collected)
                 }) {
                     Ok(attestation_response) => {

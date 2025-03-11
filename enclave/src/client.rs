@@ -15,7 +15,7 @@ pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Op
 
     info!(
         "Connected to server at CID {}:PORT {}",
-        tokio_vsock::VMADDR_CID_LOCAL,
+        libc::VMADDR_CID_ANY,
         port
     );
 

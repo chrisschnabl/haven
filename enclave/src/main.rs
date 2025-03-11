@@ -1,63 +1,72 @@
-use anyhow::Result;
-use clap::{Parser, ValueEnum};
+// src/main.rs
 
 mod vsock;
-mod server;
-mod client;
+mod typestate;
+mod evaluation_server;
+mod evaluation_client;
 
-use server::run_server;
-use client::run_client;
+use anyhow::Result;
+use structopt::StructOpt;
+use tracing::{info, Level};
+use tracing_subscriber::FmtSubscriber;
 
-#[derive(Parser)]
-#[command(name = "file_transfer_program")]
-#[command(version = "0.0.1")]
-#[command(author = "Chris Schnabl <chris.schnabl.cs@gmail.com>")]
-#[command(about = "Tokio Virtio socket file transfer program (enclave and host)")]
-struct Cli {
-    /// Mode of operation: 'enclave' (server) or 'host' (client)
-    #[arg(long, short)]
-    mode: Mode,
-
-    /// Port for the server or client
-    #[arg(long, short)]
-    port: u32,
-
-    /// Path to the file to send (required in 'host' mode)
-    #[arg(long, short)]
-    file: Option<String>,
-
-    /// Alternative option to specify data directly (required in 'host' mode if file is not provided)
-    #[arg(long)]
-    prompt: Option<String>,
-
-    /// CID (defaults to ANY for the server, but you can specify for the client)
-    #[arg(long, short, default_value_t = libc::VMADDR_CID_ANY)]
-    cid: u32,
-}
-
-#[derive(ValueEnum, Clone)]
-enum Mode {
-    Enclave,
-    Host,
+#[derive(Debug, StructOpt)]
+#[structopt(name = "model-evaluator", about = "Secure Model Evaluation System")]
+enum Opt {
+    /// Run in server mode
+    #[structopt(name = "server")]
+    Server {
+        /// Port to listen on
+        #[structopt(short, long, default_value = "5000")]
+        port: u32,
+    },
+    
+    /// Run in client mode
+    #[structopt(name = "client")]
+    Client {
+        /// CID of the server to connect to
+        #[structopt(short, long)]
+        cid: u32,
+        
+        /// Port to connect to
+        #[structopt(short, long, default_value = "5000")]
+        port: u32,
+        
+        /// Path to the LLaMA model file
+        #[structopt(long)]
+        llama_model: String,
+        
+        /// Path to the BERT model file
+        #[structopt(long)]
+        bert_model: String,
+        
+        /// Path to the evaluation dataset file
+        #[structopt(long)]
+        dataset: String,
+    },
 }
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let args = Cli::parse();
-
-    tracing_subscriber::fmt()
-        .init();
-
-    match args.mode {
-        Mode::Enclave => {
-            println!("Starting in enclave (server) mode...");
-            run_server(args.port).await?;
+    let subscriber = FmtSubscriber::builder()
+        .with_max_level(Level::INFO)
+        .finish();
+    tracing::subscriber::set_global_default(subscriber)
+        .expect("Failed to set tracing subscriber");
+    
+    let opt = Opt::from_args();
+    
+    match opt {
+        Opt::Server { port } => {
+            info!("Starting server on port {}", port);
+            evaluation_server::run_server(port).await?;
         }
-        Mode::Host => {
-            println!("Starting in host (client) mode...");
-            run_client(args.port, args.cid, args.file.as_deref(), args.prompt.as_deref()).await?;
+        
+        Opt::Client { cid, port, llama_model, bert_model, dataset } => {
+            info!("Starting client, connecting to CID {}, port {}", cid, port);
+            evaluation_client::run_client(cid, port, &llama_model, &bert_model, &dataset).await?;
         }
     }
-
+    
     Ok(())
 }
