@@ -1,9 +1,10 @@
-// src/main.rs
-
-mod vsock;
-mod typestate;
-mod evaluation_server;
-mod evaluation_client;
+mod messages;
+mod file_transfer;
+// TODO CS: better naming and organization
+mod client_state;
+mod server_state;
+mod client_vsock;
+mod server_vsock;
 
 use anyhow::Result;
 use structopt::StructOpt;
@@ -13,34 +14,26 @@ use tracing_subscriber::FmtSubscriber;
 #[derive(Debug, StructOpt)]
 #[structopt(name = "model-evaluator", about = "Secure Model Evaluation System")]
 enum Opt {
-    /// Run in server mode
     #[structopt(name = "server")]
     Server {
-        /// Port to listen on
         #[structopt(short, long, default_value = "5000")]
         port: u32,
     },
     
-    /// Run in client mode
     #[structopt(name = "client")]
     Client {
-        /// CID of the server to connect to
         #[structopt(short, long)]
         cid: u32,
         
-        /// Port to connect to
         #[structopt(short, long, default_value = "5000")]
         port: u32,
         
-        /// Path to the LLaMA model file
         #[structopt(long)]
         llama_model: String,
         
-        /// Path to the BERT model file
         #[structopt(long)]
         bert_model: String,
         
-        /// Path to the evaluation dataset file
         #[structopt(long)]
         dataset: String,
     },
@@ -59,12 +52,12 @@ async fn main() -> Result<()> {
     match opt {
         Opt::Server { port } => {
             info!("Starting server on port {}", port);
-            evaluation_server::run_server(port).await?;
+            server_vsock::run_server(port).await?;
         }
         
         Opt::Client { cid, port, llama_model, bert_model, dataset } => {
             info!("Starting client, connecting to CID {}, port {}", cid, port);
-            evaluation_client::run_client(cid, port, &llama_model, &bert_model, &dataset).await?;
+            client_vsock::run_client(cid, port, &llama_model, &bert_model, &dataset).await?;
         }
     }
     

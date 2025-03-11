@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 RUN apt-get update && apt-get install -y libgomp1 wget unzip
 
-COPY ./target/release/enclave haven
+COPY ./target/debug/enclave_typestate haven
 
 RUN wget https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.4.0%2Bcpu.zip && \
     unzip libtorch-cxx11-abi-shared-with-deps-2.4.0+cpu.zip -d /opt && \
@@ -11,4 +11,4 @@ ENV LIBTORCH=/opt/libtorch
 RUN echo "${LIBTORCH}/lib" > /etc/ld.so.conf.d/libtorch.conf && ldconfig
 ENV LD_LIBRARY_PATH=${LIBTORCH}/lib:$LD_LIBRARY_PATH
 
-CMD ["./haven", "--mode", "enclave", "--port", "5005"].
+CMD ["./haven", "server"].
