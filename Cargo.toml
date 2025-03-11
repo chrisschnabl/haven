@@ -3,7 +3,9 @@ members = [
     "llama_runner",
     "enclave",
     "attestation",
-    "bert_runner"
+    "bert_runner",
+    "enclave_typestate", 
+    "vsock-protocol"  # TODO unified naming 
 ]
 
 [workspace.dependencies]

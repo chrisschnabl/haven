@@ -10,6 +10,7 @@ edition = "2018"
 llama_runner = { path = "../llama_runner" }
 attestation = { path = "../attestation" }
 bert_runner = { path = "../bert_runner", features = ["use_rust_bert"] }
+vsock-protocol = { path = "../vsock-protocol" }  # TODO clean up unused dependencies
 
 hex = "0.4.3"
 anyhow = { workspace = true } 
