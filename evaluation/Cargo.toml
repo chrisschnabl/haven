@@ -28,3 +28,12 @@ serde = { workspace = true }
 serde_bytes = { workspace = true }
 tee-attestation-verifier = "0.1.4"
 structopt = "0.3.26"
+
+[[bin]]
+name = "haven-server"
+path = "src/main_server.rs"
+
+[[bin]]
+name = "haven-client"
+path = "src/main_client.rs"
+# TODO CS: don't link against torch here 

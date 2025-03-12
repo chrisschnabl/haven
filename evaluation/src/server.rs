@@ -8,7 +8,7 @@ use std::collections::HashMap;
 
 use crate::messages::{write_message, Operation, Message};
 use crate::file_transfer::receive_file;
-use crate::bert_runner::BertRunner;
+use bert_runner::{BertRunner, BertRunnerTrait};
 pub trait ServerState {}
 
 pub struct InitializedState;
@@ -107,6 +107,8 @@ impl ModelServer<BertLoadedState> {
             state: DatasetLoadedState {
                 llama_path: self.state.llama_path,
                 bert_path: self.state.bert_path,
+                config_path: self.state.config_path,
+                vocab_path: self.state.vocab_path,
                 dataset_path: path,
             },
             shared: self.shared,

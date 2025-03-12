@@ -2,26 +2,28 @@ use rust_bert::resources::LocalResource;
 use rust_bert::pipelines::sequence_classification::{SequenceClassificationConfig, SequenceClassificationModel};
 use rust_bert::pipelines::common::ModelResource;
 use crate::{BertRunnerTrait, label::Label};
+use std::path::PathBuf;
 
 pub struct BertRunner {
     model: Option<SequenceClassificationModel>,
-    model_path: String = ".".to_string()
+    model_path: String
 }
 
 impl BertRunnerTrait for BertRunner {
-    fn new(model_path: &str = ".".to_string()) -> Self {
-        Self { model: None, model_path: model_path.to_string() }
+    fn new() -> Self {
+        Self { model: None, model_path: ".".to_string() }
     }
 
     fn load_model(&mut self) -> anyhow::Result<()> {
+        let model_path = PathBuf::from(&self.model_path);
         let model_resource = ModelResource::Torch(Box::new(LocalResource {
-            local_path: self.model_path.into() + "/rust_model.ot",  // TODO CS: paramterize this 
+            local_path: model_path.join("rust_model.ot"),
         }));
         let config_resource = Box::new(LocalResource {
-            local_path: self.model_path.into() + "/config.json",
+            local_path: model_path.join("config.json"),
         });
         let vocab_resource = Box::new(LocalResource {
-            local_path: self.model_path.into() + "/vocab.txt",
+            local_path: model_path.join("vocab.txt"),
         });
 
         let custom_config = SequenceClassificationConfig {

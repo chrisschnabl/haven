@@ -75,9 +75,13 @@ impl ModelClient<LlamaSent> {
             .context("Stream not connected")?;
         
         // rust_model.ot, config.json, vocab.txt
-        send_file(stream, bert_directory_path + "/rust_model.ot").await?;
-        send_file(stream, bert_directory_path + "/config.json").await?;
-        send_file(stream, bert_directory_path + "/vocab.txt").await?;
+        let model_path = format!("{}/rust_model.ot", bert_directory_path);
+        let config_path = format!("{}/config.json", bert_directory_path);
+        let vocab_path = format!("{}/vocab.txt", bert_directory_path);
+        
+        send_file(stream, &model_path).await?;
+        send_file(stream, &config_path).await?;
+        send_file(stream, &vocab_path).await?;
         
         Ok(ModelClient {
             stream: self.stream,
