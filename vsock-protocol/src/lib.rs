@@ -1,33 +1,34 @@
+pub mod io;
+pub mod handler;
 
-pub mod protocol;
-pub mod server;
-pub mod client;
-pub mod file_transfer;
+pub use io::{read_message, write_message};
+pub use handler::{run_server, make_handler, ServerHandler};
 
-pub use protocol::{Message, Operation, read_message, write_message};
-pub use server::{run_server, make_handler, ServerHandler};
-pub use file_transfer::{connect_to_server, receive_file, BUFFER_SIZE};
+use anyhow::Result;
+use tokio_vsock::VsockStream;
+use std::future::Future;
+use handler::connect_to_server;
 
-/// Takes a client implementation function and runs it with the given parameters
-pub async fn run_client_with<F>(
+pub async fn run_client_with<F, Fut>(
     cid: u32,
     port: u32,
     client_impl: F,
-) -> anyhow::Result<()>
+) -> Result<()>
 where
-    F: FnOnce(tokio_vsock::VsockStream) -> anyhow::Result<()>,
+    F: FnOnce(VsockStream) -> Fut,
+    Fut: Future<Output = Result<()>>,
 {
     let stream = connect_to_server(cid, port).await?;
-    client_impl(stream)
+    client_impl(stream).await
 }
 
-/// That takes a server implementation function and runs it with the given parameters
-pub async fn run_server_with<F>(
-    port: u32,
+pub async fn run_server_with<F, Fut>(
+    port: u32,e
     server_impl: F,
-) -> anyhow::Result<()>
+) -> Result<()>
 where
-    F: Fn(tokio_vsock::VsockStream) -> std::pin::Pin<Box<dyn std::future::Future<Output = anyhow::Result<()>> + Send>> + Send + Sync + 'static,
+    F: Fn(VsockStream) -> Fut + Send + Sync + 'static,
+    Fut: Future<Output = Result<()>> + Send + 'static,
 {
     run_server(port, make_handler(server_impl)).await
 }
