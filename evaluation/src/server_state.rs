@@ -218,8 +218,7 @@ impl ModelServer<AttestedState> {
     }
 }
 
+
+// TODO CS: shared state would be here
 impl<S: ServerState> ModelServer<S> {
-    pub fn stream(&mut self) -> &mut VsockStream {
-        &mut self.shared.stream
-    }
 }

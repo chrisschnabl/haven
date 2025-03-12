@@ -23,7 +23,7 @@ where
 }
 
 pub async fn run_server_with<F, Fut>(
-    port: u32,e
+    port: u32,
     server_impl: F,
 ) -> Result<()>
 where

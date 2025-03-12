@@ -1,8 +1,7 @@
 use anyhow::{Context, Result};
-use tokio_vsock::{VsockAddr, VsockStream};
 use tracing::{info, error, instrument};
 use std::marker::PhantomData;
-
+use tokio_vsock::VsockStream;
 use crate::messages::{read_message, Operation};
 use crate::file_transfer::send_file;
 
@@ -31,7 +30,8 @@ pub struct ModelClient<S: ClientState> {
 }
 
 impl ModelClient<Disconnected> {
-    pub fn new() -> Self {
+
+    pub fn new() -> ModelClient<Disconnected> {
         ModelClient {
             stream: None,
             attestation: None,
@@ -40,26 +40,14 @@ impl ModelClient<Disconnected> {
     }
 
     #[instrument(skip(self))]
-    pub async fn connect(mut self, cid: u32, port: u32) -> Result<ModelClient<Connected>> {
-        info!("Connecting to server at CID {}, port {}", cid, port);
-        
-        let addr = VsockAddr::new(cid, port);
-        let stream = VsockStream::connect(addr)
-            .await
-            .context("Failed to connect to server")?;
-        
-        info!("Successfully connected to server");
-        
-        self.stream = Some(stream);
-        
-        Ok(ModelClient {
-            stream: self.stream,
+    pub fn connect(self, stream: VsockStream) -> ModelClient<Connected> {
+        ModelClient {
+            stream: Some(stream),
             attestation: self.attestation,
             state: PhantomData,
-        })
+        }
     }
 }
-
 
 impl ModelClient<Connected> {
     #[instrument(skip(self))]
@@ -132,7 +120,6 @@ impl ModelClient<DatasetSent> {
                 }
                 
                 Operation::Attestation => {
-                    // When we receive an attestation, evaluation is complete
                     info!("Received attestation data from server");
                     self.attestation = Some(msg.data);
                     break;

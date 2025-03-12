@@ -3,10 +3,26 @@ use tokio_vsock::VsockStream;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use serde::{Serialize, Deserialize};
 
-pub async fn read_message<T>(stream: &mut VsockStream) -> Result<T>
-where
-    T: for<'de> Deserialize<'de>,
-{
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+pub enum Operation {
+    SendFile,       
+    EofFile,        
+    Prompt,         
+    EofPrompt,      
+    Progress,       
+    Attestation,    
+    Complete,
+}
+
+// TODO CS: refactor messages
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Message {
+    pub op: Operation,
+    pub file_path: Option<String>,
+    pub data: Vec<u8>,
+}
+
+pub async fn read_message(stream: &mut VsockStream) -> Result<Message> {
     let mut len_bytes = [0u8; 4];
     stream.read_exact(&mut len_bytes).await?;
     let msg_len = u32::from_le_bytes(len_bytes) as usize;
@@ -14,16 +30,13 @@ where
     let mut data = vec![0u8; msg_len];
     stream.read_exact(&mut data).await?;
     
-    let message: T = bincode::deserialize(&data)
+    let message: Message = bincode::deserialize(&data)
         .context("Failed to deserialize message")?;
     
     Ok(message)
 }
 
-pub async fn write_message<T>(stream: &mut VsockStream, message: &T) -> Result<()>
-where
-    T: Serialize,
-{
+pub async fn write_message(stream: &mut VsockStream, message: &Message) -> Result<()> {
     let data = bincode::serialize(message)
         .context("Failed to serialize message")?;
     
