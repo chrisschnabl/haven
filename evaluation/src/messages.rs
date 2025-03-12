@@ -14,7 +14,7 @@ pub enum Operation {
     Complete,
 }
 
-// TODO CS: refactor messages
+// TODO CS: refactor messages to not have file pathi ncluded everywhere but clashes iwth bincode 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Message {
     pub op: Operation,

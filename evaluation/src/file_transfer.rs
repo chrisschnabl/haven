@@ -105,6 +105,7 @@ pub async fn receive_file(stream: &mut VsockStream, description: &str) -> Result
             
             Operation::EofFile => {
                 info!("{} file transfer complete. Received {} bytes", description, total_received);
+                // TODO CS: progress bar
                 break;
             }
             

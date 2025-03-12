@@ -5,22 +5,23 @@ use crate::{BertRunnerTrait, label::Label};
 
 pub struct BertRunner {
     model: Option<SequenceClassificationModel>,
+    model_path: String = ".".to_string()
 }
 
 impl BertRunnerTrait for BertRunner {
-    fn new() -> Self {
-        Self { model: None }
+    fn new(model_path: &str = ".".to_string()) -> Self {
+        Self { model: None, model_path: model_path.to_string() }
     }
 
     fn load_model(&mut self) -> anyhow::Result<()> {
         let model_resource = ModelResource::Torch(Box::new(LocalResource {
-            local_path: "model/rust_model.ot".into(),  // TODO CS: paramterize this 
+            local_path: self.model_path.into() + "/rust_model.ot",  // TODO CS: paramterize this 
         }));
         let config_resource = Box::new(LocalResource {
-            local_path: "model/config.json".into(),
+            local_path: self.model_path.into() + "/config.json",
         });
         let vocab_resource = Box::new(LocalResource {
-            local_path: "model/vocab.txt".into(),
+            local_path: self.model_path.into() + "/vocab.txt",
         });
 
         let custom_config = SequenceClassificationConfig {

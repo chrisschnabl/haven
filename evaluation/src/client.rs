@@ -69,12 +69,15 @@ impl ModelClient<Connected> {
 
 impl ModelClient<LlamaSent> {
     #[instrument(skip(self))]
-    pub async fn send_bert_model(mut self, file_path: &str) -> Result<ModelClient<BertSent>> {
-        info!("Sending BERT model file: {}", file_path);
+    pub async fn send_bert_model(mut self, bert_directory_path: &str) -> Result<ModelClient<BertSent>> {
+        info!("Sending BERT model directory: {}", bert_directory_path);
         let stream = self.stream.as_mut()
             .context("Stream not connected")?;
         
-        send_file(stream, file_path).await?;
+        // rust_model.ot, config.json, vocab.txt
+        send_file(stream, bert_directory_path + "/rust_model.ot").await?;
+        send_file(stream, bert_directory_path + "/config.json").await?;
+        send_file(stream, bert_directory_path + "/vocab.txt").await?;
         
         Ok(ModelClient {
             stream: self.stream,

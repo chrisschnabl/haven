@@ -8,7 +8,7 @@ use std::collections::HashMap;
 
 use crate::messages::{write_message, Operation, Message};
 use crate::file_transfer::receive_file;
-
+use crate::bert_runner::BertRunner;
 pub trait ServerState {}
 
 pub struct InitializedState;
@@ -18,10 +18,14 @@ pub struct LlamaLoadedState {
 pub struct BertLoadedState {
     llama_path: PathBuf,
     bert_path: PathBuf,
+    config_path: PathBuf,
+    vocab_path: PathBuf,
 }
 pub struct DatasetLoadedState {
     llama_path: PathBuf,
     bert_path: PathBuf,
+    config_path: PathBuf,
+    vocab_path: PathBuf,
     dataset_path: PathBuf,
 }
 pub struct EvaluatedState {
@@ -76,12 +80,17 @@ impl ModelServer<LlamaLoadedState> {
     #[instrument(skip(self))]
     pub async fn receive_bert_model(mut self) -> Result<ModelServer<BertLoadedState>> {
         info!("Waiting for BERT model file...");
+
         let path = receive_file(&mut self.shared.stream, "BERT model").await?;
+        let config_path = receive_file(&mut self.shared.stream, "BERT model config").await?;
+        let vocab_path = receive_file(&mut self.shared.stream, "BERT model vocab").await?;
         
         Ok(ModelServer {
             state: BertLoadedState { 
                 llama_path: self.state.llama_path,
                 bert_path: path,
+                config_path,
+                vocab_path,
             },
             shared: self.shared,
         })
@@ -111,7 +120,10 @@ impl ModelServer<DatasetLoadedState> {
         info!("Starting evaluation process...");
         
         info!("Loading LLaMA model from {:?}", self.state.llama_path);
-        info!("Loading BERT model from {:?}", self.state.bert_path);
+
+        let mut bert_runner = BertRunner::new();
+        bert_runner.load_model()?;
+
         info!("Loading evaluation dataset from {:?}", self.state.dataset_path);
         
         let mut file = File::open(&self.state.dataset_path).await?;
