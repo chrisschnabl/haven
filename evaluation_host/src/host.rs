@@ -2,8 +2,7 @@ use anyhow::{Context, Result};
 use tracing::{info, error, instrument};
 use std::marker::PhantomData;
 use tokio_vsock::VsockStream;
-use crate::messages::{read_message, Operation};
-use crate::file_transfer::send_file;
+use evaluation::{read_message, send_file, Operation};
 
 pub trait ClientState {}
 

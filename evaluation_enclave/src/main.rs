@@ -1,6 +1,4 @@
-mod messages;
-mod file_transfer;
-mod server;
+mod enclave;
 
 use anyhow::Result;
 use structopt::StructOpt;
@@ -8,7 +6,7 @@ use tracing::{info, instrument, Level};
 use tracing_subscriber::FmtSubscriber;
 
 use vsock::run_server_with;
-use crate::server::ModelServer;
+use enclave::ModelServer;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "model-evaluator", about = "Secure Model Evaluation System")]

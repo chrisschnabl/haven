@@ -1,6 +1,4 @@
-mod messages;
-mod file_transfer;
-mod client;
+mod host;
 
 use anyhow::Result;
 use structopt::StructOpt;
@@ -9,7 +7,7 @@ use tracing_subscriber::FmtSubscriber;
 
 use tokio_vsock::VsockStream;
 use vsock::run_client_with;
-use crate::client::ModelClient;
+use host::ModelClient;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "model-evaluator", about = "Secure Model Evaluation System")]

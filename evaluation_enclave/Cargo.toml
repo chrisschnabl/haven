@@ -1,0 +1,26 @@
+[package]
+name = "evaluation_enclave"
+version = "0.1.1"
+authors = ["Chris Schnabl"]
+description = "TODO"
+license = "Apache-2.0"
+edition = "2018"
+
+[dependencies]
+# llama_runner = { path = "../llama_runner" }
+attestation = { path = "../attestation" }
+bert_runner = { path = "../bert_runner", features = ["use_rust_bert"] }
+vsock = { path = "../vsock" } 
+evaluation = { path = "../evaluation"}
+
+anyhow = { workspace = true } 
+tokio = { workspace = true }
+tokio-vsock = { workspace = true }
+# llama-cpp-2 = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+structopt = "0.3.26"
+
+[[bin]]
+name = "haven-enclave"
+path = "src/main.rs"

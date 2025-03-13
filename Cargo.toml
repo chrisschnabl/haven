@@ -5,6 +5,8 @@ members = [
     "attestation",
     "bert_runner",
     "evaluation", 
+    "evaluation_enclave",
+    "evaluation_host",
     "vsock"
 ]
 resolver = "2"

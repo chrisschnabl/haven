@@ -934,18 +934,39 @@ name = "evaluation"
 version = "0.1.1"
 dependencies = [
  "anyhow",
- "attestation",
- "bert_runner",
  "bincode",
  "clap 4.5.26",
- "futures",
- "hex",
  "indicatif 0.17.9",
- "libc",
- "llama-cpp-2",
- "llama_runner",
  "serde",
  "serde_bytes",
+ "tokio",
+ "tokio-vsock",
+ "tracing",
+]
+
+[[package]]
+name = "evaluation_enclave"
+version = "0.1.1"
+dependencies = [
+ "anyhow",
+ "attestation",
+ "bert_runner",
+ "evaluation",
+ "structopt",
+ "tokio",
+ "tokio-vsock",
+ "tracing",
+ "tracing-subscriber",
+ "vsock 0.1.0",
+]
+
+[[package]]
+name = "evaluation_host"
+version = "0.1.1"
+dependencies = [
+ "anyhow",
+ "evaluation",
+ "hex",
  "structopt",
  "tee-attestation-verifier",
  "tokio",
