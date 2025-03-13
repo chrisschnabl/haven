@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 pub mod actor;
 
 pub mod label {
@@ -11,7 +13,7 @@ pub mod label {
 }
 
 pub trait BertRunnerTrait {
-    fn new() -> Self where Self: Sized;
+    fn new(model_path: PathBuf, config_path: PathBuf, vocab_path: PathBuf) -> Self where Self: Sized;
     fn load_model(&mut self) -> anyhow::Result<()>;
     fn predict(&self, input: Vec<String>) -> anyhow::Result<Vec<label::Label>>;
 }

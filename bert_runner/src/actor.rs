@@ -7,7 +7,7 @@ use crate::runner::BertRunner;
 use crate::mock_runner::BertRunner;
 use crate::label::Label;
 use crate::BertRunnerTrait;
-
+use std::path::PathBuf;
 pub enum BertCommand {
     LoadModel {
         reply: oneshot::Sender<anyhow::Result<()>>,
@@ -53,7 +53,7 @@ pub fn start_bert_actor() -> (BertActorHandle, thread::JoinHandle<()>) {
     let handle = BertActorHandle::new(cmd_tx);
 
     let join_handle = thread::spawn(move || {
-        let mut runner = BertRunner::new();
+        let mut runner = BertRunner::new(PathBuf::from("rust_model.ot"), PathBuf::from("config.json"), PathBuf::from("vocab.txt"));
         actor_loop(&mut runner, cmd_rx);
         eprintln!("BERT actor thread: command channel closed, exiting.");
     });

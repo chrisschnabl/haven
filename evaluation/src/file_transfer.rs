@@ -7,11 +7,11 @@ use std::path::{Path, PathBuf};
 use tokio::io::AsyncReadExt;
 use indicatif::ProgressBar;
 use indicatif::ProgressStyle;
-
+use std::time::Duration;
 use crate::messages::{write_message, read_message, Operation, Message};
 
 
-const BUFFER_SIZE: usize = 4096;
+const BUFFER_SIZE: usize = 10 * 1024 * 1024;
 
 
 pub async fn open_file(path: &Path) -> Result<File> {
@@ -28,49 +28,55 @@ pub async fn open_file(path: &Path) -> Result<File> {
 }
 
 pub async fn send_file(stream: &mut VsockStream, file_path: &str) -> Result<()> {
-    let path = Path::new(file_path);
-    let mut file = open_file(path).await?;
-    let file_metadata = tokio::fs::metadata(path).await?;
-    let total_size = file_metadata.len();
-    let mut total_sent = 0;
+    info!("Sending file: {}", file_path);
     
-    let pb = ProgressBar::new(total_size);
+    let mut file = File::open(file_path).await
+        .context(format!("Failed to open file: {}", file_path))?;
+    
+    let mut buffer = vec![0; BUFFER_SIZE];
+    
+    let path = Path::new(file_path);
+    let file_name = path.file_name().unwrap().to_str().unwrap();
+
+    let mut msg = Message {
+        op: Operation::SendFile,
+        file_path: Some(file_name.to_string()),
+        data: Vec::with_capacity(BUFFER_SIZE),
+    };
+    write_message(stream, &msg).await?;
+    
+    let file_size = file.metadata().await?.len();
+    let mut bytes_sent = 0;
+
+    let pb = ProgressBar::new(file_size);
     pb.set_style(
         ProgressStyle::default_bar()
-            .template(
-                "{msg} [{elapsed_precise}] [{bar:40.cyan/blue}] {bytes}/{total_bytes} ({eta})",
-            )
-            .expect("Failed to set template for progress bar")
+            .template("{msg} [{elapsed_precise}] [{bar:40.cyan/blue}] {bytes}/{total_bytes} ({eta})")
+            .expect("Failed to set progress bar template")
             .progress_chars("#>-"),
     );
-    pb.set_message(format!("Transferring '{}'...", file_path));   
-
-    let mut buf = vec![0u8; BUFFER_SIZE];
-
+    pb.set_message(format!("Sending '{}'", file_path));
+        
     loop {
-        let len = file.read(&mut buf).await?;
-        if len == 0 {
-            let msg = Message {
-                op: Operation::EofFile,
-                file_path: Some(file_path.to_string()),
-                data: vec![],
-            };
-            write_message(stream, &msg).await?;
-            pb.finish_with_message("File transfer complete. Sent EOF marker.");
+        let n = file.read(&mut buffer).await?;
+        if n == 0 {
             break;
         }
-
-        let msg = Message {
-            op: Operation::SendFile,
-            file_path: Some(file_path.to_string()),
-            data: buf[..len].to_vec(),
-        };
+        
+        msg.data.clear();
+        msg.data.extend_from_slice(&buffer[..n]);
         write_message(stream, &msg).await?;
-
-        total_sent += len as u64;
-        pb.set_position(total_sent);
+        
+        bytes_sent += n as u64;
+        pb.set_position(bytes_sent);
     }
     
+    msg.op = Operation::EofFile;
+    msg.data.clear();
+    write_message(stream, &msg).await?;
+    
+    pb.finish_with_message(format!("Sent '{}' ({} bytes)", file_path, bytes_sent));
+    info!("File transfer complete: {} ({} bytes sent)", file_path, bytes_sent);
     Ok(())
 }
 
@@ -80,6 +86,10 @@ pub async fn receive_file(stream: &mut VsockStream, description: &str) -> Result
     let mut file_path = None;
     let mut file: Option<File> = None;
     let mut total_received = 0u64;
+
+    let pb = ProgressBar::new_spinner();
+    pb.set_message("Receiving file...");
+    pb.enable_steady_tick(Duration::from_millis(100));
     
     loop {
         let msg = read_message(stream).await
@@ -91,21 +101,21 @@ pub async fn receive_file(stream: &mut VsockStream, description: &str) -> Result
                     file_path = msg.file_path.clone();
                     info!("Receiving {}: {:?}", description, file_path);
                     
+                    // if start with dir, create it
                     if let Some(path) = &file_path {
                         file = Some(File::create(path).await?);
                     }
                 }
-                
+
                 if let Some(ref mut f) = file {
                     f.write_all(&msg.data).await?;
                     total_received += msg.data.len() as u64;
-                    info!("Received {} bytes of {} data", total_received, description);
+                    pb.set_message(format!("Received {} bytes of {} data", total_received, description));
                 }
             }
             
             Operation::EofFile => {
-                info!("{} file transfer complete. Received {} bytes", description, total_received);
-                // TODO CS: progress bar
+                pb.finish_with_message("File transfer complete. Received EOF marker.");
                 break;
             }
             

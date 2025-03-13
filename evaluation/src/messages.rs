@@ -15,6 +15,7 @@ pub enum Operation {
 }
 
 // TODO CS: refactor messages to not have file pathi ncluded everywhere but clashes iwth bincode 
+// TODO right now we send the file apth in each message whcih is super ineffiecint. 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Message {
     pub op: Operation,
@@ -22,6 +23,7 @@ pub struct Message {
     pub data: Vec<u8>,
 }
 
+// #[instrument(skip(stream))]
 pub async fn read_message(stream: &mut VsockStream) -> Result<Message> {
     let mut len_bytes = [0u8; 4];
     stream.read_exact(&mut len_bytes).await?;

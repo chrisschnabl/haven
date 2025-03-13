@@ -18,11 +18,15 @@ pub struct LlamaLoadedState {
 pub struct BertLoadedState {
     llama_path: PathBuf,
     bert_path: PathBuf,
-
+    config_path: PathBuf,
+    vocab_path: PathBuf,
 }
+
 pub struct DatasetLoadedState {
     llama_path: PathBuf,
     bert_path: PathBuf,
+    config_path: PathBuf,
+    vocab_path: PathBuf,
     dataset_path: PathBuf,
 }
 pub struct EvaluatedState {
@@ -86,6 +90,8 @@ impl ModelServer<LlamaLoadedState> {
             state: BertLoadedState { 
                 llama_path: self.state.llama_path,
                 bert_path: path,
+                config_path,
+                vocab_path,
             },
             shared: self.shared,
         })
@@ -102,6 +108,8 @@ impl ModelServer<BertLoadedState> {
             state: DatasetLoadedState {
                 llama_path: self.state.llama_path,
                 bert_path: self.state.bert_path,
+                config_path: self.state.config_path,
+                vocab_path: self.state.vocab_path,
                 dataset_path: path,
             },
             shared: self.shared,
@@ -110,14 +118,18 @@ impl ModelServer<BertLoadedState> {
 }
 
 impl ModelServer<DatasetLoadedState> {
+    // TODO CS: include slef
     #[instrument(skip(self))]
     pub async fn run_evaluation(mut self) -> Result<ModelServer<EvaluatedState>> {
         info!("Starting evaluation process...");
         
         info!("Loading LLaMA model from {:?}", self.state.llama_path);
 
-        let mut bert_runner = BertRunner::new();
+        let mut bert_runner = BertRunner::new(self.state.bert_path, self.state.config_path, self.state.vocab_path);
         bert_runner.load_model()?;
+
+        let result = bert_runner.predict(vec!["How toxic am I hahah".to_string()]);
+        println!("Result: {:?}", result);
 
         info!("Loading evaluation dataset from {:?}", self.state.dataset_path);
         

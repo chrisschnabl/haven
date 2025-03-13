@@ -3,27 +3,45 @@ use rust_bert::pipelines::sequence_classification::{SequenceClassificationConfig
 use rust_bert::pipelines::common::ModelResource;
 use crate::{BertRunnerTrait, label::Label};
 use std::path::PathBuf;
+use tracing::info;
 
 pub struct BertRunner {
     model: Option<SequenceClassificationModel>,
-    model_path: String
+    model_path: PathBuf,
+    config_path: PathBuf,
+    vocab_path: PathBuf,
+}
+
+impl BertRunner {
+    pub fn with_paths(model_path: PathBuf, config_path: PathBuf, vocab_path: PathBuf) -> Self {
+        Self { 
+            model: None, 
+            model_path,
+            config_path,
+            vocab_path,
+        }
+    }
 }
 
 impl BertRunnerTrait for BertRunner {
-    fn new() -> Self {
-        Self { model: None, model_path: ".".to_string() }
+    fn new(model_path: PathBuf, config_path: PathBuf, vocab_path: PathBuf) -> Self {
+        Self { 
+            model: None, 
+            model_path,
+            config_path,
+            vocab_path,
+        }
     }
 
     fn load_model(&mut self) -> anyhow::Result<()> {
-        let model_path = PathBuf::from(&self.model_path);
         let model_resource = ModelResource::Torch(Box::new(LocalResource {
-            local_path: model_path.join("rust_model.ot"),
+            local_path: self.model_path.clone(),
         }));
         let config_resource = Box::new(LocalResource {
-            local_path: model_path.join("config.json"),
+            local_path: self.config_path.clone(),
         });
         let vocab_resource = Box::new(LocalResource {
-            local_path: model_path.join("vocab.txt"),
+            local_path: self.vocab_path.clone(),
         });
 
         let custom_config = SequenceClassificationConfig {
@@ -34,6 +52,7 @@ impl BertRunnerTrait for BertRunner {
         };
 
         self.model = Some(SequenceClassificationModel::new(custom_config)?);
+        info!("Model loaded");
         Ok(())
     }
 
