@@ -46,16 +46,20 @@ fn score_responses() -> Result<()> {
         "https://huggingface.co/datasets/knkarthick/xsum/resolve/main/test.csv"
     );
     
-    let entries: Vec<DatasetEntry<SimilarityContent>> = loader.load_or_download(Some(20), 0)?;
+    let entries: Vec<DatasetEntry<SimilarityContent>> = loader.load_or_download(Some(20), 50)?;
     
     let model_path = PathBuf::from("model/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf");
     
     let llama_config = LlamaConfig {
         model_path: Some(model_path.to_str().unwrap().to_string()),
-        context_size: NonZero::new(4 * 1024).unwrap(), // If this is too small, the model cannot generate a summary.
+        context_size: NonZero::new(4 * 1024).unwrap(),
         threads: 12,
         n_len: 512,
-        seed: 12,
+        seed: 1337,
+        temp: 0.1, // 0.5 yields garbage.
+        top_p: 0.7,
+        skip_non_utf8: true,
+        truncate_if_context_full: true,
     };
     let mut llama = LlamaRunner::new(llama_config);
     llama.load_model()?;
@@ -124,8 +128,9 @@ fn score_responses() -> Result<()> {
         println!("--------------------------------");
 
         let score = model.similarity(&entry.content.summary, &response)?;
+    
         scores.push(score);
-        println!("Score: {}", score);
+
 
         ids.push(entry.content.id);
         dialogues.push(entry.content.dialogue.clone());
@@ -194,6 +199,10 @@ fn generate_responses(limit: usize, start_from: usize) -> Result<()> {
         threads: 12,
         n_len: 256,
         seed: 42,
+        temp: 0.3,
+        top_p: 0.75,
+        skip_non_utf8: true,
+        truncate_if_context_full: true,
     };
     let mut llama = LlamaRunner::new(llama_config);
     llama.load_model()?;

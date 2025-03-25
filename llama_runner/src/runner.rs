@@ -61,14 +61,9 @@ impl LlamaRunner {
         self.load_context()?;
 
         let sampler = LlamaSampler::chain_simple([
-            LlamaSampler::temp(0.3),
-            LlamaSampler::top_p(0.75, 1),
+            LlamaSampler::temp(self.config.temp),
+            LlamaSampler::top_p(self.config.top_p, 1),
             LlamaSampler::greedy(),
-           //LlamaSampler::penalties(-1,1.3,
-                //0.3, 
-                //0.3
-            //)
-            //LlamaSampler::penalties(0, 1.0, 0.0, 0.0),  // last_n, repeat, freq, present
         ]);
 
         self.sampler = Some(sampler);
@@ -133,7 +128,11 @@ impl LlamaRunner {
         }
 
         let tokens_list = if tokens_list.len() >= n_len.try_into()? {
-            tokens_list[..n_len.try_into()?].to_vec()  // truncate to n_len
+            if self.config.truncate_if_context_full {
+                tokens_list[..n_len.try_into()?].to_vec()  // truncate to n_len
+            } else {
+                bail!("Context is full; cannot truncate to n_len");
+            }
         } else {
             tokens_list
         };
@@ -165,8 +164,11 @@ impl LlamaRunner {
             if let Ok(output_str) = String::from_utf8(output_bytes) {
                 on_token(&output_str);
             } else {
-                println!("Failed to convert token to utf8. Skipping token.");
-                info!("Failed to convert token to utf8. Skipping token.");
+                if self.config.skip_non_utf8 {
+                    info!("Failed to convert token to utf8. Skipping token.");
+                } else {
+                    bail!("Failed to convert token to utf8. Skipping token.");
+                }
             }
 
             batch.clear();
