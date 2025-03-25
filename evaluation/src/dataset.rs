@@ -6,6 +6,8 @@ use anyhow::{Result, Context};
 use std::marker::PhantomData;
 use arrow::array::{Int64Array, ArrayRef, Array};
 use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
+use std::path::PathBuf;
+use std::io::{stdout, Write};
 
 #[derive(Debug, Clone)]
 pub struct DatasetEntry<T> {
@@ -19,7 +21,7 @@ pub trait DatasetContent: Sized {
 
 #[derive(Debug, Clone)]
 pub struct ToxicityContent {
-    pub id: i64,
+    pub id: String,
     pub input: String,
     pub response: String,
     pub toxic: f64,
@@ -47,8 +49,7 @@ impl DatasetContent for ToxicityContent {
         Ok(Self {
             id: record.get(0)
                 .context("Missing id field")?
-                .parse()
-                .context("Failed to parse id")?,
+                .to_string(),
             input: record.get(1)
                 .context("Missing input field")?
                 .to_string(),
@@ -182,6 +183,8 @@ impl<T: DatasetContent> DatasetLoader<T> {
 pub struct ParquetDatasetLoader {
     file_path: String,
     url: String,
+    cache_dir: Option<PathBuf>,
+    batch_size: usize,
 }
 
 impl ParquetDatasetLoader {
@@ -189,19 +192,57 @@ impl ParquetDatasetLoader {
         Self {
             file_path: file_path.to_string(),
             url: url.to_string(),
+            cache_dir: None,
+            batch_size: 1024,
         }
+    }
+
+    pub fn with_cache_dir(mut self, cache_dir: PathBuf) -> Self {
+        self.cache_dir = Some(cache_dir);
+        self
+    }
+
+    pub fn with_batch_size(mut self, batch_size: usize) -> Self {
+        self.batch_size = batch_size;
+        self
     }
 
     fn ensure_file_exists(&self) -> Result<()> {
         if !std::path::Path::new(&self.file_path).exists() {
             println!("Dataset not found, downloading...");
+            
+            // Create parent directory if it doesn't exist
+            if let Some(parent) = std::path::Path::new(&self.file_path).parent() {
+                std::fs::create_dir_all(parent)
+                    .context("Failed to create parent directory")?;
+            }
+
+            // Download with progress indicator
             let response = reqwest::blocking::get(&self.url)
                 .context("Failed to download dataset")?;
+            
+            let total_size = response.content_length()
+                .unwrap_or(0);
+            
             let mut file = File::create(&self.file_path)
                 .context("Failed to create file")?;
-            std::io::copy(&mut response.bytes()?.as_ref(), &mut file)
-                .context("Failed to write dataset to file")?;
-            println!("Dataset downloaded successfully.");
+            
+            let mut downloaded: u64 = 0;
+            let mut buffer = vec![0; 8192];
+            
+            let mut stream = response.bytes_stream();
+            while let Some(chunk) = stream.next().await {
+                let chunk = chunk.context("Failed to read chunk")?;
+                file.write_all(&chunk)?;
+                downloaded += chunk.len() as u64;
+                
+                if total_size > 0 {
+                    let progress = (downloaded as f64 / total_size as f64) * 100.0;
+                    print!("\rDownloading: {:.1}%", progress);
+                    stdout().flush()?;
+                }
+            }
+            println!("\nDataset downloaded successfully.");
         }
         Ok(())
     }
@@ -214,7 +255,12 @@ impl ParquetDatasetLoader {
         
         let builder = ParquetRecordBatchReaderBuilder::try_new(file)
             .context("Failed to create parquet reader")?;
-        let mut reader = builder.build()
+        
+        // Configure reader properties
+        let props = builder.properties();
+        let mut reader = builder
+            .with_batch_size(self.batch_size)
+            .build()
             .context("Failed to build parquet reader")?;
         
         let mut entries = Vec::new();
@@ -223,6 +269,7 @@ impl ParquetDatasetLoader {
         while let Some(batch_result) = reader.next() {
             let batch = batch_result.context("Failed to read record batch")?;
             
+            // Extract arrays with null checks
             let question_array = batch.column_by_name("question")
                 .context("Missing question column")?
                 .as_any()
@@ -244,6 +291,7 @@ impl ParquetDatasetLoader {
                 .downcast_ref::<Int64Array>()
                 .context("Failed to get answer column as Int64Array")?;
 
+            // Process batch rows
             for row_idx in 0..batch.num_rows() {
                 if current_idx < start_from {
                     current_idx += 1;
@@ -256,6 +304,7 @@ impl ParquetDatasetLoader {
                     }
                 }
 
+                // Extract row data with better error handling
                 let question = question_array.is_valid(row_idx)
                     .then(|| question_array.value(row_idx).to_string())
                     .context("Question is null")?;
@@ -305,13 +354,22 @@ impl ParquetDatasetLoader {
         Ok(entries)
     }
 
-    /// Helper function to extract choices from an array column
+    /// Helper function to extract choices from an array column with improved error handling
     fn extract_choices(&self, choices_array: &ArrayRef, row_idx: usize) -> Result<Vec<String>> {
         if let Some(list_array) = choices_array.as_any().downcast_ref::<arrow::array::ListArray>() {
+            if !list_array.is_valid(row_idx) {
+                anyhow::bail!("Choices list is null at row {}", row_idx);
+            }
+
             let values = list_array.value(row_idx);
             if let Some(string_array) = values.as_any().downcast_ref::<arrow::array::GenericStringArray<i32>>() {
                 let choices: Vec<String> = (0..string_array.len() as usize)
-                    .map(|i| string_array.value(i).to_string())
+                    .map(|i| {
+                        if !string_array.is_valid(i) {
+                            anyhow::bail!("Choice string is null at index {}", i);
+                        }
+                        string_array.value(i).to_string()
+                    })
                     .collect();
                 Ok(choices)
             } else {
@@ -320,5 +378,36 @@ impl ParquetDatasetLoader {
         } else {
             anyhow::bail!("Choices column is not a list array")
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::tempdir;
+
+    #[test]
+    fn test_parquet_loader() -> Result<()> {
+        let temp_dir = tempdir()?;
+        let file_path = temp_dir.path().join("test.parquet");
+        
+        // Create a test parquet file
+        let schema = Schema::new(vec![
+            Field::new("question", DataType::Utf8, false),
+            Field::new("subject", DataType::Utf8, false),
+            Field::new("choices", DataType::List(Box::new(Field::new("item", DataType::Utf8, false))), false),
+            Field::new("answer", DataType::Int64, false),
+        ]);
+
+        let loader = ParquetDatasetLoader::new(
+            file_path.to_str().unwrap(),
+            "http://example.com/test.parquet"
+        );
+
+        // Test loading with limit
+        let result = loader.load_classification_data(Some(10), 0);
+        assert!(result.is_ok());
+
+        Ok(())
     }
 }

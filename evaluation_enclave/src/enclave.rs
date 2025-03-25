@@ -118,9 +118,8 @@ impl ModelServer<BertLoadedState> {
 }
 
 impl ModelServer<DatasetLoadedState> {
-    // TODO CS: include slef
     #[instrument(skip(self))]
-    pub async fn run_evaluation(mut self) -> Result<ModelServer<EvaluatedState>> {
+    pub async fn run_evaluation(self) -> Result<ModelServer<EvaluatedState>> {
         info!("Starting evaluation process...");
         
         info!("Loading LLaMA model from {:?}", self.state.llama_path);

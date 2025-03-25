@@ -8,7 +8,7 @@ use llama_cpp_2::model::{AddBos, LlamaModel, Special};
 use llama_cpp_2::sampling::LlamaSampler;
 
 use std::convert::TryInto;
-use tracing::info;
+use tracing::{info, debug};
 
 use crate::config::LlamaConfig;
 
@@ -95,7 +95,7 @@ impl LlamaRunner {
 
     // Blocking generation that calls `on_token` for each token produced.
     // TODO CS: return a tokio stream
-    pub fn generate_blocking<F>(&mut self, prompt: &str, mut on_token: F) -> Result<()>
+    pub fn generate_blocking<F>(&mut self, prompt: &str, mut on_token: F) -> Result<(i32, std::time::Duration)>
     where
         F: FnMut(&str),
     {
@@ -184,10 +184,8 @@ impl LlamaRunner {
         let t_main_end = ggml_time_us();
         let duration = std::time::Duration::from_micros((t_main_end - t_main_start) as u64);
 
-        // 20 tokens/s 
-        // one prompt has around 400 tokens
-        // 20s per prompt
-        info!(
+        // Change log level from info to debug
+        debug!(
             "Decoded {} tokens in {:.2}s, speed {:.2} t/s\n{}",
             n_decode,
             duration.as_secs_f32(),
@@ -195,7 +193,6 @@ impl LlamaRunner {
             ctx.timings()
         );
 
-        //Ok((n_decode, duration))
-        Ok(())
+        Ok((n_decode, duration))
     }
 }

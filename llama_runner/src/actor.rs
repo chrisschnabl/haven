@@ -2,7 +2,7 @@ use anyhow::Result;
 use std::thread;
 use tokio::sync::{mpsc as tokio_mpsc, oneshot};
 use std::sync::mpsc::{self, Sender, Receiver};
-use tracing::{error, info};
+use tracing::{error, info, debug};
 
 use crate::runner::LlamaRunner;
 use crate::config::LlamaConfig;
@@ -129,16 +129,22 @@ fn actor_loop(runner: &mut LlamaRunner, cmd_rx: Receiver<LlamaCommand>) {
                 token_tx,
                 reply,
             } => {
-                let res = runner.generate_blocking(&prompt, |token_str| {
+                let result = runner.generate_blocking(&prompt, |token_str| {
                     // This is blocking send because we're on a dedicated thread
                     let _ = token_tx.blocking_send(token_str.to_string());
                 });
                 drop(token_tx); // close channel
 
-                if let Err(e) = &res {
-                    error!("Generate error: {:?}", e);
+                match result {
+                    Ok((n_decode, duration)) => {
+                        debug!("Generated {} tokens in {:?} at {:.2} tokens/sec", 
+                              n_decode, duration, n_decode as f64 / duration.as_secs_f64());
+                        let _ = reply.send(Ok(()));
+                    }
+                    Err(e) => {
+                        let _ = reply.send(Err(e));
+                    }
                 }
-                let _ = reply.send(res);
             }
         }
     }
