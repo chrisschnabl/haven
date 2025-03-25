@@ -1,8 +1,10 @@
 use crate::{BertRunnerTrait, label::Label};
+use std::path::PathBuf;
+
 pub struct BertRunner;
 
 impl BertRunnerTrait for BertRunner {
-    fn new() -> Self {
+    fn new(model_path: PathBuf, config_path: PathBuf, vocab_path: PathBuf) -> Self {
         Self
     }
     

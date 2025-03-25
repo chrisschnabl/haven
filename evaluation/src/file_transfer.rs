@@ -13,20 +13,6 @@ use crate::messages::{write_message, read_message, Operation, Message};
 
 const BUFFER_SIZE: usize = 10 * 1024 * 1024;
 
-
-pub async fn open_file(path: &Path) -> Result<File> {
-    // TODO CS: outside this we often use the path nad not name
-    let _ = path.file_name()
-        .and_then(|n| n.to_str())
-        .unwrap_or(path.to_str().unwrap());
-
-    let file = File::open(path)
-        .await
-        .context(format!("Failed to open file: {}", path.to_str().unwrap()))?;
-
-    Ok(file)
-}
-
 pub async fn send_file(stream: &mut VsockStream, file_path: &str) -> Result<()> {
     info!("Sending file: {}", file_path);
     

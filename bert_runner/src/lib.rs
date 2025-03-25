@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 pub mod actor;
-
+pub mod score;
 pub mod label {
     #[derive(Debug)]
     pub struct Label {

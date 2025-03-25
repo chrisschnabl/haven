@@ -2,3 +2,5 @@ target/
 *.eif
 *.gguf
 *.ot
+results/
+model/

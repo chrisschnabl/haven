@@ -6,6 +6,7 @@ use llama_cpp_2::llama_batch::LlamaBatch;
 use llama_cpp_2::model::params::LlamaModelParams;
 use llama_cpp_2::model::{AddBos, LlamaModel, Special};
 use llama_cpp_2::sampling::LlamaSampler;
+
 use std::convert::TryInto;
 use tracing::info;
 
@@ -54,26 +55,47 @@ impl LlamaRunner {
 
         let model: &'static LlamaModel = Box::leak(model_box);
 
-        let ctx_params = LlamaContextParams::default()
-            .with_n_ctx(Some(self.config.context_size))
-            .with_n_threads(self.config.threads);
-
-        let context = model
-            .new_context(&backend, ctx_params)
-            .context("Unable to create the llama_context")?;
-
-        let sampler = LlamaSampler::chain_simple([
-            LlamaSampler::dist(self.config.seed as u32),
-            LlamaSampler::greedy(),
-        ]);
-
         self.backend = Some(backend);
         self.model = Some(model);
-        self.context = Some(context);
+
+        self.load_context()?;
+
+        let sampler = LlamaSampler::chain_simple([
+            LlamaSampler::temp(0.3),
+            LlamaSampler::top_p(0.75, 1),
+            LlamaSampler::greedy(),
+           //LlamaSampler::penalties(-1,1.3,
+                //0.3, 
+                //0.3
+            //)
+            //LlamaSampler::penalties(0, 1.0, 0.0, 0.0),  // last_n, repeat, freq, present
+        ]);
+
         self.sampler = Some(sampler);
 
         info!("Model loaded successfully!");
         Ok(())
+    }
+
+    pub fn load_context(&mut self) -> Result<()> {
+        if let (Some(backend), Some(model)) = (&self.backend, &self.model) {
+            info!("Reloading context...");
+            
+            let ctx_params = LlamaContextParams::default()
+                .with_n_ctx(Some(self.config.context_size))
+                .with_n_threads(self.config.threads);
+                
+            let context = model
+                .new_context(backend, ctx_params)
+                .context("Unable to create a new llama_context")?;
+                
+            self.context = Some(context);
+            
+            info!("Context reloaded successfully!");
+            Ok(())
+        } else {
+            bail!("Model not loaded; call load_model() first.")
+        }
     }
 
     // Blocking generation that calls `on_token` for each token produced.
@@ -86,10 +108,14 @@ impl LlamaRunner {
             Some(m) => m,
             None => bail!("Model not loaded; call load_model() first."),
         };
+        
         let ctx = match self.context.as_mut() {
             Some(c) => c,
             None => bail!("Context not loaded; call load_model() first."),
         };
+
+        ctx.clear_kv_cache();
+
         let sampler = match self.sampler.as_mut() {
             Some(s) => s,
             None => bail!("Sampler not loaded; call load_model() first."),
@@ -105,15 +131,12 @@ impl LlamaRunner {
         if n_kv_req > n_ctx {
             bail!("n_kv_req > n_ctx (required KV cache size is too big)");
         }
-        if tokens_list.len() >= n_len.try_into()? {
-            bail!("Prompt is too long; more tokens than n_len.");
-        }
 
-        // Output the prompt tokens
-        for &token in &tokens_list {
-            let token_str = model.token_to_str(token, Special::Tokenize)?;
-            on_token(&token_str);
-        }
+        let tokens_list = if tokens_list.len() >= n_len.try_into()? {
+            tokens_list[..n_len.try_into()?].to_vec()  // truncate to n_len
+        } else {
+            tokens_list
+        };
 
         let mut batch = LlamaBatch::new(512, 1);
         let last_index = (tokens_list.len() - 1) as i32;
@@ -122,7 +145,6 @@ impl LlamaRunner {
             batch.add(token, i, &[0], is_last)?;
         }
 
-        // decode initial prompt
         ctx.decode(&mut batch).context("Failed to decode prompt tokens")?;
 
         let mut n_cur = batch.n_tokens();
@@ -139,9 +161,13 @@ impl LlamaRunner {
             }
 
             let output_bytes = model.token_to_bytes(token, Special::Tokenize)?;
-            let output_str = String::from_utf8(output_bytes)
-                .context("Failed to convert token to utf8")?;
-            on_token(&output_str);
+
+            if let Ok(output_str) = String::from_utf8(output_bytes) {
+                on_token(&output_str);
+            } else {
+                println!("Failed to convert token to utf8. Skipping token.");
+                info!("Failed to convert token to utf8. Skipping token.");
+            }
 
             batch.clear();
             batch.add(token, n_cur, &[0], true)?;
@@ -152,9 +178,13 @@ impl LlamaRunner {
             n_decode += 1;
         }
 
+
         let t_main_end = ggml_time_us();
         let duration = std::time::Duration::from_micros((t_main_end - t_main_start) as u64);
 
+        // 20 tokens/s 
+        // one prompt has around 400 tokens
+        // 20s per prompt
         info!(
             "Decoded {} tokens in {:.2}s, speed {:.2} t/s\n{}",
             n_decode,
@@ -163,6 +193,7 @@ impl LlamaRunner {
             ctx.timings()
         );
 
+        //Ok((n_decode, duration))
         Ok(())
     }
 }
