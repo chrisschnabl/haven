@@ -4,9 +4,7 @@ use bert_runner::{BertRunner, BertRunnerTrait};
 use bert_runner::score::SimilarityModel;
 use std::path::PathBuf;
 use std::fs::File;
-use std::io::{BufReader, Write};
-use reqwest;
-use csv;
+use std::io::{Write};
 use anyhow::{Result, Context};
 use std::io::stdout;
 use std::num::NonZero;
@@ -15,15 +13,20 @@ use arrow::record_batch::RecordBatch;
 use arrow::datatypes::{Schema, Field, DataType};
 use parquet::arrow::arrow_writer::ArrowWriter;
 use parquet::file::properties::WriterProperties;
-use std::sync::Arc;
 use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
 use arrow::array::Array;
 use arrow::array::BooleanArray;
 use arrow::array::Float64Array;
 use indicatif::{ProgressBar, ProgressStyle};
-use dataset::{DatasetLoader, ToxicityContent, SimilarityContent, DatasetEntry};
+use dataset::{DatasetLoader, ToxicityContent, SimilarityContent, DatasetEntry, ClassificationContent};
 use std::cmp::min;
-   
+use dataset::ParquetDatasetLoader;
+use std::sync::Arc;
+use rand::seq::SliceRandom;
+use rand::thread_rng;
+use rand::rngs::StdRng;
+use rand::SeedableRng;
+
 fn main() -> Result<()> {
     let test_size = 500;
     let start_from = 200;
@@ -32,9 +35,130 @@ fn main() -> Result<()> {
         analyze_responses()?;
     } else if std::env::args().any(|arg| arg == "--score") {
         score_responses()?;
+    } else if std::env::args().any(|arg| arg == "--class") {
+        score_classification()?;
     } else {
         generate_responses(test_size, start_from)?;
     }
+    Ok(())
+}
+
+fn score_classification() -> Result<()> {
+    // We would expect the model to be around 60 - 65% correct for GGUF-I-Quant, we test the Instruct finetuned ones
+    // So expeect to be slightly below that
+
+    let loader = ParquetDatasetLoader::new(
+        "classification_pairs.parquet",
+        "https://huggingface.co/datasets/cais/mmlu/resolve/main/all/test-00000-of-00001.parquet"
+    );
+
+    let mut entries: Vec<DatasetEntry<ClassificationContent>> = loader.load_classification_data(None, 0)?;
+    let mut rng = rand::rngs::StdRng::seed_from_u64(42);  // Using 42 as seed
+    entries.shuffle(&mut rng); // So we get entries from different subjects.
+    let entries = entries[..500].to_vec();
+
+    let n = entries.len();
+    let pb = ProgressBar::new(n as u64);
+    pb.set_style(ProgressStyle::default_bar()
+        .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} ({eta}) {msg}")
+        .unwrap()
+        .progress_chars("=>-"));
+
+    let model_path = PathBuf::from("model/Meta-Llama-3-8B-Instruct.Q8_0.gguf");
+    
+    let llama_config = LlamaConfig {
+        model_path: Some(model_path.to_str().unwrap().to_string()),
+        context_size: NonZero::new(4 * 1024).unwrap(),
+        threads: 12,
+        n_len: 256,
+        seed: 1337,
+        temp: 0.25,
+        top_p: 0.7,
+        skip_non_utf8: true,
+        truncate_if_context_full: true,
+    };
+
+    let mut llama = LlamaRunner::new(llama_config);
+    llama.load_model()?;
+
+    let mut valid_choices = Vec::new();
+    let mut incorrect_responses = Vec::new();
+    let mut correct_responses = Vec::new();
+    for entry in entries {
+        stdout().flush()?;
+
+        pb.set_message(format!("Processing entry {}", entry.content.id));
+        pb.inc(1);
+        
+        // Prompt adapted from: 
+        // https://github.com/stanford-crfm/helm/blob/46dacf07fbef04ca21e9b4c66e5d576b10a158b4/src/helm/benchmark/scenarios/mmlu_scenario.py
+        // and https://github.com/hendrycks/test/blob/master/evaluate.py
+
+        let system_prompt = "You are a knowledgeable assistant. Please provide the correct answer to the question based on the given context.";
+        let system_prompt_formatted = format!("<|start_header_id|>system<|end_header_id|>{}<|eot_id|>", system_prompt);
+        let question_formatted = format!("<|start_header_id|>question<|end_header_id|>{}<|eot_id|>", entry.content.question);
+        let choices_formatted = format!(
+            "<|start_header_id|>choices<|end_header_id|>{}<|eot_id|>",
+            entry.content.choices.iter()
+                .enumerate()
+                .map(|(i, choice)| format!("{}) {}", (b'A' + i as u8) as char, choice))
+                .collect::<Vec<_>>()
+                .join("\n")
+        );
+        let user_prompt = "<|start_header_id|>user<|end_header_id|>GIVE YOUR ANSWER AS A, B, C, or D ONLY. DO NOT PROVIDE ANY OTHER TEXT.<|eot_id|>";
+
+        let prompt = format!("{}{}{}{}", system_prompt_formatted, question_formatted, choices_formatted, user_prompt);
+        let mut response = String::new();
+
+        llama.generate_blocking(&prompt, |token| {
+            if let Ok(token_str) = String::from_utf8(token.as_bytes().to_vec()) {
+                response.push_str(&token_str);
+
+            }
+        })?;
+
+        // Remove the BOS and assistant tokens
+        let prefix = "<|start_header_id|>assistant<|end_header_id|>";
+        if response.starts_with(prefix) {
+            response = response[prefix.len()..].to_string();
+        }
+        response = response.trim_start_matches('\n').to_string();
+        response = response.trim_end_matches('\n').to_string();
+        response = response.trim_end_matches(' ').to_string();
+        response = response.trim_end_matches(' ').to_string();
+
+        let valid_answer_chars = ['A', 'B', 'C', 'D'];
+        let response_char = response.chars().next().unwrap_or('E');
+        let is_valid_choice = valid_answer_chars.contains(&response_char);
+        
+        // Convert answer index (0-3) to corresponding letter (A-D)
+        let expected_answer = (b'A' + entry.content.answer_index as u8) as char;
+        let is_correct = is_valid_choice && response_char == expected_answer;
+
+        if is_valid_choice {
+            valid_choices.push(entry.content.id);
+            if is_correct {
+                correct_responses.push(entry.content.id);
+            } else {
+                incorrect_responses.push(entry.content.id);
+            }
+        } else {
+            // In dubio pro rerum natura, try to parse the response as text 
+            if response == entry.content.answer {
+                valid_choices.push(entry.content.id);
+                correct_responses.push(entry.content.id);
+            } else {
+                incorrect_responses.push(entry.content.id);
+            }
+        }
+        
+    }
+
+    println!("Valid choices: {}", valid_choices.len());
+    println!("Correct responses: {}", correct_responses.len());
+    println!("Incorrect responses: {}", incorrect_responses.len());
+    println!("Total: {}", n);
+
     Ok(())
 }
 
@@ -106,6 +230,8 @@ fn score_responses() -> Result<()> {
         // Zero-shot summarization
         // BOS already present
         // Make sure the prompt is roughly 150 chracters.
+        // Prompt adapted from: 
+        // https://github.com/stanford-crfm/helm/blob/46dacf07fbef04ca21e9b4c66e5d576b10a158b4/src/helm/benchmark/scenarios/summarization_scenario.py#L19
         let prompt = format!("<|start_header_id|>system<|end_header_id|>You are a professional summarizer. Please provide a structured summary of this document, focusing on critical information.
         <|eot_id|><|start_header_id|>document<|end_header_id|>{}<|eot_id|>{example}<|start_header_id|>user<|end_header_id|>Summarize the document in 150 characters or less.<|eot_id|>", truncated_dialogue);
 
