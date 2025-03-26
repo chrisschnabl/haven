@@ -17,10 +17,10 @@ use tracing::debug;
 /// We would expect the model to be around 60 - 65% correct for GGUF-I-Quant,
 /// we test the Instruct finetuned ones. So expect to be slightly below that.
 #[derive(Parser, Debug)]
-#[command(name = "LLM Benchmark")]
-#[command(author = "You <your.email@example.com>")]
+#[command(name = "Haven Evaluation")]
+#[command(author = "Christoph Schnabl <cs228@cam.ac.uk>")]
 #[command(version = "1.0")]
-#[command(about = "Runs various benchmarks on LLMs", long_about = None)]
+#[command(about = "TODO", long_about = None)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -63,10 +63,8 @@ enum Commands {
 }
 
 fn main() -> Result<()> {
-    // Set environment variable to downgrade llama_runner logs
     std::env::set_var("RUST_LOG", "llama_runner=info");
     
-    // Fix the tracing subscriber configuration
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .with_writer(std::io::stderr)

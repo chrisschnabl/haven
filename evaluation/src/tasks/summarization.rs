@@ -17,6 +17,7 @@ use crate::util::format_header;
 struct SummarizationPromptBuilder;
 impl SummarizationPromptBuilder {
     fn build_prompt(&self, entry: &DatasetEntry<SimilarityContent>) -> String {
+        // Prompt taken from TODO
         let system_prompt = "You are a professional summarizer. Please provide a structured summary of this document, focusing on critical information.";
         let formatted_system_prompt = format_header("system", system_prompt);
         let formatted_document = format_header("document", &entry.content.dialogue);
