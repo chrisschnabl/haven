@@ -38,14 +38,12 @@ impl LlamaRunner {
 
     /// Load the model from `self.config.model_path`.
     pub fn load_model(&mut self) -> Result<()> {
-        // Start of Selection
         // TODO CS: revisit semantics of storing the model path in config
         // TODO CS: wait for PR to be merged: https://github.com/ggerganov/llama.cpp/discussions/10990
         let model_path = self.config.model_path.as_ref().context("Model path is not set")?;
         
         info!("Loading model from path: {}", model_path);
         let backend = LlamaBackend::init().context("Failed to initialize LlamaBackend")?;
-        // TODO CS: handle this more gracefully 
 
         let model_params = LlamaModelParams::default();
         let model_box = Box::new(
@@ -95,7 +93,7 @@ impl LlamaRunner {
 
     // Blocking generation that calls `on_token` for each token produced.
     // TODO CS: return a tokio stream
-    pub fn generate_blocking<F>(&mut self, prompt: &str, mut on_token: F) -> Result<(i32, std::time::Duration)>
+    pub fn generate_blocking<F>(&mut self, prompt: &str, mut on_token: F) -> Result<(i32, std::time::Duration, std::time::Duration, std::time::Duration, usize)>
     where
         F: FnMut(&str),
     {
@@ -117,6 +115,9 @@ impl LlamaRunner {
         };
 
         let n_len = self.config.n_len;
+
+        let t_tokenize_start = ggml_time_us();
+
         let tokens_list = model
             .str_to_token(prompt, AddBos::Always)
             .context(format!("Failed to tokenize prompt: {prompt}"))?;
@@ -126,6 +127,10 @@ impl LlamaRunner {
         if n_kv_req > n_ctx {
             bail!("n_kv_req > n_ctx (required KV cache size is too big)");
         }
+
+        let t_tokenize_end = ggml_time_us();
+        let tokenize_duration = std::time::Duration::from_micros((t_tokenize_end - t_tokenize_start) as u64);
+        debug!("Tokenized prompt in {:?}, {} tokens", tokenize_duration, tokens_list.len());
 
         let tokens_list = if tokens_list.len() >= n_len.try_into()? {
             if self.config.truncate_if_context_full {
@@ -137,7 +142,12 @@ impl LlamaRunner {
             tokens_list
         };
 
-        let mut batch = LlamaBatch::new(512, 1);
+
+        let t_prompt_start = ggml_time_us();
+        let prompt_tokens = tokens_list.len();
+        // llama_init_from_model: n_batch       = 2048
+        // llama_init_from_model: n_ubatch      = 512
+        let mut batch = LlamaBatch::new(n_ctx.try_into().unwrap(), 1); // TODO CS: where does this come from?
         let last_index = (tokens_list.len() - 1) as i32;
         for (i, token) in (0_i32..).zip(tokens_list.into_iter()) {
             let is_last = i == last_index;
@@ -145,6 +155,12 @@ impl LlamaRunner {
         }
 
         ctx.decode(&mut batch).context("Failed to decode prompt tokens")?;
+
+        let t_prompt_end = ggml_time_us();
+        let prompt_duration = std::time::Duration::from_micros((t_prompt_end - t_prompt_start) as u64);
+        debug!("Prompt decoded in {:?}, {} tokens", prompt_duration, prompt_tokens);
+
+        // TODO CS: collect the durations for decoding the prompt tokens:
 
         let mut n_cur = batch.n_tokens();
         let mut n_decode = 0;
@@ -184,7 +200,6 @@ impl LlamaRunner {
         let t_main_end = ggml_time_us();
         let duration = std::time::Duration::from_micros((t_main_end - t_main_start) as u64);
 
-        // Change log level from info to debug
         debug!(
             "Decoded {} tokens in {:.2}s, speed {:.2} t/s\n{}",
             n_decode,
@@ -193,6 +208,6 @@ impl LlamaRunner {
             ctx.timings()
         );
 
-        Ok((n_decode, duration))
+        Ok((n_decode, duration, tokenize_duration, prompt_duration, prompt_tokens))
     }
 }

@@ -35,8 +35,9 @@ impl ModelConfig {
 
     pub fn classification() -> Self {
         Self {
-            model_path: PathBuf::from(Q8_MODEL_PATH),
-            context_size: 4 * 1024,
+            model_path: PathBuf::from(Q4_MODEL_PATH),
+            context_size: 8 * 1024, //
+            // lTODO: CSlama_init_from_model: n_ctx_per_seq (4096) < n_ctx_train (8192) -- the full capacity of the model will not be utilized
             threads: 4,
             n_len: 256,
             seed: 1337,
@@ -122,7 +123,7 @@ impl TaskConfig {
             data: DataConfig {
                 dataset_path: "classification_pairs.parquet".to_string(),
                 dataset_url: "https://huggingface.co/datasets/cais/mmlu/resolve/main/all/test-00000-of-00001.parquet".to_string(),
-                limit: Some(10),
+                limit: Some(1000),
                 start_from: 0,
                 skip_if_longer_than: None,
             },

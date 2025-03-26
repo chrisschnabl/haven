@@ -75,6 +75,9 @@ pub fn run_toxicity(limit_override: Option<usize>, model_override: Option<String
         Field::new("expected_toxic", DataType::Float64, false),
         Field::new("duration", DataType::Float64, false),
         Field::new("token_count", DataType::Float64, false),
+        Field::new("tokenize_duration", DataType::Float64, false),
+        Field::new("prompt_duration", DataType::Float64, false),
+        Field::new("prompt_tokens", DataType::Float64, false),
     ]);
     
     let mut writer = ParquetWriter::new(schema, config.output.clone())?;
@@ -85,13 +88,13 @@ pub fn run_toxicity(limit_override: Option<usize>, model_override: Option<String
         let prompt = prompt_builder.build_prompt(entry);
         let mut response = String::new();
         
-        let (token_count, duration)  = llama.generate_blocking(&prompt, |token| {
+        let (token_count, duration, tokenize_duration, prompt_duration, prompt_tokens) = llama.generate_blocking(&prompt, |token| {
             if let Ok(token_str) = String::from_utf8(token.as_bytes().to_vec()) {
                 response.push_str(&token_str);
             }
         })?;
 
-        progress.add_tokens(token_count.try_into().unwrap());
+        progress.add_tokens(token_count.try_into().unwrap(), duration.as_secs_f64());
         progress.update(format!("Processing entry {}", entry.content.id));
         
         let processed_response = response_processor.process_response(&response);
@@ -103,6 +106,9 @@ pub fn run_toxicity(limit_override: Option<usize>, model_override: Option<String
             Arc::new(Float64Array::from(vec![entry.content.toxic])),
             Arc::new(Float64Array::from(vec![duration.as_secs_f64()])),
             Arc::new(Float64Array::from(vec![token_count as f64])),
+            Arc::new(Float64Array::from(vec![tokenize_duration.as_secs_f64()])),
+            Arc::new(Float64Array::from(vec![prompt_duration.as_secs_f64()])),
+            Arc::new(Float64Array::from(vec![prompt_tokens as f64])),
         ])?;
     }   
 

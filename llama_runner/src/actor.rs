@@ -136,9 +136,9 @@ fn actor_loop(runner: &mut LlamaRunner, cmd_rx: Receiver<LlamaCommand>) {
                 drop(token_tx); // close channel
 
                 match result {
-                    Ok((n_decode, duration)) => {
-                        debug!("Generated {} tokens in {:?} at {:.2} tokens/sec", 
-                              n_decode, duration, n_decode as f64 / duration.as_secs_f64());
+                    Ok((n_decode, duration, tokenize_duration, prompt_duration, prompt_tokens)) => {
+                        debug!("Generated {} tokens in {:?} at {:.2} tokens/sec, tokenize: {:?}, prompt: {:?}, prompt_tokens: {}", 
+                              n_decode, duration, n_decode as f64 / duration.as_secs_f64(), tokenize_duration, prompt_duration, prompt_tokens);
                         let _ = reply.send(Ok(()));
                     }
                     Err(e) => {

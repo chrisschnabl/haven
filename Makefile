@@ -64,6 +64,10 @@ run-enclave:
 		exit 1; \
 	fi
 
+.PHONY: profile-enclave
+profile-enclave:
+	CARGO_PROFILE_RELEASE_DEBUG=true cargo flamegraph
+
 .PHONY: terminate-enclaves
 terminate-enclaves:
 	nitro-cli describe-enclaves \

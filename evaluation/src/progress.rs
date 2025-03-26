@@ -1,12 +1,13 @@
 use indicatif::{ProgressBar, ProgressStyle};
 use tracing::debug;
-use std::time::Instant;
 
 pub struct ProgressTracker {
     bar: ProgressBar,
-    start_time: Instant,
     tokens_generated: usize,
     completed_examples: usize,
+    total_duration: f64,
+    last_tokens: usize,
+    last_duration: f64,
 }
 
 impl ProgressTracker {
@@ -21,9 +22,11 @@ impl ProgressTracker {
         
         Self {
             bar,
-            start_time: Instant::now(),
             tokens_generated: 0,
             completed_examples: 0,
+            total_duration: 0.0,
+            last_tokens: 0,
+            last_duration: 0.0,
         }
     }
     
@@ -31,27 +34,32 @@ impl ProgressTracker {
         self.completed_examples += 1;
         self.bar.inc(1);
         
-        let elapsed = self.start_time.elapsed().as_secs_f64();
-        let current_tokens_per_sec = self.tokens_generated as f64 / elapsed;
+        let current_rate = self.last_tokens as f64 / self.last_duration;
+        let overall_rate = self.tokens_generated as f64 / self.total_duration;
         
-        let msg = format!("{} - {:.2} tokens/sec", message.into(), current_tokens_per_sec);
+        let msg = format!("{} - Current: {:.2} tokens/sec, Total: {} tokens in {:.2}s ({:.2} tokens/sec)", 
+            message.into(), 
+            current_rate,
+            self.tokens_generated,
+            self.total_duration,
+            overall_rate);
         self.bar.set_message(msg);
     }
     
-    pub fn add_tokens(&mut self, tokens: usize) {
+    pub fn add_tokens(&mut self, tokens: usize, duration: f64) {
+        self.last_tokens = tokens;
+        self.last_duration = duration;
         self.tokens_generated += tokens;
+        self.total_duration += duration;
     }
     
     pub fn finish(&self, _message: impl Into<String>) {
         self.bar.finish();
         
-        let total_elapsed = self.start_time.elapsed().as_secs_f64();
-        let overall_tokens_per_sec = self.tokens_generated as f64 / total_elapsed;
-        
         debug!("Generated {} tokens across {} examples in {:.2}s ({:.2} tokens/sec)",
                self.tokens_generated, 
                self.completed_examples,
-               total_elapsed, 
-               overall_tokens_per_sec);
+               self.total_duration, 
+               self.tokens_generated as f64 / self.total_duration);
     }
 } 

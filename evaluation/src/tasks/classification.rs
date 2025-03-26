@@ -14,6 +14,8 @@ use crate::progress::ProgressTracker;
 use crate::writer::ParquetWriter;
 use crate::util::format_header;
 
+use rand::seq::SliceRandom;
+
 struct ClassificationPromptBuilder;
 impl ClassificationPromptBuilder {
     fn build_prompt(&self, entry: &DatasetEntry<ClassificationContent>) -> String {
@@ -62,15 +64,21 @@ pub fn run_classification(limit_override: Option<usize>, model_override: Option<
         &config.data.dataset_path,
         &config.data.dataset_url
     );
-    let entries: Vec<DatasetEntry<ClassificationContent>> = loader.load_classification_data(config.data.limit, config.data.start_from)?;
+    let entries: Vec<DatasetEntry<ClassificationContent>> = loader.load_classification_data(None, 0)?;
     
+    // Filter out 1000 rows randomly
+    let mut rng = rand::rng();
+    let n = limit_override.unwrap_or(config.data.limit.unwrap_or(entries.len()));
+    let mut entries = entries.clone();
+    entries.shuffle(&mut rng);
+    entries = entries.into_iter().take(n).collect();
+
     let mut llama = LlamaRunner::new(config.model.to_llama_config());
     llama.load_model()?;
     
     let prompt_builder = ClassificationPromptBuilder;
     let response_processor = ClassificationProcessor;
-    let total = limit_override.unwrap_or(entries.len());
-    let mut progress = ProgressTracker::new(total);
+    let mut progress = ProgressTracker::new(n);
 
     let schema = Schema::new(vec![
         Field::new("id", DataType::Int64, false),
@@ -80,6 +88,9 @@ pub fn run_classification(limit_override: Option<usize>, model_override: Option<
         Field::new("correct", DataType::Boolean, false),
         Field::new("duration", DataType::Float64, false),
         Field::new("token_count", DataType::Float64, false),
+        Field::new("tokenize_duration", DataType::Float64, false),
+        Field::new("prompt_duration", DataType::Float64, false),
+        Field::new("prompt_tokens", DataType::Float64, false),
     ]);
     let mut writer = ParquetWriter::new(schema, config.output)?;
 
@@ -87,18 +98,18 @@ pub fn run_classification(limit_override: Option<usize>, model_override: Option<
     let mut incorrect_responses = Vec::new();
     let mut correct_responses = Vec::new();
     
-    for (idx, entry) in entries.iter().enumerate().take(total) {
+    for (idx, entry) in entries.iter().enumerate().take(n) {
         stdout().flush()?;
         let prompt = prompt_builder.build_prompt(entry);
         let mut response = String::new();
         
-        let (token_count, duration) = llama.generate_blocking(&prompt, |token| {
+        let (token_count, duration, tokenize_duration, prompt_duration, prompt_tokens) = llama.generate_blocking(&prompt, |token| {
             if let Ok(token_str) = String::from_utf8(token.as_bytes().to_vec()) {
                 response.push_str(&token_str);
             }
         })?;
         
-        progress.add_tokens(token_count.try_into().unwrap());
+        progress.add_tokens(token_count.try_into().unwrap(), duration.as_secs_f64());
         let processed_response = response_processor.process_response(&response);
         
         let valid_answer_chars = ['A', 'B', 'C', 'D'];
@@ -134,9 +145,12 @@ pub fn run_classification(limit_override: Option<usize>, model_override: Option<
             Arc::new(BooleanArray::from(vec![is_correct])),
             Arc::new(Float64Array::from(vec![duration.as_secs_f64()])),
             Arc::new(Float64Array::from(vec![token_count as f64])),
+            Arc::new(Float64Array::from(vec![tokenize_duration.as_secs_f64()])),
+            Arc::new(Float64Array::from(vec![prompt_duration.as_secs_f64()])),
+            Arc::new(Float64Array::from(vec![prompt_tokens as f64])),
         ])?;
 
-        progress.add_tokens(token_count.try_into().unwrap());
+        progress.add_tokens(token_count.try_into().unwrap(), duration.as_secs_f64());
         progress.update(format!("Processing entry {}", entry.id));
     }
 
