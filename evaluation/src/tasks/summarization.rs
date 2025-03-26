@@ -7,6 +7,7 @@ use arrow::array::{Int64Array, StringArray, Float64Array};
 use arrow::datatypes::{Schema, Field, DataType};
 use std::path::PathBuf;
 use tracing::debug;
+use std::convert::TryInto;
 
 use crate::dataset::{DatasetEntry, SimilarityContent, DatasetLoader};
 use crate::config::TaskConfig;
@@ -71,6 +72,8 @@ pub fn run_summarization(limit_override: Option<usize>, model_override: Option<S
         Field::new("response", DataType::Utf8, false),
         Field::new("expected", DataType::Utf8, false),
         Field::new("score", DataType::Float64, false),
+        Field::new("duration", DataType::Float64, false),
+        Field::new("token_count", DataType::Float64, false),
     ]);
     let mut writer = ParquetWriter::new(schema, config.output)?;
 
@@ -90,11 +93,13 @@ pub fn run_summarization(limit_override: Option<usize>, model_override: Option<S
         let prompt = prompt_builder.build_prompt(entry);
         let mut response = String::new();
         
-        llama.generate_blocking(&prompt, |token| {
+        let (token_count, duration) = llama.generate_blocking(&prompt, |token| {
             if let Ok(token_str) = String::from_utf8(token.as_bytes().to_vec()) {
                 response.push_str(&token_str);
             }
         })?;
+
+        progress.add_tokens(token_count.try_into().unwrap());
 
         let processed_response = response_processor.process_response(&response);
         let score = model.similarity(&entry.content.summary, &processed_response)?;
@@ -108,6 +113,8 @@ pub fn run_summarization(limit_override: Option<usize>, model_override: Option<S
             Arc::new(StringArray::from(vec![processed_response.clone()])),
             Arc::new(StringArray::from(vec![entry.content.summary.clone()])),
             Arc::new(Float64Array::from(vec![score])),
+            Arc::new(Float64Array::from(vec![duration.as_secs_f64()])),
+            Arc::new(Float64Array::from(vec![token_count as f64])),
         ])?;
     }
 

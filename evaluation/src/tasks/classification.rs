@@ -2,10 +2,11 @@ use std::sync::Arc;
 use std::io::{stdout, Write};
 use anyhow::Result;
 use llama_runner::LlamaRunner;
-use arrow::array::{Int64Array, StringArray, BooleanArray};
+use arrow::array::{Int64Array, StringArray, BooleanArray, Float64Array};
 use arrow::datatypes::{Schema, Field, DataType};
 use std::path::PathBuf;
 use tracing::debug;
+use std::convert::TryInto;
 
 use crate::dataset::{DatasetEntry, ClassificationContent, ParquetDatasetLoader};
 use crate::config::TaskConfig;
@@ -77,6 +78,8 @@ pub fn run_classification(limit_override: Option<usize>, model_override: Option<
         Field::new("response", DataType::Utf8, false),
         Field::new("expected", DataType::Utf8, false),
         Field::new("correct", DataType::Boolean, false),
+        Field::new("duration", DataType::Float64, false),
+        Field::new("token_count", DataType::Float64, false),
     ]);
     let mut writer = ParquetWriter::new(schema, config.output)?;
 
@@ -95,6 +98,7 @@ pub fn run_classification(limit_override: Option<usize>, model_override: Option<
             }
         })?;
         
+        progress.add_tokens(token_count.try_into().unwrap());
         let processed_response = response_processor.process_response(&response);
         
         let valid_answer_chars = ['A', 'B', 'C', 'D'];
@@ -128,9 +132,11 @@ pub fn run_classification(limit_override: Option<usize>, model_override: Option<
             Arc::new(StringArray::from(vec![processed_response])),
             Arc::new(StringArray::from(vec![expected_answer.to_string()])),
             Arc::new(BooleanArray::from(vec![is_correct])),
+            Arc::new(Float64Array::from(vec![duration.as_secs_f64()])),
+            Arc::new(Float64Array::from(vec![token_count as f64])),
         ])?;
 
-        progress.add_tokens(token_count as usize);
+        progress.add_tokens(token_count.try_into().unwrap());
         progress.update(format!("Processing entry {}", entry.id));
     }
 

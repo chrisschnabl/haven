@@ -15,6 +15,9 @@ pub struct ModelConfig {
     pub truncate_if_context_full: bool,
 }
 
+const Q8_MODEL_PATH: &str = "model/Meta-Llama-3-8B-Instruct.Q8_0.gguf";
+const Q4_MODEL_PATH: &str = "model/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf";
+
 impl ModelConfig {
     pub fn to_llama_config(&self) -> LlamaConfig {
         LlamaConfig {
@@ -32,9 +35,9 @@ impl ModelConfig {
 
     pub fn classification() -> Self {
         Self {
-            model_path: PathBuf::from("model/Meta-Llama-3-8B-Instruct.Q8_0.gguf"),
+            model_path: PathBuf::from(Q8_MODEL_PATH),
             context_size: 4 * 1024,
-            threads: 12,
+            threads: 4,
             n_len: 256,
             seed: 1337,
             temp: 0.25,
@@ -46,9 +49,9 @@ impl ModelConfig {
 
     pub fn summarization() -> Self {
         Self {
-            model_path: PathBuf::from("model/Meta-Llama-3-8B-Instruct.Q8_0.gguf"),
+            model_path: PathBuf::from(Q4_MODEL_PATH),
             context_size: 4 * 1024,
-            threads: 12,
+            threads: 4,
             n_len: 512,
             seed: 1337,
             temp: 0.1,
@@ -60,9 +63,9 @@ impl ModelConfig {
 
     pub fn toxicity() -> Self {
         Self {
-            model_path: PathBuf::from("model/Meta-Llama-3-8B-Instruct.Q8_0.gguf"),
+            model_path: PathBuf::from(Q4_MODEL_PATH),
             context_size: 2048,
-            threads: 12,
+            threads: 4,
             n_len: 256,
             seed: 42,
             temp: 0.3,
@@ -107,7 +110,7 @@ impl TaskConfig {
                 skip_if_longer_than: Some(1750),
             },
             output: OutputConfig {
-                output_dir: PathBuf::from("results"),
+                output_dir: PathBuf::from("."),
                 file_prefix: "llama_summaries".to_string(),
             },
         }
@@ -119,7 +122,7 @@ impl TaskConfig {
             data: DataConfig {
                 dataset_path: "classification_pairs.parquet".to_string(),
                 dataset_url: "https://huggingface.co/datasets/cais/mmlu/resolve/main/all/test-00000-of-00001.parquet".to_string(),
-                limit: Some(1000),
+                limit: Some(10),
                 start_from: 0,
                 skip_if_longer_than: None,
             },
@@ -136,13 +139,13 @@ impl TaskConfig {
             data: DataConfig {
                 dataset_path: "toxic-chat_annotation_test.csv".to_string(),
                 dataset_url: "https://huggingface.co/datasets/lmsys/toxic-chat/resolve/main/data/0124/toxic-chat_annotation_test.csv".to_string(),
-                limit: Some(10),
+                limit: Some(100),
                 start_from: 0,
                 skip_if_longer_than: None,
             },
             output: OutputConfig {
                 output_dir: PathBuf::from("."),
-                file_prefix: "llama_toxicity".to_string(),
+                file_prefix: "llama3_7b_4bit_toxicity".to_string(),
             },
         }
     }

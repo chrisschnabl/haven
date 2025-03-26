@@ -12,6 +12,7 @@ use parquet::arrow::arrow_writer::ArrowWriter;
 use parquet::file::properties::WriterProperties;
 use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
 use tracing::debug;
+use std::convert::TryInto;
 
 use crate::dataset::{DatasetEntry, ToxicityContent, DatasetLoader};
 use crate::config::TaskConfig;
@@ -72,6 +73,8 @@ pub fn run_toxicity(limit_override: Option<usize>, model_override: Option<String
         Field::new("input", DataType::Utf8, false),
         Field::new("response", DataType::Utf8, false),
         Field::new("expected_toxic", DataType::Float64, false),
+        Field::new("duration", DataType::Float64, false),
+        Field::new("token_count", DataType::Float64, false),
     ]);
     
     let mut writer = ParquetWriter::new(schema, config.output.clone())?;
@@ -81,16 +84,14 @@ pub fn run_toxicity(limit_override: Option<usize>, model_override: Option<String
         
         let prompt = prompt_builder.build_prompt(entry);
         let mut response = String::new();
-        let mut tokens_in_response = 0;
         
-        llama.generate_blocking(&prompt, |token| {
+        let (token_count, duration)  = llama.generate_blocking(&prompt, |token| {
             if let Ok(token_str) = String::from_utf8(token.as_bytes().to_vec()) {
                 response.push_str(&token_str);
-                tokens_in_response += 1;
             }
         })?;
 
-        progress.add_tokens(tokens_in_response);
+        progress.add_tokens(token_count.try_into().unwrap());
         progress.update(format!("Processing entry {}", entry.content.id));
         
         let processed_response = response_processor.process_response(&response);
@@ -100,14 +101,16 @@ pub fn run_toxicity(limit_override: Option<usize>, model_override: Option<String
             Arc::new(StringArray::from(vec![entry.content.input.clone()])),
             Arc::new(StringArray::from(vec![processed_response])),
             Arc::new(Float64Array::from(vec![entry.content.toxic])),
+            Arc::new(Float64Array::from(vec![duration.as_secs_f64()])),
+            Arc::new(Float64Array::from(vec![token_count as f64])),
         ])?;
-    }
+    }   
 
-    // Make sure to flush and close the writer to ensure all data is written
     writer.close()?;
-    progress.finish("Response generation complete!");
+    let responses_file = config.output.output_dir.join(config.output.file_prefix);
     
-    let responses_file = config.output.output_dir.join(format!("{}_1.parquet", config.output.file_prefix));
+    progress.finish(format!("Response generation complete and written to: {}", responses_file.display()));
+    
     analyze_toxicity(&responses_file)?;
     
     Ok(())
@@ -121,8 +124,8 @@ fn analyze_toxicity(responses_file: &PathBuf) -> Result<()> {
     let mut bert = BertRunner::new(model_path, config_path, vocab_path);
     bert.load_model()?;
 
-    let file = File::open(responses_file)
-        .context("Failed to open responses file")?;
+    let file = File::open(responses_file.with_extension("parquet"))
+        .context(format!("Failed to open responses file: {}", responses_file.display()))?;
     
     let builder = ParquetRecordBatchReaderBuilder::try_new(file)
         .context("Failed to create parquet reader")?;
@@ -204,7 +207,7 @@ fn analyze_toxicity(responses_file: &PathBuf) -> Result<()> {
         ],
     )?;
 
-    let output_file = File::create("analysis_results.parquet")?;
+    let output_file = File::create(format!("{}_analysis.parquet", responses_file.file_name().unwrap().to_str().unwrap()))?;
     let props = WriterProperties::builder().build();
     let mut writer = ArrowWriter::try_new(output_file, output_batch.schema(), Some(props))?;
     writer.write(&output_batch)?;

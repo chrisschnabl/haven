@@ -19,7 +19,7 @@ impl ParquetWriter {
         std::fs::create_dir_all(&config.output_dir)
             .context("Failed to create output directory")?;
         
-        let file_path = config.output_dir.join(format!("{}_{}.parquet", config.file_prefix, 1));
+        let file_path = config.output_dir.join(format!("{}.parquet", config.file_prefix));
             let file = File::create(&file_path)
             .context(format!("Failed to create file: {:?}", file_path))?;
         
