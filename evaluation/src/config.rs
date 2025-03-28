@@ -106,13 +106,13 @@ impl TaskConfig {
             data: DataConfig {
                 dataset_path: "similarity_pairs.csv".to_string(),
                 dataset_url: "https://huggingface.co/datasets/knkarthick/xsum/resolve/main/test.csv".to_string(),
-                limit: Some(20),
-                start_from: 50,
+                limit: Some(500),
+                start_from: 0,
                 skip_if_longer_than: Some(1750),
             },
             output: OutputConfig {
                 output_dir: PathBuf::from("."),
-                file_prefix: "llama_summaries".to_string(),
+                file_prefix: "llama_summaries_4bit".to_string(),
             },
         }
     }
@@ -140,7 +140,7 @@ impl TaskConfig {
             data: DataConfig {
                 dataset_path: "toxic-chat_annotation_test.csv".to_string(),
                 dataset_url: "https://huggingface.co/datasets/lmsys/toxic-chat/resolve/main/data/0124/toxic-chat_annotation_test.csv".to_string(),
-                limit: Some(100),
+                limit: Some(1000),
                 start_from: 0,
                 skip_if_longer_than: None,
             },
