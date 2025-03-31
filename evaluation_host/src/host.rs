@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use tracing::{info, error, instrument};
 use std::marker::PhantomData;
 use tokio_vsock::VsockStream;
-use evaluation::{read_message, send_file, Operation};
+use evaluation::{read_message, send_file, Operation, receive_file};
 
 pub trait ClientState {}
 
@@ -147,7 +147,7 @@ impl ModelClient<DatasetSent> {
 
 impl ModelClient<EvaluationComplete> {
     #[instrument(skip(self))]
-    pub async fn verify_attestation(self) -> Result<ModelClient<AttestationReceived>> {
+    pub async fn verify_attestation(mut self) -> Result<ModelClient<AttestationReceived>> {
         info!("Verifying attestation from server...");
         
         let attestation = self.attestation.as_ref()
@@ -156,6 +156,12 @@ impl ModelClient<EvaluationComplete> {
         // TODO CS: verify attestation
         let attestation_str = String::from_utf8_lossy(attestation);
         info!("Attestation data: {}", attestation_str);
+
+        // Receive results file
+        let stream = self.stream.as_mut()
+            .context("Stream not connected")?;
+        let results_path = receive_file(stream, "evaluation results").await?;
+        info!("Received results file: {}", results_path.display());
         
         Ok(ModelClient {
             stream: self.stream,

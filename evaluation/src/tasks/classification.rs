@@ -47,10 +47,14 @@ impl ClassificationProcessor {
     }
 }
 
-pub fn run_classification(limit_override: Option<usize>, model_override: Option<String>) -> Result<()> {
+pub fn run_classification(limit_override: Option<usize>, model_override: Option<String>, config_override: Option<TaskConfig>) -> Result<()> {
     debug!("Loading classification dataset...");
     
     let mut config = TaskConfig::classification();
+    
+    if let Some(config_override) = config_override {
+        config = config_override;
+    }
     
     if let Some(limit) = limit_override {
         config.data.limit = Some(limit);

@@ -42,10 +42,14 @@ impl ToxicityProcessor {
     }
 }
 
-pub fn run_toxicity(limit_override: Option<usize>, model_override: Option<String>) -> Result<()> {
+pub fn run_toxicity(limit_override: Option<usize>, model_override: Option<String>, config_override: Option<TaskConfig>) -> Result<()> {
     debug!("Loading toxicity dataset...");
     
     let mut config = TaskConfig::toxicity();
+    
+    if let Some(config_override) = config_override {
+        config = config_override;
+    }
     
     if let Some(limit) = limit_override {
         config.data.limit = Some(limit);
@@ -117,17 +121,13 @@ pub fn run_toxicity(limit_override: Option<usize>, model_override: Option<String
     
     progress.finish(format!("Response generation complete and written to: {}", responses_file.display()));
     
-    analyze_toxicity(&responses_file)?;
+    //analyze_toxicity(&responses_file)?;
     
     Ok(())
 }
 
-fn analyze_toxicity(responses_file: &PathBuf) -> Result<()> {
-    let model_path = PathBuf::from("model/rust_model.ot");
-    let config_path = PathBuf::from("model/config.json");
-    let vocab_path = PathBuf::from("model/vocab.txt");
-
-    let mut bert = BertRunner::new(model_path, config_path, vocab_path);
+pub fn analyze_toxicity(responses_file: &PathBuf, model_path: &PathBuf, config_path: &PathBuf, vocab_path: &PathBuf) -> Result<PathBuf> {
+    let mut bert = BertRunner::new(model_path.clone(), config_path.clone(), vocab_path.clone());
     bert.load_model()?;
 
     let file = File::open(responses_file.with_extension("parquet"))
@@ -213,9 +213,11 @@ fn analyze_toxicity(responses_file: &PathBuf) -> Result<()> {
         ],
     )?;
 
-    let output_file = File::create(format!("{}_analysis.parquet", responses_file.file_name().unwrap().to_str().unwrap()))?;
+    let output_file = responses_file.with_extension("analysis.parquet");
+    let file = File::create(&output_file)
+        .context(format!("Failed to create output file: {}", output_file.display()))?;
     let props = WriterProperties::builder().build();
-    let mut writer = ArrowWriter::try_new(output_file, output_batch.schema(), Some(props))?;
+    let mut writer = ArrowWriter::try_new(file, output_batch.schema(), Some(props))?;
     writer.write(&output_batch)?;
     writer.close()?;
 
@@ -225,5 +227,5 @@ fn analyze_toxicity(responses_file: &PathBuf) -> Result<()> {
         toxic_count as f64 / output_batch.num_rows() as f64
     );
     
-    Ok(())
+    Ok(output_file)
 } 

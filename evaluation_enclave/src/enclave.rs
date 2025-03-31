@@ -2,12 +2,12 @@ use anyhow::{Result};
 use tokio_vsock::VsockStream;
 use tracing::{info, instrument};
 use std::path::PathBuf;
-use tokio::fs::File;
-use tokio::io::AsyncReadExt;
-use std::collections::HashMap;
 
-use evaluation::{receive_file, write_message, Operation, Message};
-use bert_runner::{BertRunner, BertRunnerTrait};
+use evaluation::{
+    receive_file, write_message, send_file, Operation, Message,
+    run_toxicity, analyze_toxicity,
+    TaskConfig, ModelConfig, DataConfig, OutputConfig
+};
 
 pub trait ServerState {}
 
@@ -31,6 +31,7 @@ pub struct DatasetLoadedState {
 }
 pub struct EvaluatedState {
     results: Vec<EvaluationResult>,
+    output_file: PathBuf,
 }
 pub struct AttestedState {}
 
@@ -119,60 +120,60 @@ impl ModelServer<BertLoadedState> {
 
 impl ModelServer<DatasetLoadedState> {
     #[instrument(skip(self))]
-    pub async fn run_evaluation(self) -> Result<ModelServer<EvaluatedState>> {
+    pub async fn run_evaluation(mut self) -> Result<ModelServer<EvaluatedState>> {
         info!("Starting evaluation process...");
         
-        info!("Loading LLaMA model from {:?}", self.state.llama_path);
+        let config = TaskConfig {
+            model: ModelConfig {
+                model_path: self.state.llama_path,
+                context_size: 8 * 1024,
+                threads: 1,
+                n_len: 256,
+                seed: 1337,
+                temp: 0.25,
+                top_p: 0.7,
+                skip_non_utf8: true,
+                truncate_if_context_full: true,
+            },
+            data: DataConfig {
+                dataset_path: self.state.dataset_path.to_string_lossy().to_string(),
+                dataset_url: "none".to_string(), 
+                limit: Some(1),
+                start_from: 0,
+                skip_if_longer_than: Some(1750),
+            },
+            output: OutputConfig {
+                output_dir: PathBuf::from("."),
+                file_prefix: "llama_toxic".to_string(),
+            },
+        };
 
-        let mut bert_runner = BertRunner::new(self.state.bert_path, self.state.config_path, self.state.vocab_path);
-        bert_runner.load_model()?;
+        let output_dir = config.output.output_dir.clone();
+        let file_prefix = config.output.file_prefix.clone();
+        
+        run_toxicity(None, None, Some(config))?;
+        let responses_file = output_dir.join(&file_prefix); 
+        let output_file = analyze_toxicity(&responses_file, &self.state.bert_path, &self.state.config_path, &self.state.vocab_path)?;
 
-        let result = bert_runner.predict(vec!["How toxic am I hahah".to_string()]);
-        println!("Result: {:?}", result);
-
-        info!("Loading evaluation dataset from {:?}", self.state.dataset_path);
-        
-        let mut file = File::open(&self.state.dataset_path).await?;
-        let mut dataset_content = String::new();
-        file.read_to_string(&mut dataset_content).await?;
-        
-        let inputs: Vec<String> = dataset_content
-            .lines()
-            .filter(|line| !line.trim().is_empty())
-            .map(|line| line.trim().to_string())
-            .collect();
-        
-        let mut results = Vec::new();
-        
-        for input in inputs {
-            let progress_msg = Message {
-                op: Operation::Progress,
-                file_path: None,
-                data: format!("Processing: {}", input).into_bytes(),
-            };
-            write_message(&mut self.shared.stream, &progress_msg).await?;
-            
-            let llama_output = "I don't know the answer to that question.".to_string();
-            let bert_classification = "FACTUAL".to_string();
-            let confidence = 0.92;
-            
-            results.push(EvaluationResult {
-                input,
-                llama_output,
-                bert_classification,
-                confidence,
-            });
-        }
+        // Parse results from output file
+        let results = vec![EvaluationResult {
+            input: "".to_string(),
+            llama_output: "".to_string(),
+            bert_classification: "".to_string(),
+            confidence: 0.0,
+        }]; // TODO: Actually parse results from output_file
         
         let completion_msg = Message {
             op: Operation::Progress,
             file_path: None,
             data: format!("Evaluation complete. Processed {} samples.", results.len()).into_bytes(),
         };
-        write_message(&mut self.shared.stream, &completion_msg).await?;
-        
+        write_message(&mut self.shared.stream, &completion_msg).await?;        
         Ok(ModelServer {
-            state: EvaluatedState { results },
+            state: EvaluatedState { 
+                results,
+                output_file,
+            },
             shared: self.shared,
         })
     }
@@ -182,25 +183,10 @@ impl ModelServer<EvaluatedState> {
     #[instrument(skip(self))]
     pub async fn generate_attestation(mut self) -> Result<ModelServer<AttestedState>> {
         info!("Generating attestation for evaluation results...");
-        
-        let mut class_counts: HashMap<String, usize> = HashMap::new();
-        let mut total_confidence = 0.0;
-        
-        for result in &self.state.results {
-            *class_counts.entry(result.bert_classification.clone()).or_insert(0) += 1;
-            total_confidence += result.confidence;
-        }
-        
-        let avg_confidence = if !self.state.results.is_empty() {
-            total_confidence / self.state.results.len() as f32
-        } else {
-            0.0
-        };
-        
+                
         let attestation = format!(
-            "ATTESTATION-DATA:{}:{}:{}",
+            "ATTESTATION-DATA:{}:{}",
             self.state.results.len(),
-            avg_confidence,
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .unwrap()
@@ -213,6 +199,9 @@ impl ModelServer<EvaluatedState> {
             data: attestation.into_bytes(),
         };
         write_message(&mut self.shared.stream, &attestation_msg).await?;
+
+        // Send the results file
+        send_file(&mut self.shared.stream, self.state.output_file.to_str().unwrap()).await?;
         
         Ok(ModelServer {
             state: AttestedState {},
