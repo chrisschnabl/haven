@@ -1,0 +1,25 @@
+base_path: "quantization_ablation_model"
+experiments:
+  - "Meta-Llama-3-8B-Instruct.Q2_K.gguf"
+  - "Meta-Llama-3-8B-Instruct.Q4_K.gguf"
+  - "Meta-Llama-3-8B-Instruct.Q4_K_M.gguf"
+  - "Meta-Llama-3-8B-Instruct.Q6_K.gguf"
+  - "Meta-Llama-3-8B-Instruct.Q8_0.gguf"
+  - "Meta-Llama-3-8B-Instruct.Q8_K.gguf"
+  - "Meta-Llama-3-8B-Instruct.Q8_K_M.gguf"
+
+chart_dirs:
+  accuracy: "charts/accuracy"
+  timing: "charts/timing"
+  efficiency: "charts/efficiency"
+  error_analysis: "charts/error_analysis"
+  summarization: "charts/summarization"
+  toxicity: "charts/toxicity"
+  flamegraph: "charts/flamegraph"
+
+plot_style: "fivethirtyeight"
+figure_size: [12, 8]
+title_size: 16
+label_size: 14
+dpi: 300
+max_workers: 4 

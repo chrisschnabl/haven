@@ -1,0 +1,85 @@
+2025-04-01 21:25:37,894 - __main__ - ERROR - Analysis failed: AnalysisManager.__init__() missing 1 required positional argument: 'config'
+2025-04-01 21:26:18,426 - __main__ - INFO - Starting analysis pipeline
+2025-04-01 21:26:18,426 - __main__ - INFO - Starting data loading...
+2025-04-01 21:26:18,427 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K.gguf
+2025-04-01 21:26:18,427 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q6_K.gguf
+2025-04-01 21:26:18,427 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_K.gguf
+2025-04-01 21:26:18,427 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_K_M.gguf
+2025-04-01 21:26:19,008 - __main__ - INFO - Data loading completed
+2025-04-01 21:26:19,485 - __main__ - INFO - Saved plot to charts/accuracy/accuracy_heatmap_20250401_212619.png
+2025-04-01 21:26:19,597 - __main__ - INFO - Saved plot to charts/accuracy/overall_accuracy_20250401_212619.png
+2025-04-01 21:26:20,049 - __main__ - INFO - Saved plot to charts/timing/timing_distributions_20250401_212619.png
+2025-04-01 21:26:20,233 - __main__ - INFO - Saved plot to charts/timing/timing_boxplots_20250401_212620.png
+2025-04-01 21:26:20,652 - __main__ - INFO - Saved plot to charts/timing/timing_vs_tokens_20250401_212620.png
+2025-04-01 21:26:20,822 - __main__ - INFO - Saved plot to charts/flamegraph/timing_flamegraph_20250401_212620.png
+2025-04-01 21:26:20,965 - __main__ - INFO - Saved plot to charts/efficiency/token_efficiency_20250401_212620.png
+2025-04-01 21:26:21,326 - __main__ - INFO - Saved plot to charts/error_analysis/error_distribution_20250401_212621.png
+2025-04-01 21:28:06,704 - __main__ - INFO - Saved plot to charts/error_analysis/confusion_matrix_Q2_K_20250401_212625.png
+2025-04-01 21:28:08,840 - __main__ - INFO - Saved plot to charts/error_analysis/confusion_matrix_Q4_K_M_20250401_212806.png
+2025-04-01 21:28:10,644 - __main__ - INFO - Saved plot to charts/error_analysis/confusion_matrix_Q8_0_20250401_212808.png
+2025-04-01 21:28:10,644 - __main__ - ERROR - Failed to generate summarization plots: 'AnalysisManager' object has no attribute 'analyze_summarization_data'
+2025-04-01 21:28:10,644 - __main__ - ERROR - Analysis failed: Failed to generate summarization plots
+2025-04-01 21:28:19,596 - __main__ - INFO - Starting analysis pipeline
+2025-04-01 21:28:19,596 - __main__ - INFO - Starting data loading...
+2025-04-01 21:28:19,596 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K.gguf
+2025-04-01 21:28:19,596 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q6_K.gguf
+2025-04-01 21:28:19,597 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_K.gguf
+2025-04-01 21:28:19,597 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_K_M.gguf
+2025-04-01 21:28:20,148 - __main__ - INFO - Data loading completed
+2025-04-01 21:28:20,577 - __main__ - INFO - Saved plot to charts/accuracy/accuracy_heatmap_20250401_212820.png
+2025-04-01 21:28:20,683 - __main__ - INFO - Saved plot to charts/accuracy/overall_accuracy_20250401_212820.png
+2025-04-01 21:28:21,123 - __main__ - INFO - Saved plot to charts/timing/timing_distributions_20250401_212820.png
+2025-04-01 21:28:21,305 - __main__ - INFO - Saved plot to charts/timing/timing_boxplots_20250401_212821.png
+2025-04-01 21:28:21,701 - __main__ - INFO - Saved plot to charts/timing/timing_vs_tokens_20250401_212821.png
+2025-04-01 21:28:21,879 - __main__ - INFO - Saved plot to charts/flamegraph/timing_flamegraph_20250401_212821.png
+2025-04-01 21:28:22,023 - __main__ - INFO - Saved plot to charts/efficiency/token_efficiency_20250401_212821.png
+2025-04-01 21:28:22,366 - __main__ - INFO - Saved plot to charts/error_analysis/error_distribution_20250401_212822.png
+2025-04-01 21:30:04,829 - __main__ - INFO - Saved plot to charts/error_analysis/confusion_matrix_Q2_K_20250401_212826.png
+2025-04-01 21:30:06,947 - __main__ - INFO - Saved plot to charts/error_analysis/confusion_matrix_Q4_K_M_20250401_213004.png
+2025-04-01 21:30:08,789 - __main__ - INFO - Saved plot to charts/error_analysis/confusion_matrix_Q8_0_20250401_213006.png
+2025-04-01 21:30:08,789 - __main__ - ERROR - Failed to generate summarization plots: 'AnalysisManager' object has no attribute 'analyze_summarization_data'
+2025-04-01 21:30:08,789 - __main__ - ERROR - Analysis failed: Failed to generate summarization plots
+2025-04-01 21:30:29,636 - __main__ - INFO - Starting analysis pipeline
+2025-04-01 21:30:29,636 - __main__ - INFO - Starting data loading...
+2025-04-01 21:30:29,637 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K.gguf
+2025-04-01 21:30:29,637 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q6_K.gguf
+2025-04-01 21:30:29,637 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_K.gguf
+2025-04-01 21:30:29,637 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_K_M.gguf
+2025-04-01 21:30:30,159 - __main__ - INFO - Data loading completed
+2025-04-01 21:30:30,616 - __main__ - INFO - Saved plot to charts/accuracy/accuracy_heatmap_20250401_213030.png
+2025-04-01 21:30:30,723 - __main__ - INFO - Saved plot to charts/accuracy/overall_accuracy_20250401_213030.png
+2025-04-01 21:30:30,738 - __main__ - ERROR - Failed to generate timing plots: Could not interpret value `model` for `x`. An entry with this name does not appear in `data`.
+2025-04-01 21:30:30,738 - __main__ - ERROR - Analysis failed: Failed to generate timing plots
+2025-04-01 21:32:12,334 - __main__ - INFO - Starting analysis pipeline
+2025-04-01 21:32:12,334 - __main__ - INFO - Starting data loading...
+2025-04-01 21:32:12,334 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K.gguf
+2025-04-01 21:32:12,335 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q6_K.gguf
+2025-04-01 21:32:12,335 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_K.gguf
+2025-04-01 21:32:12,335 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_K_M.gguf
+2025-04-01 21:32:12,848 - __main__ - INFO - Data loading completed
+2025-04-01 21:32:13,283 - __main__ - INFO - Saved plot to charts/accuracy/accuracy_heatmap_20250401_213212.png
+2025-04-01 21:32:13,386 - __main__ - INFO - Saved plot to charts/accuracy/overall_accuracy_20250401_213213.png
+2025-04-01 21:32:13,397 - __main__ - ERROR - Failed to generate timing plots: Could not interpret value `model` for `x`. An entry with this name does not appear in `data`.
+2025-04-01 21:32:13,398 - __main__ - ERROR - Analysis failed: Failed to generate timing plots
+2025-04-01 21:34:04,354 - __main__ - INFO - Starting analysis pipeline
+2025-04-01 21:34:04,354 - __main__ - INFO - Starting data loading...
+2025-04-01 21:34:04,355 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K.gguf
+2025-04-01 21:34:04,355 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q6_K.gguf
+2025-04-01 21:34:04,355 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_K.gguf
+2025-04-01 21:34:04,355 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_K_M.gguf
+2025-04-01 21:34:04,877 - __main__ - INFO - Data loading completed
+2025-04-01 21:34:05,308 - __main__ - INFO - Saved plot to charts/accuracy/accuracy_heatmap_20250401_213405.png
+2025-04-01 21:34:05,410 - __main__ - INFO - Saved plot to charts/accuracy/overall_accuracy_20250401_213405.png
+2025-04-01 21:34:05,422 - __main__ - ERROR - Failed to generate timing plots: Could not interpret value `model` for `x`. An entry with this name does not appear in `data`.
+2025-04-01 21:34:05,422 - __main__ - ERROR - Analysis failed: Failed to generate timing plots
+2025-04-01 22:05:54,591 - __main__ - INFO - Starting analysis pipeline
+2025-04-01 22:05:54,591 - __main__ - INFO - Starting data loading...
+2025-04-01 22:05:54,591 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K.gguf
+2025-04-01 22:05:54,591 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q6_K.gguf
+2025-04-01 22:05:54,591 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_K.gguf
+2025-04-01 22:05:54,592 - __main__ - WARNING - Directory does not exist: quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_K_M.gguf
+2025-04-01 22:05:55,151 - __main__ - INFO - Data loading completed
+2025-04-01 22:05:55,588 - __main__ - INFO - Saved plot to charts/accuracy/accuracy_heatmap_20250401_220555.png
+2025-04-01 22:05:55,693 - __main__ - INFO - Saved plot to charts/accuracy/overall_accuracy_20250401_220555.png
+2025-04-01 22:05:55,705 - __main__ - ERROR - Failed to generate timing plots: Could not interpret value `model` for `x`. An entry with this name does not appear in `data`.
+2025-04-01 22:05:55,706 - __main__ - ERROR - Analysis failed: Failed to generate timing plots
