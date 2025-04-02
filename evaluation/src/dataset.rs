@@ -212,9 +212,9 @@ impl ParquetDatasetLoader {
             .context("Failed to open dataset file")?;
         
         let builder = ParquetRecordBatchReaderBuilder::try_new(file)
-            .context("Failed to create parquet reader")?;
+            .context(format!("Failed to create parquet reader: {}", self.file_path))?;
         let mut reader = builder.build()
-            .context("Failed to build parquet reader")?;
+            .context(format!("Failed to build parquet reader: {}", self.file_path))?;
         
         let mut entries = Vec::new();
         let mut current_idx = 0;

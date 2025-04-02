@@ -47,7 +47,7 @@ impl ClassificationProcessor {
     }
 }
 
-pub fn run_classification(limit_override: Option<usize>, model_override: Option<String>, config_override: Option<TaskConfig>) -> Result<()> {
+pub fn run_classification(limit_override: Option<usize>, model_override: Option<String>, config_override: Option<TaskConfig>, entries_override: Option<Vec<DatasetEntry<ClassificationContent>>>) -> Result<()> {
     debug!("Loading classification dataset...");
     
     let mut config = TaskConfig::classification();
@@ -68,8 +68,14 @@ pub fn run_classification(limit_override: Option<usize>, model_override: Option<
         &config.data.dataset_path,
         &config.data.dataset_url
     );
-    let entries: Vec<DatasetEntry<ClassificationContent>> = loader.load_classification_data(None, 0)?;
-    
+
+    let entries: Vec<DatasetEntry<ClassificationContent>>;
+    if let Some(entries_override) = entries_override {
+        entries = entries_override;
+    } else {
+        entries = loader.load_classification_data(None, 0)?;
+    }
+
     // Filter out 1000 rows randomly
     let mut rng = rand::rng();
     let n = limit_override.unwrap_or(config.data.limit.unwrap_or(entries.len()));
@@ -87,6 +93,8 @@ pub fn run_classification(limit_override: Option<usize>, model_override: Option<
     let schema = Schema::new(vec![
         Field::new("id", DataType::Int64, false),
         Field::new("question", DataType::Utf8, false),
+        Field::new("subject", DataType::Utf8, false),
+        Field::new("choices", DataType::Utf8, false),
         Field::new("response", DataType::Utf8, false),
         Field::new("expected", DataType::Utf8, false),
         Field::new("correct", DataType::Boolean, false),
@@ -144,6 +152,8 @@ pub fn run_classification(limit_override: Option<usize>, model_override: Option<
         writer.add_row(idx, vec![
             Arc::new(Int64Array::from(vec![entry.content.id])),
             Arc::new(StringArray::from(vec![entry.content.question.clone()])),
+            Arc::new(StringArray::from(vec![entry.content.subject.clone()])),
+            Arc::new(StringArray::from(vec![entry.content.choices.join(", ")])),
             Arc::new(StringArray::from(vec![processed_response])),
             Arc::new(StringArray::from(vec![expected_answer.to_string()])),
             Arc::new(BooleanArray::from(vec![is_correct])),
