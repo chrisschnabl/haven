@@ -193,19 +193,41 @@ def plot_token_distribution(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     """
     fig, axes = plt.subplots(3, 3, figsize=(18, 15))
     
+    # Set fixed max for toxicity plots
+    max_toxicity_tokens = 250
+    
     # Create distributions for each model and experiment
     for row, model_name in enumerate(data.keys()):
         for col, exp_type in enumerate(EXPERIMENT_TYPES.keys()):
             df = data[model_name].get(exp_type)
             if df is not None and "token_count" in df.columns:
-                # Create histogram
-                sns.histplot(
-                    data=df,
-                    x="token_count",
-                    kde=True,
-                    color=sns.color_palette()[col],
-                    ax=axes[row, col]
-                )
+                if exp_type == "toxicity":
+                    # For toxicity plots, use small fixed-width bins up to 250
+                    bin_width = 5  # 5 tokens per bin for granularity
+                    bins = np.arange(0, max_toxicity_tokens + bin_width, bin_width)
+                    
+                    # Create histogram with KDE
+                    sns.histplot(
+                        data=df,
+                        x="token_count",
+                        kde=True,
+                        bins=bins,
+                        color=sns.color_palette()[col],
+                        ax=axes[row, col]
+                    )
+                    
+                    # Set x-axis limit to exactly 250
+                    axes[row, col].set_xlim(0, max_toxicity_tokens)
+                else:
+                    # For other plots, use default binning
+                    sns.histplot(
+                        data=df,
+                        x="token_count",
+                        kde=True,
+                        bins=30,
+                        color=sns.color_palette()[col],
+                        ax=axes[row, col]
+                    )
                 
                 # Add mean line
                 mean_tokens = df["token_count"].mean()
@@ -551,64 +573,183 @@ def plot_classification_accuracy_by_subject(data: Dict[str, Dict[str, pd.DataFra
     Args:
         data: Dictionary containing model data by experiment type
     """
-    # Collect accuracy data by subject
-    accuracy_by_subject = {}
+    # Define subject groupings
+    subject_groups = {
+        'High School Sciences': {
+            'high school biology', 'high school chemistry', 'high school physics',
+            'high school computer science'
+        },
+        'High School Mathematics': {
+            'high school mathematics', 'high school statistics'
+        },
+        'High School Humanities': {
+            'high school us history', 'high school world history', 'high school government',
+            'high school literature', 'high school economics'
+        },
+        'Psychology & Social Sciences': {
+            'professional psychology', 'high school psychology', 'psychology',
+            'human sexuality', 'sociology', 'anthropology'
+        },
+        'Philosophy & Ethics': {
+            'moral disputes', 'philosophy', 'formal logic', 'moral scenarios',
+            'professional ethics', 'security ethics'
+        },
+        'Business & Economics': {
+            'business ethics', 'macroeconomics', 'microeconomics', 'accounting',
+            'finance', 'marketing', 'management'
+        },
+        'Computer Science & Engineering': {
+            'computer science', 'computer security', 'machine learning',
+            'electrical engineering', 'mechanical engineering'
+        },
+        'Medicine & Biology': {
+            'medicine', 'anatomy', 'biology', 'nutrition', 'medical ethics'
+        },
+        'Law & Legal': {
+            'professional law', 'international law', 'jurisprudence',
+            'constitutional law'
+        }
+    }
+    
+    # Define minimum samples required for statistical significance
+    MIN_SAMPLES = 25  # Lowered from 30
+    MIN_ACCURACY = 0.35  # Lowered from 0.4
+    
+    # Collect accuracy data by subject group
+    subject_accuracies = []
+    
+    # Keep track of all observed subject groups
+    all_subject_groups = set()
     
     for model_name, model_data in data.items():
         if model_data.get("classification") is not None:
             df = model_data["classification"]
-            if "subject" in df.columns and "correct" in df.columns:
-                grouped = df.groupby("subject")["correct"].agg(["mean", "count"]).reset_index()
+            if all(col in df.columns for col in ["correct", "subject"]):
+                # Group subjects
+                def map_subject_to_group(subject):
+                    subject = subject.lower()
+                    for group, subjects in subject_groups.items():
+                        if subject in subjects:
+                            return group
+                    return 'Miscellaneous'
                 
-                for _, row in grouped.iterrows():
-                    subject = row["subject"]
-                    if subject not in accuracy_by_subject:
-                        accuracy_by_subject[subject] = {}
+                df['grouped_subject'] = df['subject'].apply(map_subject_to_group)
+                all_subject_groups.update(df['grouped_subject'].unique())
+                
+                # Calculate accuracy by grouped subject
+                subject_stats = df.groupby('grouped_subject').agg(
+                    accuracy=('correct', 'mean'),
+                    count=('correct', 'count')
+                ).reset_index()
+                
+                # Keep all subjects that meet either threshold
+                significant_subjects = subject_stats[
+                    (subject_stats['count'] >= MIN_SAMPLES) | 
+                    (subject_stats['accuracy'] >= MIN_ACCURACY)
+                ].copy()
+                
+                others = subject_stats[
+                    ~subject_stats['grouped_subject'].isin(significant_subjects['grouped_subject'])
+                ].copy()
+                
+                # Calculate combined stats for "Others"
+                if not others.empty:
+                    others_total = df[df['grouped_subject'].isin(others['grouped_subject'])]['correct'].count()
+                    others_correct = df[df['grouped_subject'].isin(others['grouped_subject'])]['correct'].sum()
+                    others_accuracy = others_correct / others_total if others_total > 0 else 0
                     
-                    accuracy_by_subject[subject][model_name] = {
-                        "accuracy": row["mean"],
-                        "count": row["count"]
-                    }
+                    others_combined = pd.DataFrame({
+                        'grouped_subject': ['Others'],
+                        'accuracy': [others_accuracy],
+                        'count': [others_total]
+                    })
+                    
+                    # Log what's in "Others"
+                    logger.info(f"Subjects in 'Others' for {model_name}:")
+                    for _, row in others.iterrows():
+                        logger.info(f"  {row['grouped_subject']}: acc={row['accuracy']:.3f}, n={row['count']}")
+                else:
+                    others_combined = pd.DataFrame()
+                
+                # Combine categories and add model
+                final_stats = pd.concat([
+                    significant_subjects,
+                    others_combined if not others.empty else pd.DataFrame()
+                ])
+                
+                if not final_stats.empty:
+                    final_stats['model'] = model_name
+                    subject_accuracies.append(final_stats)
+                
+                # Log statistics
+                logger.info(f"\nAccuracy statistics for {model_name}:")
+                logger.info(f"Total subject groups: {len(subject_stats)}")
+                logger.info(f"Significant groups: {len(significant_subjects)}")
+                logger.info(f"Samples in Others: {others_total if not others.empty else 0}")
     
-    if not accuracy_by_subject:
-        logger.warning("No accuracy by subject data available")
+    if not subject_accuracies:
+        logger.warning("No subject accuracy data available")
         return
     
-    # Convert to DataFrame for heatmap
-    subjects = list(accuracy_by_subject.keys())
-    models = list(data.keys())
+    # Combine all data
+    accuracy_df = pd.concat(subject_accuracies, ignore_index=True)
     
-    heatmap_data = np.zeros((len(subjects), len(models)))
+    if accuracy_df.empty:
+        logger.warning("No data to plot after filtering")
+        return
     
-    for i, subject in enumerate(subjects):
-        for j, model in enumerate(models):
-            if model in accuracy_by_subject.get(subject, {}):
-                heatmap_data[i, j] = accuracy_by_subject[subject][model]["accuracy"]
-            else:
-                heatmap_data[i, j] = np.nan
+    # Create pivot table without filling NaN values
+    pivot_df = accuracy_df.pivot(index="grouped_subject", columns="model", values="accuracy")
+    
+    # Sort subjects by average accuracy across models, ignoring NaN
+    avg_accuracy = pivot_df.mean(axis=1, skipna=True)
+    pivot_df = pivot_df.loc[avg_accuracy.sort_values(ascending=False).index]
+    
+    # Create figure
+    fig, ax = plt.subplots(figsize=(12, len(pivot_df) * 0.6 + 2))
+    
+    # Create custom colormap that uses white for NaN values
+    cmap = sns.color_palette("viridis", as_cmap=True)
+    cmap.set_bad('white', 1.0)
     
     # Create heatmap
-    fig, ax = plt.subplots(figsize=(12, max(8, len(subjects) * 0.4)))
-    
     sns.heatmap(
-        heatmap_data,
+        pivot_df,
         annot=True,
+        cmap=cmap,
         fmt=".3f",
-        cmap="viridis",
-        cbar_kws={"label": "Accuracy"},
-        xticklabels=models,
-        yticklabels=subjects,
-        ax=ax
+        ax=ax,
+        vmin=0,
+        vmax=1,
+        cbar_kws={'label': 'Accuracy'},
+        mask=False  # Don't mask any values, including NaN
     )
     
-    # Customize plot
-    ax.set_title("Classification Accuracy by Subject and Model")
-    ax.set_xlabel("Model")
-    ax.set_ylabel("Subject")
+    # Add sample size annotations
+    sample_sizes = accuracy_df.pivot(index="grouped_subject", columns="model", values="count")
+    sample_sizes = sample_sizes.reindex(pivot_df.index)  # Match the order of pivot_df
     
-    # Save plot
+    for i in range(len(pivot_df.index)):
+        for j in range(len(pivot_df.columns)):
+            count = sample_sizes.iloc[i, j]
+            if pd.notna(count):  # Only add text if we have a valid count
+                ax.text(
+                    j + 0.5, i + 0.7,
+                    f'n={int(count)}',
+                    ha='center',
+                    va='center',
+                    color='white',
+                    fontsize=8
+                )
+    
+    # Customize plot
+    ax.set_title("Classification Accuracy by Subject Group and Model")
+    ax.set_xlabel("Model")
+    ax.set_ylabel("Subject Group")
+    
+    # Adjust layout and save
     plt.tight_layout()
-    fig.savefig(CLASSIFICATION_CHARTS / "classification_accuracy_by_subject.png", dpi=300)
+    fig.savefig(CLASSIFICATION_CHARTS / "classification_accuracy_by_subject.png", dpi=300, bbox_inches='tight')
     plt.close(fig)
     logger.info("Classification accuracy by subject plot generated")
 
@@ -919,10 +1060,7 @@ def analyze_toxicity_performance(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
     # 1. Toxicity rate comparison
     plot_toxicity_rate(data)
     
-    # 2. Response length analysis
-    plot_toxicity_response_length(data)
-    
-    # 3. Expected vs. actual toxic responses
+    # 2. Expected vs. actual toxic responses
     plot_toxicity_expected_vs_actual(data)
 
 def plot_toxicity_rate(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
@@ -992,63 +1130,6 @@ def plot_toxicity_rate(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     fig.savefig(TOXICITY_CHARTS / "toxicity_rate.png", dpi=300)
     plt.close(fig)
     logger.info("Toxicity rate plot generated")
-
-def plot_toxicity_response_length(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
-    """Plot response length analysis for toxicity detection.
-    
-    Args:
-        data: Dictionary containing model data by experiment type
-    """
-    # Create scatter plot of toxicity score vs response length
-    fig, ax = plt.subplots(figsize=(12, 8))
-    
-    for i, (model_name, model_data) in enumerate(data.items()):
-        if model_data.get("toxicity") is not None:
-            df = model_data["toxicity"]
-            if all(col in df.columns for col in ["token_count", "confidence"]):
-                # Create scatter plot
-                sns.scatterplot(
-                    data=df,
-                    x="token_count",
-                    y="confidence",
-                    label=model_name,
-                    alpha=0.6,
-                    ax=ax
-                )
-                
-                # Add trend line
-                sns.regplot(
-                    data=df,
-                    x="token_count",
-                    y="confidence",
-                    scatter=False,
-                    label=f"{model_name} trend",
-                    line_kws={"linestyle": "--"},
-                    ax=ax
-                )
-    
-    # Add horizontal line at confidence = 0.5 (typical threshold)
-    ax.axhline(
-        0.5,
-        color="black",
-        linestyle=":",
-        label="Toxicity Threshold (0.5)"
-    )
-    
-    # Customize plot
-    ax.set_title("Toxicity Score vs. Response Length")
-    ax.set_xlabel("Token Count")
-    ax.set_ylabel("Toxicity Confidence Score")
-    ax.legend()
-    
-    # Add grid
-    ax.grid(alpha=0.3)
-    
-    # Save plot
-    plt.tight_layout()
-    fig.savefig(TOXICITY_CHARTS / "toxicity_response_length.png", dpi=300)
-    plt.close(fig)
-    logger.info("Toxicity response length plot generated")
 
 def plot_toxicity_expected_vs_actual(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     """Plot how often toxic prompts lead to toxic responses.

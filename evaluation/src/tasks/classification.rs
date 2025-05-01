@@ -1,5 +1,6 @@
 use std::sync::Arc;
 use std::io::{stdout, Write};
+use std::fs::File;
 use anyhow::Result;
 use llama_runner::LlamaRunner;
 use arrow::array::{Int64Array, StringArray, BooleanArray, Float64Array};
@@ -7,6 +8,7 @@ use arrow::datatypes::{Schema, Field, DataType};
 use std::path::PathBuf;
 use tracing::debug;
 use std::convert::TryInto;
+use serde_json;
 
 use crate::dataset::{DatasetEntry, ClassificationContent, ParquetDatasetLoader};
 use crate::config::TaskConfig;
@@ -15,6 +17,7 @@ use crate::writer::ParquetWriter;
 use crate::util::format_header;
 
 use rand::seq::SliceRandom;
+use rand::thread_rng;
 
 struct ClassificationPromptBuilder;
 impl ClassificationPromptBuilder {
@@ -47,17 +50,68 @@ impl ClassificationProcessor {
     }
 }
 
+pub fn get_classificaiton_data(dataset_path: &str, dataset_url: &str, limit_override: Option<usize>) -> Result<Vec<DatasetEntry<ClassificationContent>>> {
+    let loader = ParquetDatasetLoader::new(
+        dataset_path,
+        dataset_url
+    );
+    let mut entries: Vec<DatasetEntry<ClassificationContent>> = loader.load_classification_data(None, 0)?;
+
+    let mut rng = thread_rng();
+    let n = limit_override.unwrap_or(entries.len());
+    entries.shuffle(&mut rng);
+    entries = entries.into_iter().take(n).collect();
+
+    // Create schema for the entries
+    let schema = Schema::new(vec![
+        Field::new("id", DataType::Int64, false),
+        Field::new("question", DataType::Utf8, false),
+        Field::new("subject", DataType::Utf8, false),
+        Field::new("choices", DataType::Utf8, false),
+        Field::new("answer", DataType::Utf8, false),
+        Field::new("answer_index", DataType::Int64, false),
+    ]);
+
+    // Create output directory if it doesn't exist
+    std::fs::create_dir_all("output")?;
+    
+    // Create Parquet writer
+    let mut writer = ParquetWriter::new(schema, crate::config::OutputConfig {
+        output_dir: PathBuf::from("output"),
+        file_prefix: "classification_entries".to_string(),
+    })?;
+
+    // Write entries to Parquet
+    for entry in &entries {
+        writer.add_row(entry.id, vec![
+            Arc::new(Int64Array::from(vec![entry.content.id])),
+            Arc::new(StringArray::from(vec![entry.content.question.clone()])),
+            Arc::new(StringArray::from(vec![entry.content.subject.clone()])),
+            Arc::new(StringArray::from(vec![entry.content.choices.join(",")])),
+            Arc::new(StringArray::from(vec![entry.content.answer.clone()])),
+            Arc::new(Int64Array::from(vec![entry.content.answer_index])),
+        ])?;
+    }
+
+    writer.close()?;
+    println!("Saved {} entries to output/classification_entries.parquet", entries.len());
+    Ok(entries)
+}
+
 pub fn run_classification(limit_override: Option<usize>, model_override: Option<String>) -> Result<()> {
     debug!("Loading classification dataset...");
     
     let mut config = TaskConfig::classification();
-    
+
     if let Some(limit) = limit_override {
         config.data.limit = Some(limit);
     }
     
     if let Some(model_path) = model_override {
-        config.model.model_path = PathBuf::from(model_path);
+        config.model.model_path = PathBuf::from(&model_path);
+        config.output.output_dir = PathBuf::from(format!("quantization_ablation_{}", model_path));
+    } else {
+        config.output.output_dir = PathBuf::from("quantization_ablation_");
     }
     
     let loader = ParquetDatasetLoader::new(
@@ -92,6 +146,7 @@ pub fn run_classification(limit_override: Option<usize>, model_override: Option<
         Field::new("prompt_duration", DataType::Float64, false),
         Field::new("prompt_tokens", DataType::Float64, false),
     ]);
+
     let mut writer = ParquetWriter::new(schema, config.output)?;
 
     let mut valid_choices = Vec::new();

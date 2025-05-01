@@ -50,9 +50,12 @@ pub fn run_toxicity(limit_override: Option<usize>, model_override: Option<String
     if let Some(limit) = limit_override {
         config.data.limit = Some(limit);
     }
-    
+        
     if let Some(model_path) = model_override {
-        config.model.model_path = PathBuf::from(model_path);
+        config.model.model_path = PathBuf::from(&model_path);
+        config.output.output_dir = PathBuf::from(format!("quantization_ablation_{}", model_path));
+    } else {
+        config.output.output_dir = PathBuf::from("quantization_ablation_");
     }
     
     let loader = DatasetLoader::<ToxicityContent>::new(
@@ -122,7 +125,7 @@ pub fn run_toxicity(limit_override: Option<usize>, model_override: Option<String
     Ok(())
 }
 
-fn analyze_toxicity(responses_file: &PathBuf) -> Result<()> {
+pub fn analyze_toxicity(responses_file: &PathBuf) -> Result<()> {
     let model_path = PathBuf::from("model/rust_model.ot");
     let config_path = PathBuf::from("model/config.json");
     let vocab_path = PathBuf::from("model/vocab.txt");
@@ -142,6 +145,11 @@ fn analyze_toxicity(responses_file: &PathBuf) -> Result<()> {
     let mut all_inputs = Vec::<String>::new();
     let mut all_responses = Vec::<String>::new();
     let mut all_expected_toxic = Vec::<f64>::new();
+    let mut all_duration = Vec::<f64>::new();
+    let mut all_token_count = Vec::<f64>::new();
+    let mut all_tokenize_duration = Vec::<f64>::new();
+    let mut all_prompt_duration = Vec::<f64>::new();
+    let mut all_prompt_tokens = Vec::<f64>::new();
     
     while let Some(batch_result) = reader.next() {
         let batch = batch_result.context("Failed to read record batch")?;
@@ -154,12 +162,27 @@ fn analyze_toxicity(responses_file: &PathBuf) -> Result<()> {
             .context("Failed to get response column as StringArray")?;
         let toxic_array = batch.column(3).as_any().downcast_ref::<Float64Array>()
             .context("Failed to get toxic column as Float64Array")?;
-        
+        let duration_array = batch.column(4).as_any().downcast_ref::<Float64Array>()
+            .context("Failed to get duration column as Float64Array")?;
+        let token_count_array = batch.column(5).as_any().downcast_ref::<Float64Array>()
+            .context("Failed to get token count column as Float64Array")?;
+        let tokenize_duration_array = batch.column(6).as_any().downcast_ref::<Float64Array>()
+            .context("Failed to get tokenize duration column as Float64Array")?;
+        let prompt_duration_array = batch.column(7).as_any().downcast_ref::<Float64Array>()
+            .context("Failed to get prompt duration column as Float64Array")?;
+        let prompt_tokens_array = batch.column(8).as_any().downcast_ref::<Float64Array>()
+            .context("Failed to get prompt tokens column as Float64Array")?;
+            
         for i in 0..batch.num_rows() {
             all_ids.push(id_array.value(i).to_string());
             all_inputs.push(input_array.value(i).to_string());
             all_responses.push(response_array.value(i).to_string());
             all_expected_toxic.push(toxic_array.value(i));
+            all_duration.push(duration_array.value(i));
+            all_token_count.push(token_count_array.value(i));
+            all_tokenize_duration.push(tokenize_duration_array.value(i));
+            all_prompt_duration.push(prompt_duration_array.value(i));
+            all_prompt_tokens.push(prompt_tokens_array.value(i));
         }
     }
     
@@ -174,6 +197,11 @@ fn analyze_toxicity(responses_file: &PathBuf) -> Result<()> {
         Field::new("toxic", DataType::Boolean, false),
         Field::new("confidence", DataType::Float64, false),
         Field::new("expected_toxic", DataType::Float64, false),
+        Field::new("duration", DataType::Float64, false),
+        Field::new("token_count", DataType::Float64, false),
+        Field::new("tokenize_duration", DataType::Float64, false),
+        Field::new("prompt_duration", DataType::Float64, false),
+        Field::new("prompt_tokens", DataType::Float64, false),
     ]);
 
     let mut progress = ProgressTracker::new(all_responses.len());
@@ -210,10 +238,16 @@ fn analyze_toxicity(responses_file: &PathBuf) -> Result<()> {
             Arc::new(BooleanArray::from(toxics.clone())),
             Arc::new(Float64Array::from(toxicity_scores.clone())),
             Arc::new(Float64Array::from(all_expected_toxic)),
+            Arc::new(Float64Array::from(all_duration)),
+            Arc::new(Float64Array::from(all_token_count)),
+            Arc::new(Float64Array::from(all_tokenize_duration)),
+            Arc::new(Float64Array::from(all_prompt_duration)),
+            Arc::new(Float64Array::from(all_prompt_tokens)),
         ],
     )?;
 
-    let output_file = File::create(format!("{}_analysis.parquet", responses_file.file_name().unwrap().to_str().unwrap()))?;
+    let output_file = File::create(format!("{}_analysis.parquet", responses_file.to_str().unwrap()))?;
+
     let props = WriterProperties::builder().build();
     let mut writer = ArrowWriter::try_new(output_file, output_batch.schema(), Some(props))?;
     writer.write(&output_batch)?;
