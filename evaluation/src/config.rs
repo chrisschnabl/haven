@@ -35,7 +35,7 @@ impl ModelConfig {
 
     pub fn classification() -> Self {
         Self {
-            model_path: PathBuf::from(Q8_MODEL_PATH),
+            model_path: PathBuf::from(Q4_MODEL_PATH),
             context_size: 8 * 1024, //
             // lTODO: CSlama_init_from_model: n_ctx_per_seq (4096) < n_ctx_train (8192) -- the full capacity of the model will not be utilized
             threads: 4,
@@ -50,7 +50,7 @@ impl ModelConfig {
 
     pub fn summarization() -> Self {
         Self {
-            model_path: PathBuf::from(Q8_MODEL_PATH),
+            model_path: PathBuf::from(Q4_MODEL_PATH),
             context_size: 4 * 1024,
             threads: 4,
             n_len: 512,
@@ -64,7 +64,7 @@ impl ModelConfig {
 
     pub fn toxicity() -> Self {
         Self {
-            model_path: PathBuf::from(Q8_MODEL_PATH),
+            model_path: PathBuf::from(Q4_MODEL_PATH),
             context_size: 2048,
             threads: 4,
             n_len: 256,
@@ -111,8 +111,8 @@ impl TaskConfig {
                 skip_if_longer_than: Some(1750),
             },
             output: OutputConfig {
-                output_dir: PathBuf::from("quantization_ablation_model"),
-                file_prefix: "llama_summaries".to_string(),
+                output_dir: PathBuf::from("."),
+                file_prefix: "llama_summaries_4bit".to_string(),
             },
         }
     }
@@ -128,7 +128,7 @@ impl TaskConfig {
                 skip_if_longer_than: None,
             },
             output: OutputConfig {
-                output_dir: PathBuf::from("quantization_ablation_model"),
+                output_dir: PathBuf::from("."),
                 file_prefix: "llama_classification".to_string(),
             },
         }
@@ -140,13 +140,13 @@ impl TaskConfig {
             data: DataConfig {
                 dataset_path: "toxic-chat_annotation_test.csv".to_string(),
                 dataset_url: "https://huggingface.co/datasets/lmsys/toxic-chat/resolve/main/data/0124/toxic-chat_annotation_test.csv".to_string(),
-                limit: Some(500),
+                limit: Some(1000),
                 start_from: 0,
                 skip_if_longer_than: None,
             },
             output: OutputConfig {
                 output_dir: PathBuf::from("."),
-                file_prefix: "llama3_7b".to_string(),
+                file_prefix: "llama3_7b_4bit_toxicity".to_string(),
             },
         }
     }
