@@ -76,15 +76,15 @@ fn main() -> Result<()> {
     match &cli.command {
         Commands::Class { limit, model } => {
             debug!("Running classification task...");
-            run_classification(limit.clone(), model.clone())?;
+            run_classification(limit.clone(), model.clone(), None, None)?;
         },
         Commands::Summarize { limit, model } => {
             debug!("Running summarization task...");
-            run_summarization(limit.clone(), model.clone())?;
+            run_summarization(limit.clone(), model.clone(), None, true)?;
         },
         Commands::Toxicity { limit, model } => {
             debug!("Running toxicity task...");
-            run_toxicity(limit.clone(), model.clone())?;
+            run_toxicity(limit.clone(), model.clone(), None)?;
         },
     }
     

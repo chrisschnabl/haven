@@ -67,7 +67,7 @@ pub fn run_summarization(limit_override: Option<usize>, model_override: Option<S
     let prompt_builder = SummarizationPromptBuilder;
     let response_processor = SummarizationProcessor;
     let mut progress = ProgressTracker::new(entries.len());
-    //let mut model = SimilarityModel::new()?;
+    let mut model = SimilarityModel::new()?;
 
     let schema = Schema::new(vec![
         Field::new("id", DataType::Int64, false),
@@ -111,8 +111,8 @@ pub fn run_summarization(limit_override: Option<usize>, model_override: Option<S
 
         let mut score = 0.0;
         if run_similarity {
-            //score = model.similarity(&entry.content.summary, &processed_response)?;
-            score = 0.0;
+            score = model.similarity(&entry.content.summary, &processed_response)?;
+            //score = 0.0;
         }
         
         total_score += score;

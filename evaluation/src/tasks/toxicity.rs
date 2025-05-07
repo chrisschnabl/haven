@@ -11,7 +11,7 @@ use arrow::record_batch::RecordBatch;
 use parquet::arrow::arrow_writer::ArrowWriter;
 use parquet::file::properties::WriterProperties;
 use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
-use tracing::debug;
+use tracing::{info, debug};
 use std::convert::TryInto;
 
 use crate::dataset::{DatasetEntry, ToxicityContent, DatasetLoader};
@@ -121,7 +121,11 @@ pub fn run_toxicity(limit_override: Option<usize>, model_override: Option<String
     
     progress.finish(format!("Response generation complete and written to: {}", responses_file.display()));
     
-    //analyze_toxicity(&responses_file)?;
+
+    let model_path = PathBuf::from("model/rust_model.ot");
+    let config_path = PathBuf::from("model/config.json");
+    let vocab_path = PathBuf::from("model/vocab.txt");
+    analyze_toxicity(&responses_file, &model_path, &config_path, &vocab_path)?;
     
     Ok(())
 }
@@ -252,7 +256,7 @@ pub fn analyze_toxicity(responses_file: &PathBuf, model_path: &PathBuf, config_p
     writer.close()?;
 
     let toxic_count = toxics.iter().filter(|&&b| b).count();
-    debug!("Toxic count: {}, rate: {:.4}", 
+    info!("Toxic count: {}, rate: {:.4}", 
         toxic_count, 
         toxic_count as f64 / output_batch.num_rows() as f64
     );
