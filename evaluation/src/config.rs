@@ -35,10 +35,10 @@ impl ModelConfig {
 
     pub fn classification() -> Self {
         Self {
-            model_path: PathBuf::from(Q8_MODEL_PATH),
-            context_size: 8 * 1024, //
+            model_path: PathBuf::from(Q4_MODEL_PATH),
+            context_size: 1024, //
             threads: 6,
-            n_len: 512,
+            n_len: 300,
             seed: 1337,
             temp: 0.25,
             top_p: 0.7,
@@ -105,7 +105,7 @@ impl TaskConfig {
             data: DataConfig {
                 dataset_path: "similarity_pairs.csv".to_string(),
                 dataset_url: "https://huggingface.co/datasets/knkarthick/xsum/resolve/main/test.csv".to_string(),
-                limit: Some(250),
+                limit: Some(150),
                 start_from: 0,
                 skip_if_longer_than: Some(1750),
             },
@@ -145,7 +145,7 @@ impl TaskConfig {
             },
             output: OutputConfig {
                 output_dir: PathBuf::from("comp-constant-8b"),
-                file_prefix: "llama3_8b_8bit_toxicity".to_string(),
+                file_prefix: "llama3_8b_4bit_toxicity".to_string(),
             },
         }
     }
