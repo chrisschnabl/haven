@@ -50,9 +50,12 @@ pub fn run_summarization(limit_override: Option<usize>, model_override: Option<S
     if let Some(limit) = limit_override {
         config.data.limit = Some(limit);
     }
-    
+            
     if let Some(model_path) = model_override {
-        config.model.model_path = PathBuf::from(model_path);
+        config.model.model_path = PathBuf::from(&model_path);
+        config.output.output_dir = PathBuf::from(format!("quantization_ablation_{}", model_path));
+    } else {
+        config.output.output_dir = PathBuf::from("quantization_ablation_");
     }
     
     let loader = DatasetLoader::<SimilarityContent>::new(
