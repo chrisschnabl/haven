@@ -20,7 +20,7 @@ impl ParquetWriter {
             .context("Failed to create output directory")?;
         
         let file_path = config.output_dir.join(format!("{}.parquet", config.file_prefix));
-            let file = File::create(&file_path)
+        let file = File::create(&file_path)
             .context(format!("Failed to create file: {:?}", file_path))?;
         
         let writer = ArrowWriter::try_new(file, Arc::new(schema.clone()), None)

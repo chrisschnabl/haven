@@ -3,4 +3,4 @@ target/
 *.gguf
 *.ot
 results/
-model/
+model/.DS_Store

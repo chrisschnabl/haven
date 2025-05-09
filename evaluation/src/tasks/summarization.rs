@@ -39,10 +39,13 @@ impl SummarizationProcessor {
     }
 }
 
-pub fn run_summarization(limit_override: Option<usize>, model_override: Option<String>) -> Result<()> {
+pub fn run_summarization(limit_override: Option<usize>, model_override: Option<String>, config_override: Option<TaskConfig>, run_similarity: bool) -> Result<()> {
     debug!("Loading summarization dataset...");
     
     let mut config = TaskConfig::summarization();
+    if let Some(config_override) = config_override {
+        config = config_override;
+    }
     
     if let Some(limit) = limit_override {
         config.data.limit = Some(limit);
@@ -67,7 +70,7 @@ pub fn run_summarization(limit_override: Option<usize>, model_override: Option<S
     let prompt_builder = SummarizationPromptBuilder;
     let response_processor = SummarizationProcessor;
     let mut progress = ProgressTracker::new(entries.len());
-    let model = SimilarityModel::new()?;
+    let mut model = SimilarityModel::new()?;
 
     let schema = Schema::new(vec![
         Field::new("id", DataType::Int64, false),
@@ -108,7 +111,12 @@ pub fn run_summarization(limit_override: Option<usize>, model_override: Option<S
         progress.add_tokens(token_count.try_into().unwrap(), duration.as_secs_f64());
 
         let processed_response = response_processor.process_response(&response);
-        let score = model.similarity(&entry.content.summary, &processed_response)?;
+
+        let mut score = 0.0;
+        if run_similarity {
+            score = model.similarity(&entry.content.summary, &processed_response)?;
+            //score = 0.0;
+        }
         
         total_score += score;
         count += 1;

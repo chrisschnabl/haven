@@ -36,10 +36,9 @@ impl ModelConfig {
     pub fn classification() -> Self {
         Self {
             model_path: PathBuf::from(Q4_MODEL_PATH),
-            context_size: 8 * 1024, //
-            // lTODO: CSlama_init_from_model: n_ctx_per_seq (4096) < n_ctx_train (8192) -- the full capacity of the model will not be utilized
-            threads: 4,
-            n_len: 256,
+            context_size: 1024, //
+            threads: 6,
+            n_len: 300,
             seed: 1337,
             temp: 0.25,
             top_p: 0.7,
@@ -50,9 +49,9 @@ impl ModelConfig {
 
     pub fn summarization() -> Self {
         Self {
-            model_path: PathBuf::from(Q4_MODEL_PATH),
-            context_size: 4 * 1024,
-            threads: 4,
+            model_path: PathBuf::from(Q8_MODEL_PATH),
+            context_size: 8 * 1024,
+            threads: 10,
             n_len: 512,
             seed: 1337,
             temp: 0.1,
@@ -64,10 +63,10 @@ impl ModelConfig {
 
     pub fn toxicity() -> Self {
         Self {
-            model_path: PathBuf::from(Q4_MODEL_PATH),
-            context_size: 2048,
-            threads: 4,
-            n_len: 256,
+            model_path: PathBuf::from(Q8_MODEL_PATH),
+            context_size: 8 * 1024,
+            threads: 6,
+            n_len: 512,
             seed: 42,
             temp: 0.3,
             top_p: 0.75,
@@ -106,13 +105,13 @@ impl TaskConfig {
             data: DataConfig {
                 dataset_path: "similarity_pairs.csv".to_string(),
                 dataset_url: "https://huggingface.co/datasets/knkarthick/xsum/resolve/main/test.csv".to_string(),
-                limit: Some(500),
+                limit: Some(150),
                 start_from: 0,
                 skip_if_longer_than: Some(1750),
             },
             output: OutputConfig {
-                output_dir: PathBuf::from("."),
-                file_prefix: "llama_summaries_4bit".to_string(),
+                output_dir: PathBuf::from("comp-constant-8b"),
+                file_prefix: "llama_summaries_8bit".to_string(),
             },
         }
     }
@@ -123,13 +122,13 @@ impl TaskConfig {
             data: DataConfig {
                 dataset_path: "classification_pairs.parquet".to_string(),
                 dataset_url: "https://huggingface.co/datasets/cais/mmlu/resolve/main/all/test-00000-of-00001.parquet".to_string(),
-                limit: Some(1000),
+                limit: Some(500),
                 start_from: 0,
                 skip_if_longer_than: None,
             },
             output: OutputConfig {
-                output_dir: PathBuf::from("."),
-                file_prefix: "llama_classification".to_string(),
+                output_dir: PathBuf::from("comp-constant-8b"),
+                file_prefix: "llama_classification2".to_string(),
             },
         }
     }
@@ -140,13 +139,13 @@ impl TaskConfig {
             data: DataConfig {
                 dataset_path: "toxic-chat_annotation_test.csv".to_string(),
                 dataset_url: "https://huggingface.co/datasets/lmsys/toxic-chat/resolve/main/data/0124/toxic-chat_annotation_test.csv".to_string(),
-                limit: Some(1000),
+                limit: Some(100),
                 start_from: 0,
                 skip_if_longer_than: None,
             },
             output: OutputConfig {
-                output_dir: PathBuf::from("."),
-                file_prefix: "llama3_7b_4bit_toxicity".to_string(),
+                output_dir: PathBuf::from("comp-constant-8b"),
+                file_prefix: "llama3_8b_4bit_toxicity".to_string(),
             },
         }
     }

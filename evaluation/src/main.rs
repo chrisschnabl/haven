@@ -22,9 +22,7 @@ use crate::progress::ProgressTracker;
 use crate::writer::ParquetWriter;
 use rand;
 
-/// Benchmark tool for evaluating LLM performance on different tasks
-/// We would expect the model to be around 60 - 65% correct for GGUF-I-Quant,
-/// we test the Instruct finetuned ones. So expect to be slightly below that.
+
 #[derive(Parser, Debug)]
 #[command(name = "Haven Evaluation")]
 #[command(author = "Christoph Schnabl <cs228@cam.ac.uk>")]
@@ -103,19 +101,19 @@ fn main() -> Result<()> {
         Commands::Class { limit, model } => {
             debug!("Running classification task...");
             for model in ["model/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf"] { //, "model/Meta-Llama-3-8B-Instruct.Q8_0.gguf", "model/Meta-Llama-3-8B-Instruct.Q2_K.gguf"] {
-                run_classification(limit.clone(), Some(model.to_string()))?;
+                run_classification(limit.clone(), Some(model.to_string()), None)?;
             }
         },
         Commands::Summarize { limit, model } => {
             debug!("Running summarization task...");
             for model in ["model/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf", "model/Meta-Llama-3-8B-Instruct.Q8_0.gguf", "model/Meta-Llama-3-8B-Instruct.Q2_K.gguf"] {
-                run_summarization(limit.clone(), Some(model.to_string()))?;
+                run_summarization(limit.clone(), Some(model.to_string()), None)?;
             }
         },
         Commands::Toxicity { limit, model } => {
             debug!("Running toxicity task...");
             for model in ["model/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf", "model/Meta-Llama-3-8B-Instruct.Q8_0.gguf", "model/Meta-Llama-3-8B-Instruct.Q2_K.gguf"] {
-                run_toxicity(limit.clone(), Some(model.to_string()))?;
+                run_toxicity(limit.clone(), Some(model.to_string()), None)?;
             }
         },
         Commands::ClassifyData { limit } => {

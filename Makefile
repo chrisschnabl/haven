@@ -43,15 +43,15 @@ build-docker:
 # Build an EIF
 .PHONY: build-eif
 build-eif:
-	nitro-cli build-enclave --docker-uri enclave:latest --output-file enclave.eif
+	nitro-cli build-enclave --docker-uri toxic:latest --output-file enclave.eif
 
 # Run an enclave
 .PHONY: run-enclave
 run-enclave:
 	@echo "Starting the enclave..."
 	@ENCLAVE_ID=$$(nitro-cli run-enclave \
-			--cpu-count 2 \
-			--memory 10000 \
+			--cpu-count 4 \
+			--memory 20000 \
 			--enclave-cid 16 \
 			--eif-path enclave.eif \
 			--debug-mode | jq -r '.EnclaveID') && \
@@ -63,6 +63,12 @@ run-enclave:
 		echo "Failed to retrieve EnclaveID"; \
 		exit 1; \
 	fi
+
+.PHONY: log-enclave
+log-enclave:
+	nitro-cli describe-enclaves \
+	| jq -r '.[].EnclaveID' \
+	| xargs -I {} nitro-cli console --enclave-id {}
 
 .PHONY: profile-enclave
 profile-enclave:

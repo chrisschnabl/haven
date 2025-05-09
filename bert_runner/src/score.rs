@@ -1,7 +1,5 @@
 use rust_bert::pipelines::sentence_embeddings::{SentenceEmbeddingsBuilder, SentenceEmbeddingsModelType};
 use anyhow::Result;
-// No longer using the external crate
-// use semanticsimilarity_rs::cosine_similarity;
 
 pub struct SimilarityModel {
     model: rust_bert::pipelines::sentence_embeddings::SentenceEmbeddingsModel,

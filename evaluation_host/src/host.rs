@@ -56,6 +56,9 @@ impl ModelClient<Connected> {
         let stream = self.stream.as_mut()
             .context("Stream not connected")?;
         
+
+        //send_file(stream, "model/similarity_pairs.csv").await?;
+        //info!("Sent similarity pairs file");
         send_file(stream, file_path).await?;
                 
         Ok(ModelClient {
