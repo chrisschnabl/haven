@@ -1,3 +1,4 @@
+from datetime import datetime
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,14 +22,23 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Set plot style
-plt.style.use('fivethirtyeight')
-sns.set_context("notebook")
+plt.style.use('default')  # Changed from fivethirtyeight to default
+sns.set_style("whitegrid")  # Changed to whitegrid
 plt.rcParams['figure.figsize'] = (12, 8)
 plt.rcParams['axes.titlesize'] = 16
 plt.rcParams['axes.labelsize'] = 14
+plt.rcParams['figure.facecolor'] = 'white'  # Set figure background to white
+plt.rcParams['axes.facecolor'] = 'white'    # Set axes background to white
+plt.rcParams['savefig.facecolor'] = 'white' # Set saved figure background to white
+plt.rcParams['savefig.format'] = 'pdf'      # Set default savee format to PDF
+# Ensure Times (Type 1/TrueType) fonts in PDF/PS
+plt.rcParams['pdf.fonttype'] = 3
+plt.rcParams['ps.fonttype'] = 3
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.serif'] = ['Times', 'Times New Roman', 'DejaVu Serif']
 
 # Create chart directories
-CHART_DIR = Path('analysis/charts')
+CHART_DIR = Path(f'local-analysis-{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}/charts')
 CLASSIFICATION_CHARTS = CHART_DIR / 'classification'
 SUMMARIZATION_CHARTS = CHART_DIR / 'summarization'
 TOXICITY_CHARTS = CHART_DIR / 'toxicity'
@@ -181,7 +191,7 @@ def plot_token_count_comparison(token_df: pd.DataFrame) -> None:
     
     # Save plot
     plt.tight_layout()
-    fig.savefig(TOKEN_CHARTS / "token_count_comparison.png", dpi=300)
+    fig.savefig(TOKEN_CHARTS / "token_count_comparison.pdf", dpi=300)
     plt.close(fig)
     logger.info("Token count comparison plot generated")
 
@@ -267,14 +277,17 @@ def plot_token_distribution(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
                 axes[row, col].set_title(exp_type.capitalize())
             if col == 0:
                 axes[row, col].set_ylabel(model_name)
-    
-    # Add global title
-    fig.suptitle("Token Count Distribution by Model and Experiment", fontsize=20)
+            
+            # Set all spines to black and visible
+            for spine in axes[row, col].spines.values():
+                spine.set_edgecolor('black')
+                spine.set_linewidth(1.5)
+                spine.set_visible(True)
     
     # Save plot
     plt.tight_layout()
     fig.subplots_adjust(top=0.92)
-    fig.savefig(TOKEN_CHARTS / "token_distribution.png", dpi=300)
+    fig.savefig(TOKEN_CHARTS / "token_distribution.pdf", dpi=300)
     plt.close(fig)
     logger.info("Token distribution plot generated")
 
@@ -356,7 +369,7 @@ def plot_runtime_distribution(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     
     # Adjust layout
     plt.tight_layout()
-    fig.savefig(TOKEN_CHARTS / "runtime_distribution.png", dpi=300, bbox_inches='tight')
+    fig.savefig(TOKEN_CHARTS / "runtime_distribution.pdf", dpi=300, bbox_inches='tight')
     plt.close(fig)
     logger.info("Runtime distribution plot generated")
 
@@ -474,7 +487,7 @@ def plot_timing_comparison(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     
     # Save plot
     plt.tight_layout()
-    fig.savefig(TOKEN_CHARTS / "timing_comparison.png", dpi=300, bbox_inches='tight')
+    fig.savefig(TOKEN_CHARTS / "timing_comparison.pdf", dpi=300, bbox_inches='tight')
     plt.close(fig)
     logger.info("Timing comparison plot generated")
 
@@ -549,21 +562,24 @@ def plot_classification_accuracy(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
             row["accuracy"] + 0.01,
             f"{row['accuracy']:.3f}\n({row['correct']}/{row['total']})",
             ha="center",
-            va="bottom"
+            va="bottom",
+            fontsize=22
         )
     
     # Customize plot
-    ax.set_title("Classification Accuracy by Model")
-    ax.set_xlabel("Model")
-    ax.set_ylabel("Accuracy")
+    ax.set_xlabel("Model", fontsize=22)
+    ax.set_ylabel("Accuracy", fontsize=22)
     ax.set_ylim(0, 1.1)  # Set y-axis limits for better visibility
+    ax.tick_params(axis='both', labelsize=22)
+    for label in ax.get_xticklabels() + ax.get_yticklabels():
+        label.set_fontsize(22)
     
     # Add grid
     ax.grid(axis="y", alpha=0.3)
     
     # Save plot
     plt.tight_layout()
-    fig.savefig(CLASSIFICATION_CHARTS / "classification_accuracy.png", dpi=300)
+    fig.savefig(CLASSIFICATION_CHARTS / "classification_accuracy.pdf", dpi=300)
     plt.close(fig)
     logger.info("Classification accuracy plot generated")
 
@@ -743,13 +759,12 @@ def plot_classification_accuracy_by_subject(data: Dict[str, Dict[str, pd.DataFra
                 )
     
     # Customize plot
-    ax.set_title("Classification Accuracy by Subject Group and Model")
     ax.set_xlabel("Model")
     ax.set_ylabel("Subject Group")
     
     # Adjust layout and save
     plt.tight_layout()
-    fig.savefig(CLASSIFICATION_CHARTS / "classification_accuracy_by_subject.png", dpi=300, bbox_inches='tight')
+    fig.savefig(CLASSIFICATION_CHARTS / "classification_accuracy_by_subject.pdf", dpi=300, bbox_inches='tight')
     plt.close(fig)
     logger.info("Classification accuracy by subject plot generated")
 
@@ -805,16 +820,19 @@ def plot_classification_accuracy_valid_only(data: Dict[str, Dict[str, pd.DataFra
             row["accuracy"] + 0.01,
             f"{row['accuracy']:.3f}\n({row['correct']}/{row['total_valid']})",
             ha="center",
-            va="bottom"
+            va="bottom",
+            fontsize=22
         )
     
     # Customize first plot
-    ax1.set_title("Classification Accuracy (Valid Responses Only)")
-    ax1.set_xlabel("Model")
-    ax1.set_ylabel("Accuracy")
+    ax1.set_xlabel("Model", fontsize=22)
+    ax1.set_ylabel("Accuracy", fontsize=22)
     ax1.set_ylim(0, 1.1)
     ax1.grid(axis="y", alpha=0.3)
-    
+    for spine in ax1.spines.values():
+        spine.set_edgecolor('black')
+        spine.set_linewidth(1.5)
+        spine.set_visible(True)
     # Plot 2: Valid response rate
     sns.barplot(
         data=accuracy_df,
@@ -831,19 +849,23 @@ def plot_classification_accuracy_valid_only(data: Dict[str, Dict[str, pd.DataFra
             row["valid_rate"] + 0.01,
             f"{row['valid_rate']:.3f}\n({row['total_valid']}/{row['total_all']})",
             ha="center",
-            va="bottom"
+            va="bottom",
+            fontsize=22
         )
     
     # Customize second plot
-    ax2.set_title("Valid Response Rate")
-    ax2.set_xlabel("Model")
-    ax2.set_ylabel("Rate of Valid Responses (A,B,C,D)")
+    ax2.set_xlabel("Model", fontsize=22)
+    ax2.set_ylabel("Rate of Valid Responses (A,B,C,D)", fontsize=22)
     ax2.set_ylim(0, 1.1)
     ax2.grid(axis="y", alpha=0.3)
+    for spine in ax2.spines.values():
+        spine.set_edgecolor('black')
+        spine.set_linewidth(1.5)
+        spine.set_visible(True)
     
     # Save plot
     plt.tight_layout()
-    fig.savefig(CLASSIFICATION_CHARTS / "classification_accuracy_valid_only.png", dpi=300)
+    fig.savefig(CLASSIFICATION_CHARTS / "classification_accuracy_valid_only.pdf", dpi=300)
     plt.close(fig)
     logger.info("Classification accuracy (valid only) plot generated")
 
@@ -943,20 +965,27 @@ def plot_summarization_bert_scores(data: Dict[str, Dict[str, pd.DataFrame]]) -> 
             row["max_score"] + 0.01,
             f"Avg: {row['avg_score']:.3f}",
             ha="center",
-            va="bottom"
+            va="bottom",
+            fontsize=22
         )
     
     # Customize plot
-    ax.set_title("BERT Scores for Summarization by Model")
-    ax.set_xlabel("Model")
-    ax.set_ylabel("BERT Score")
+    ax.set_xlabel("Model", fontsize=22)
+    ax.set_ylabel("BERT Score", fontsize=22)
+    ax.tick_params(axis='both', labelsize=22)
+    for label in ax.get_xticklabels() + ax.get_yticklabels():
+        label.set_fontsize(22)
     
     # Add grid
     ax.grid(axis="y", alpha=0.3)
-    
+    # Set all spines to black and visible
+    for spine in ax.spines.values():
+        spine.set_edgecolor('black')
+        spine.set_linewidth(1.5)
+        spine.set_visible(True)
     # Save plot
     plt.tight_layout()
-    fig.savefig(SUMMARIZATION_CHARTS / "summarization_bert_scores.png", dpi=300)
+    fig.savefig(SUMMARIZATION_CHARTS / "summarization_bert_scores.pdf", dpi=300)
     plt.close(fig)
     logger.info("Summarization BERT scores plot generated")
 
@@ -1035,7 +1064,7 @@ def plot_summarization_response_length(data: Dict[str, Dict[str, pd.DataFrame]])
     # Save plot
     plt.tight_layout()
     fig.subplots_adjust(top=0.85)
-    fig.savefig(SUMMARIZATION_CHARTS / "summarization_response_length.png", dpi=300)
+    fig.savefig(SUMMARIZATION_CHARTS / "summarization_response_length.pdf", dpi=300)
     plt.close(fig)
     logger.info("Summarization response length plot generated")
 
@@ -1113,21 +1142,27 @@ def plot_toxicity_rate(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
             row["toxic_rate"] + 0.01,
             f"{row['toxic_rate']:.3f}\n({int(row['toxic_rate'] * row['total_samples'])}/{row['total_samples']})",
             ha="center",
-            va="bottom"
+            va="bottom",
+            fontsize=22
         )
     
     # Customize plot
-    ax.set_title("Toxicity Rate by Model")
-    ax.set_xlabel("Model")
-    ax.set_ylabel("Toxicity Rate")
+    ax.set_xlabel("Model", fontsize=22)
+    ax.set_ylabel("Toxicity Rate", fontsize=22)
     ax.set_ylim(0, max(rate_df["toxic_rate"]) * 1.2)  # Set y-axis limits for better visibility
+    ax.tick_params(axis='both', labelsize=22)
+    for label in ax.get_xticklabels() + ax.get_yticklabels():
+        label.set_fontsize(22)
     
     # Add grid
     ax.grid(axis="y", alpha=0.3)
-    
+    for spine in ax.spines.values():
+        spine.set_edgecolor('black')
+        spine.set_linewidth(1.5)
+        spine.set_visible(True)
     # Save plot
     plt.tight_layout()
-    fig.savefig(TOXICITY_CHARTS / "toxicity_rate.png", dpi=300)
+    fig.savefig(TOXICITY_CHARTS / "toxicity_rate.pdf", dpi=300)
     plt.close(fig)
     logger.info("Toxicity rate plot generated")
 
@@ -1221,7 +1256,7 @@ def plot_toxicity_expected_vs_actual(data: Dict[str, Dict[str, pd.DataFrame]]) -
     
     # Save plot
     plt.tight_layout()
-    fig.savefig(TOXICITY_CHARTS / "toxicity_propagation.png", dpi=300)
+    fig.savefig(TOXICITY_CHARTS / "toxicity_propagation.pdf", dpi=300)
     plt.close(fig)
     logger.info("Toxicity propagation plot generated")
 

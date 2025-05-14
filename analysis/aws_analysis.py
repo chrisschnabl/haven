@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
@@ -23,15 +24,56 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Configure matplotlib for LaTeX text rendering and Type 1 fonts
+mpl.rcParams['text.usetex'] = True
+mpl.rcParams['font.family'] = 'serif'
+#mpl.rcParams['font.serif'] = ['Times', 'Times New Roman', 'DejaVu Serif']
+#mpl.rcParams['mathtext.fontset'] = 'stix'  # Use STIX fonts for math text
+mpl.rcParams['ps.fonttype'] = 42
+mpl.rcParams['pdf.fonttype'] = 42
+mpl.rcParams['savefig.format'] = 'pdf'  # Save as EPS for better font handling
+
+# Set border color to black
+mpl.rcParams['axes.edgecolor'] = 'black'
+mpl.rcParams['axes.linewidth'] = 1.5
+mpl.rcParams['axes.spines.top'] = True
+mpl.rcParams['axes.spines.right'] = True
+mpl.rcParams['axes.spines.bottom'] = True
+mpl.rcParams['axes.spines.left'] = True
+
+# gs -o flow-v4-embedded.pdf -dNoOutputFonts -sDEVICE=pdfwrite token_distribution.pdf
+# docker run --rm -v "$PWD:/data" -w /data minidocks/poppler pdffonts token_distribution.pdf
+
 # Set plot style
-plt.style.use('fivethirtyeight')
-sns.set_context("notebook")
-plt.rcParams['figure.figsize'] = (12, 8)
-plt.rcParams['axes.titlesize'] = 16
-plt.rcParams['axes.labelsize'] = 14
+plt.style.use('default')  # Changed from fivethirtyeight to default
+sns.set_style("whitegrid")  # Changed to whitegrid
+plt.rcParams['figure.figsize'] = (12, 6)  # Reduced height from 8 to 6
+plt.rcParams['axes.titlesize'] = 18  # Reduced from 22
+plt.rcParams['axes.labelsize'] = 18  # Reduced from 22
+plt.rcParams['xtick.labelsize'] = 16  # Reduced from 22
+plt.rcParams['ytick.labelsize'] = 16  # Reduced from 22
+plt.rcParams['legend.fontsize'] = 16  # Reduced from 22
+plt.rcParams['figure.facecolor'] = 'white'  # Set figure background to white
+plt.rcParams['axes.facecolor'] = 'white'    # Set axes background to white
+plt.rcParams['savefig.facecolor'] = 'white' # Set saved figure background to white
+
+# Set minimum line widths to 0.5pt
+plt.rcParams['lines.linewidth'] = 1
+plt.rcParams['axes.linewidth'] = 1
+plt.rcParams['grid.linewidth'] = 1
+plt.rcParams['xtick.major.width'] = 1
+plt.rcParams['ytick.major.width'] = 1
+plt.rcParams['xtick.minor.width'] = 1
+plt.rcParams['ytick.minor.width'] = 1
+plt.rcParams['patch.linewidth'] = 1
+plt.rcParams['boxplot.boxprops.linewidth'] = 1
+plt.rcParams['boxplot.whiskerprops.linewidth'] = 1
+plt.rcParams['boxplot.capprops.linewidth'] = 1
+plt.rcParams['boxplot.medianprops.linewidth'] = 1
+plt.rcParams['boxplot.flierprops.linewidth'] = 1
 
 # Create chart directories
-CHART_DIR = Path('analysis/aws_charts')
+CHART_DIR = Path(f'aws-analysis-{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}/charts')
 CLASSIFICATION_CHARTS = CHART_DIR / 'classification'
 SUMMARIZATION_CHARTS = CHART_DIR / 'summarization'
 TOXICITY_CHARTS = CHART_DIR / 'toxicity'
@@ -46,7 +88,6 @@ def create_chart_directories():
     for directory in [CLASSIFICATION_CHARTS, SUMMARIZATION_CHARTS, TOXICITY_CHARTS, TOKEN_CHARTS]:
         directory.mkdir(parents=True, exist_ok=True)
 
-# Experiment types and locations
 EXPERIMENT_TYPES = {
     "classification": "llama_classification.parquet",
     "summarization": "llama_summaries.parquet",
@@ -309,7 +350,7 @@ def plot_token_rates(token_rates: pd.DataFrame) -> None:
     
     # Save plot
     plt.tight_layout()
-    fig.savefig(TOKEN_CHARTS / 'token_rates.png', dpi=300, bbox_inches='tight')
+    fig.savefig(TOKEN_CHARTS / 'token_rates.pdf', dpi=300, bbox_inches='tight')
     plt.close(fig)
     logger.info('Token rates plot generated')
 
@@ -319,91 +360,117 @@ def plot_token_distribution(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     Args:
         data: Dictionary containing model data by experiment type
     """
-    fig, axes = plt.subplots(2, 3, figsize=(18, 12))  # 2 modes x 3 experiment types
+    fig, axes = plt.subplots(2, 3, figsize=(17, 6))  # Wider and less high
     
     # Set fixed max for toxicity plots
     max_toxicity_tokens = 250
+    
+    # Custom mode labels
+    mode_labels = {
+        'enclave4b': '(I) enclave',
+        'host4b': '(II) compute-constant'
+    }
+    # Axis limits for each column
+    xlims = [(0, 8), (0, 65), (0, 250)]
+    ylims = [(0, 800), (0, 40), (0, 80)]
+    # Consistent color palette: blue, green, purple
+    exp_colors = ['#4C72B0', '#55A868', '#8172B2']
     
     # Create distributions for each mode and experiment
     for row, mode in enumerate(EXPERIMENT_MODES):
         mode_data = data.get(mode, {})
         for col, exp_type in enumerate(EXPERIMENT_TYPES.keys()):
             df = mode_data.get(exp_type)
+            ax = axes[row, col]
+            color = exp_colors[col]
             if df is not None and "token_count" in df.columns:
                 if exp_type == "toxicity":
-                    # For toxicity plots, use small fixed-width bins up to 250
-                    bin_width = 5  # 5 tokens per bin for granularity
+                    bin_width = 5
                     bins = np.arange(0, max_toxicity_tokens + bin_width, bin_width)
-                    
-                    # Create histogram with KDE
                     sns.histplot(
                         data=df,
                         x="token_count",
-                        kde=True,
                         bins=bins,
-                        color=sns.color_palette()[col],
-                        ax=axes[row, col]
+                        color=color,
+                        ax=ax,
+                        linewidth=1.5
                     )
-                    
-                    # Set x-axis limit to exactly 250
-                    axes[row, col].set_xlim(0, max_toxicity_tokens)
                 else:
-                    # For other plots, use default binning
                     sns.histplot(
                         data=df,
                         x="token_count",
-                        kde=True,
                         bins=30,
-                        color=sns.color_palette()[col],
-                        ax=axes[row, col]
+                        color=color,
+                        ax=ax,
+                        linewidth=1.5
                     )
-                
-                # Add mean line
                 mean_tokens = df["token_count"].mean()
-                axes[row, col].axvline(
+                ax.axvline(
                     mean_tokens,
                     color="red",
                     linestyle="--",
+                    linewidth=1.5,
                     label=f"Mean: {mean_tokens:.1f}"
                 )
-                
-                # Add descriptive statistics as text
                 stats_text = (
                     f"Mean: {df['token_count'].mean():.1f}\n"
                     f"Median: {df['token_count'].median():.1f}\n"
                     f"Min: {df['token_count'].min():.1f}\n"
                     f"Max: {df['token_count'].max():.1f}"
                 )
-                axes[row, col].text(
+                ax.text(
                     0.95, 0.95,
                     stats_text,
-                    transform=axes[row, col].transAxes,
+                    transform=ax.transAxes,
                     verticalalignment="top",
                     horizontalalignment="right",
-                    bbox=dict(boxstyle="round", facecolor="white", alpha=0.8)
+                    bbox=dict(boxstyle="round", facecolor="white", alpha=0.8),
+                    fontsize=14,  # Match axis label font size
+                    fontname='Times New Roman'
                 )
             else:
-                axes[row, col].text(
+                ax.text(
                     0.5, 0.5,
                     "No data available",
                     ha="center",
                     va="center",
-                    transform=axes[row, col].transAxes
+                    transform=ax.transAxes,
+                    fontsize=14,  # Match axis label font size
+                    fontname='Times New Roman'
                 )
-            
-            # Set titles and labels
+            # Set consistent axis limits
+            ax.set_xlim(xlims[col])
+            ax.set_ylim(ylims[col])
+            # Set all spines to black
+            for spine in ax.spines.values():
+                spine.set_edgecolor('black')
+                spine.set_linewidth(1.5)
+            # Set column titles
             if row == 0:
-                axes[row, col].set_title(exp_type.capitalize())
+                ax.set_title(exp_type.capitalize(), fontsize=14, fontname='Times New Roman')  # Reduced from 18
+            # Set row labels
             if col == 0:
-                axes[row, col].set_ylabel(mode)
-    
-    # Add global title
-    fig.suptitle("Token Count Distribution by Mode and Experiment", fontsize=20)
-    
-    # Save plot
-    plt.tight_layout()
+                ax.set_ylabel(mode_labels.get(mode, mode), fontsize=14, fontname='Times New Roman')  # Reduced from 24
+            else:
+                ax.set_ylabel("")
+            # Set axis label font size and font
+            ax.tick_params(axis='both', labelsize=14, width=1.5, length=6)  # Reduced from 24
+            for label in ax.get_xticklabels() + ax.get_yticklabels():
+                label.set_fontname('Times New Roman')
+            for spine in ax.spines.values():
+                spine.set_linewidth(1.5)
+    # Set x/y labels for all subplots
+    for col in range(3):
+        for row in range(2):
+            axes[row, col].set_xlabel('# tokens', fontsize=14, fontname='Times New Roman')
+            axes[row, col].set_ylabel('Occurrence', fontsize=14, fontname='Times New Roman')
+    # Make legend font smaller if legend exists
+    handles, labels = axes[0,0].get_legend_handles_labels()
+    if handles:
+        fig.legend(handles, labels, loc='upper right', fontsize=12)
+    plt.tight_layout(pad=0.7)
     fig.subplots_adjust(top=0.92)
-    fig.savefig(TOKEN_CHARTS / "token_distribution.png", dpi=300)
+    fig.savefig(TOKEN_CHARTS / "token_distribution.pdf", dpi=300)
     plt.close(fig)
     logger.info("Token distribution plot generated")
 
@@ -495,7 +562,7 @@ def plot_runtime_distribution(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     
     # Adjust layout
     plt.tight_layout()
-    fig.savefig(TOKEN_CHARTS / "runtime_distribution.png", dpi=300, bbox_inches='tight')
+    fig.savefig(TOKEN_CHARTS / "runtime_distribution.pdf", dpi=300, bbox_inches='tight')
     plt.close(fig)
     logger.info("Runtime distribution plot generated")
 
@@ -600,7 +667,7 @@ def plot_timing_comparison(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     
     # Save plot
     plt.tight_layout()
-    fig.savefig(TOKEN_CHARTS / "timing_comparison.png", dpi=300, bbox_inches='tight')
+    fig.savefig(TOKEN_CHARTS / "timing_comparison.pdf", dpi=300, bbox_inches='tight')
     plt.close(fig)
     logger.info("Timing comparison plot generated")
 
@@ -686,7 +753,7 @@ def plot_summarization_performance(data: Dict[str, Dict[str, pd.DataFrame]]) -> 
     
     # Save plot
     plt.tight_layout()
-    fig.savefig(SUMMARIZATION_CHARTS / 'bert_scores.png', dpi=300, bbox_inches='tight')
+    fig.savefig(SUMMARIZATION_CHARTS / 'bert_scores.pdf', dpi=300, bbox_inches='tight')
     plt.close(fig)
     logger.info('BERT scores plot generated')
 
@@ -755,7 +822,7 @@ def plot_classification_performance(data: Dict[str, Dict[str, pd.DataFrame]]) ->
     
     # Save plot
     plt.tight_layout()
-    fig.savefig(CLASSIFICATION_CHARTS / 'classification_performance.png', dpi=300)
+    fig.savefig(CLASSIFICATION_CHARTS / 'classification_performance.pdf', dpi=300)
     plt.close(fig)
     logger.info('Classification performance plots generated')
 
@@ -888,7 +955,7 @@ def plot_toxicity_performance(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     
     # Save plot
     plt.tight_layout()
-    fig.savefig(TOXICITY_CHARTS / 'toxicity_performance.png', dpi=300)
+    fig.savefig(TOXICITY_CHARTS / 'toxicity_performance.pdf', dpi=300)
     plt.close(fig)
     logger.info('Toxicity performance plots generated')
 
@@ -932,7 +999,7 @@ def plot_accuracy_heatmap(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     ax.set_title('Accuracy by Subject across Different Modes')
     
     plt.tight_layout()
-    fig.savefig(CLASSIFICATION_CHARTS / 'accuracy_heatmap.png', dpi=300)
+    fig.savefig(CLASSIFICATION_CHARTS / 'accuracy_heatmap.pdf', dpi=300)
     plt.close(fig)
     logger.info('Accuracy heatmap generated')
 
@@ -993,7 +1060,7 @@ def plot_efficiency_metrics(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
                 ha='center', va='center', transform=ax2.transAxes)
     
     plt.tight_layout()
-    fig.savefig(EFFICIENCY_CHARTS / 'efficiency_metrics.png', dpi=300)
+    fig.savefig(EFFICIENCY_CHARTS / 'efficiency_metrics.pdf', dpi=300)
     plt.close(fig)
     logger.info('Efficiency metrics plot generated')
 
@@ -1037,7 +1104,7 @@ def plot_error_distribution(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     ax.set_title('Error Rate by Subject across Different Modes')
     
     plt.tight_layout()
-    fig.savefig(ERROR_ANALYSIS_CHARTS / 'error_distribution.png', dpi=300)
+    fig.savefig(ERROR_ANALYSIS_CHARTS / 'error_distribution.pdf', dpi=300)
     plt.close(fig)
     logger.info('Error distribution plot generated')
 
@@ -1077,7 +1144,7 @@ def plot_timing_flamegraph(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     plt.legend(title='Component', bbox_to_anchor=(1.05, 1), loc='upper left')
     
     plt.tight_layout()
-    fig.savefig(FLAMEGRAPH_CHARTS / 'timing_flamegraph.png', dpi=300)
+    fig.savefig(FLAMEGRAPH_CHARTS / 'timing_flamegraph.pdf', dpi=300)
     plt.close(fig)
     logger.info('Timing flamegraph generated')
 
@@ -1228,7 +1295,7 @@ def plot_token_count_comparison(token_rates: pd.DataFrame) -> None:
     
     # Adjust layout and save
     plt.tight_layout()
-    fig.savefig(TOKEN_CHARTS / "token_count_comparison.png", dpi=300, bbox_inches='tight')
+    fig.savefig(TOKEN_CHARTS / "token_count_comparison.pdf", dpi=300, bbox_inches='tight')
     plt.close(fig)
     logger.info("Token count comparison plot generated")
 
@@ -1291,7 +1358,7 @@ def plot_classification_accuracy(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
     
     # Save plot
     plt.tight_layout()
-    fig.savefig(CLASSIFICATION_CHARTS / "classification_accuracy.png", dpi=300)
+    fig.savefig(CLASSIFICATION_CHARTS / "classification_accuracy.pdf", dpi=300)
     plt.close(fig)
     logger.info("Classification accuracy plot generated")
 
@@ -1474,7 +1541,7 @@ def plot_classification_accuracy_by_subject(data: Dict[str, Dict[str, pd.DataFra
     
     # Adjust layout and save
     plt.tight_layout()
-    fig.savefig(CLASSIFICATION_CHARTS / "classification_accuracy_by_subject.png", dpi=300, bbox_inches='tight')
+    fig.savefig(CLASSIFICATION_CHARTS / "classification_accuracy_by_subject.pdf", dpi=300, bbox_inches='tight')
     plt.close(fig)
     logger.info("Classification accuracy by subject plot generated")
 
@@ -1569,7 +1636,7 @@ def plot_classification_accuracy_valid_only(data: Dict[str, Dict[str, pd.DataFra
     
     # Save plot
     plt.tight_layout()
-    fig.savefig(CLASSIFICATION_CHARTS / "classification_accuracy_valid_only.png", dpi=300)
+    fig.savefig(CLASSIFICATION_CHARTS / "classification_accuracy_valid_only.pdf", dpi=300)
     plt.close(fig)
     logger.info("Classification accuracy (valid only) plot generated")
 
@@ -1649,7 +1716,7 @@ def plot_summarization_response_length(data: Dict[str, Dict[str, pd.DataFrame]])
     # Save plot
     plt.tight_layout()
     fig.subplots_adjust(top=0.85)
-    fig.savefig(SUMMARIZATION_CHARTS / "summarization_response_length.png", dpi=300)
+    fig.savefig(SUMMARIZATION_CHARTS / "summarization_response_length.pdf", dpi=300)
     plt.close(fig)
     logger.info("Summarization response length plot generated")
 
@@ -1729,7 +1796,7 @@ def plot_toxicity_rate(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     
     # Save plot
     plt.tight_layout()
-    fig.savefig(TOXICITY_CHARTS / "toxicity_rate.png", dpi=300)
+    fig.savefig(TOXICITY_CHARTS / "toxicity_rate.pdf", dpi=300)
     plt.close(fig)
     logger.info("Toxicity rate plot generated")
 
