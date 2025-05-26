@@ -1815,6 +1815,300 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
     plt.close(fig)
     logger.info("Enclave merged analysis plot generated")
 
+def plot_combined_metrics_grid(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
+    """Create a 1x4 grid plot combining BERT scores, classification accuracy and valid response rates.
+    
+    Args:
+        data: Dictionary containing mode data by experiment type
+    """
+    # Create 1x4 figure with subplots - increased height for better bottom padding
+    fig, axes = plt.subplots(1, 4, figsize=(24, 9))  # Increased height from 8 to 9
+    
+    # Custom mode labels - shortened to just (I), (II), (III)
+    mode_labels = {
+        'enclave4b': '(I)',
+        'host4b': '(II)',
+        'comp-constant-8b': '(III)'
+    }
+    
+    # Mode colors - blue, turquoise, green
+    mode_colors = ['#4C72B0', '#55A8A8', '#55A868']
+    
+    # Bar width for thinner bars
+    bar_width = 0.6
+    
+    # Larger font size - increased sizes for labels and annotations
+    title_font_size = 18
+    label_font_size = 18  # Increased from 16
+    tick_font_size = 16   # Increased from 14
+    annotation_font_size = 16  # Increased from 14
+    
+    # Reordered plots: BERT scores, Toxicity Rate, Classification Accuracy, Valid Response Rate
+    
+    # 1. BERT Score Distribution Plot (first/left)
+    # Collect BERT scores data
+    bert_data = []
+    for mode in EXPERIMENT_MODES:
+        df = data[mode].get('summarization')
+        if df is not None and 'score' in df.columns:
+            scores = df['score'].copy()
+            scores = pd.DataFrame({
+                'score': scores,
+                'mode': mode_labels.get(mode, mode)
+            })
+            bert_data.append(scores)
+    
+    if bert_data:
+        # Combine all data
+        bert_df = pd.concat(bert_data)
+        
+        # Create violin plot with custom palette
+        sns.violinplot(
+            data=bert_df, 
+            x='mode', 
+            y='score', 
+            ax=axes[0],
+            palette=mode_colors,
+            width=bar_width * 1.2  # Adjust width for violin plots
+        )
+        
+        # Add red dots for median values and mean line
+        for i, mode in enumerate(EXPERIMENT_MODES):
+            mode_scores = bert_df[bert_df['mode'] == mode_labels.get(mode, mode)]
+            if not mode_scores.empty:
+                mean_score = mode_scores['score'].mean()
+                median_score = mode_scores['score'].median()
+                
+                # Add red dashed mean line
+                axes[0].axvline(
+                    i, 
+                    color="red",
+                    linestyle="--",
+                    alpha=0.7,
+                    ymin=0,
+                    ymax=mean_score / axes[0].get_ylim()[1]
+                )
+                
+                # Add stats text
+                stats_text = (
+                    f"Mean: {mean_score:.3f}\n"
+                    f"Median: {median_score:.3f}\n"
+                    f"Min: {mode_scores['score'].min():.3f}\n"
+                    f"Max: {mode_scores['score'].max():.3f}"
+                )
+                
+                axes[0].text(
+                    i, 0.9,
+                    stats_text,
+                    ha="center",
+                    va="top",
+                    transform=axes[0].get_xaxis_transform(),
+                    bbox=dict(boxstyle="round", facecolor="white", alpha=0.8),
+                    fontsize=annotation_font_size
+                )
+        
+        # Customize plot - add title at top instead of ylabel
+        axes[0].set_title('BERT Score', fontsize=title_font_size, pad=10)
+        axes[0].set_xlabel('Mode', fontsize=label_font_size, labelpad=15)  # Increased labelpad
+        axes[0].set_ylabel('')
+        
+        # Add grid
+        axes[0].grid(True, alpha=0.2)
+    
+    # 2. Toxicity Rate (second plot)
+    # Collect toxicity rate data
+    toxicity_rates = []
+    
+    for mode in EXPERIMENT_MODES:
+        mode_data = data.get(mode, {})
+        if mode_data.get("toxicity") is not None:
+            df = mode_data["toxicity"]
+            if "toxic" in df.columns:
+                toxic_rate = df["toxic"].mean()
+                toxic_count = df["toxic"].sum()
+            elif "classification" in df.columns:
+                # Use classification column
+                toxic_rate = (df["classification"] == "toxic").mean()
+                toxic_count = (df["classification"] == "toxic").sum()
+            elif "expected_toxic" in df.columns:
+                # Use expected_toxic column
+                toxic_rate = (df["expected_toxic"] == 1).mean()
+                toxic_count = (df["expected_toxic"] == 1).sum()
+            else:
+                logger.warning(f"No toxicity classification column found for {mode}. Available columns: {list(df.columns)}")
+                continue
+            
+            if not pd.isna(toxic_rate):
+                toxicity_rates.append({
+                    "mode": mode_labels.get(mode, mode),
+                    "toxic_rate": toxic_rate,
+                    "toxic_count": toxic_count,
+                    "total_samples": len(df)
+                })
+            else:
+                logger.warning(f"NaN toxicity rate for {mode}")
+    
+    if toxicity_rates:
+        rate_df = pd.DataFrame(toxicity_rates)
+        
+        # Create barplot with thinner bars
+        sns.barplot(
+            data=rate_df,
+            x="mode",
+            y="toxic_rate",
+            ax=axes[1],
+            palette=mode_colors,
+            width=bar_width
+        )
+        
+        # Add text annotations
+        for i, row in rate_df.iterrows():
+            axes[1].text(
+                i, 
+                row["toxic_rate"] + 0.002,
+                f"{row['toxic_rate']:.3f}",
+                ha="center",
+                va="bottom",
+                fontsize=annotation_font_size
+            )
+        
+        # Customize plot - add title at top instead of ylabel
+        axes[1].set_title("Toxicity Rate", fontsize=title_font_size, pad=10)
+        axes[1].set_xlabel("Mode", fontsize=label_font_size, labelpad=15)  # Increased labelpad
+        axes[1].set_ylabel("")  # Remove y-label
+        axes[1].set_ylim(0, max(rate_df["toxic_rate"]) * 1.3)  # Set y-axis limits with more padding
+        
+        # Increase spacing at bottom of plot
+        axes[1].tick_params(axis='x', pad=15)
+        
+        # Add grid
+        axes[1].grid(axis="y", alpha=0.3)
+    
+    # 3. Classification Accuracy for Valid Responses Only (third plot)
+    # Collect accuracy data for valid responses only
+    accuracies = []
+    
+    for mode in EXPERIMENT_MODES:
+        mode_data = data.get(mode, {})
+        if mode_data.get("classification") is not None:
+            df = mode_data["classification"]
+            # Consider only responses that are single letters A, B, C, or D
+            valid_responses = df["response"].str.strip().str.match('^[ABCD]$')
+            valid_df = df[valid_responses]
+            
+            if len(valid_df) > 0:
+                accuracy = valid_df["correct"].mean()
+                accuracies.append({
+                    "mode": mode_labels.get(mode, mode),
+                    "accuracy": accuracy,
+                    "correct": valid_df["correct"].sum(),
+                    "total_valid": len(valid_df),
+                    "total_all": len(df),
+                    "valid_rate": len(valid_df) / len(df)
+                })
+    
+    if accuracies:
+        accuracy_df = pd.DataFrame(accuracies)
+        
+        # Create barplot for accuracy (valid responses only) with thinner bars
+        bars = sns.barplot(
+            data=accuracy_df,
+            x="mode",
+            y="accuracy",
+            ax=axes[2],
+            palette=mode_colors,
+            width=bar_width
+        )
+        
+        # Add text annotations above bars
+        for i, row in accuracy_df.iterrows():
+            axes[2].text(
+                i, 
+                row["accuracy"] + 0.02,
+                f"{row['accuracy']:.3f}",
+                ha="center",
+                va="bottom",
+                fontsize=annotation_font_size
+            )
+        
+        # Customize plot - add title at top instead of ylabel
+        axes[2].set_title("Classification Accuracy", fontsize=title_font_size, pad=10)
+        axes[2].set_xlabel("Mode", fontsize=label_font_size, labelpad=15)  # Increased labelpad
+        axes[2].set_ylabel("")  # Remove y-label
+        axes[2].set_ylim(0, 1.1)  # Set y-axis limits for better visibility
+        
+        # Increase spacing at bottom of plot
+        axes[2].tick_params(axis='x', pad=15)
+        
+        # Add grid
+        axes[2].grid(axis="y", alpha=0.3)
+    
+    # 4. Valid Response Rate (fourth/right plot)
+    if accuracies:
+        # Create barplot for valid response rate with thinner bars
+        sns.barplot(
+            data=accuracy_df,
+            x="mode",
+            y="valid_rate",
+            ax=axes[3],
+            palette=mode_colors,
+            width=bar_width
+        )
+        
+        # Add text annotations
+        for i, row in accuracy_df.iterrows():
+            axes[3].text(
+                i, 
+                row["valid_rate"] + 0.02,
+                f"{row['valid_rate']:.3f}",
+                ha="center",
+                va="bottom",
+                fontsize=annotation_font_size
+            )
+        
+        # Customize plot - add title at top instead of ylabel
+        axes[3].set_title("Valid Response Rate", fontsize=title_font_size, pad=10)
+        axes[3].set_xlabel("Mode", fontsize=label_font_size, labelpad=15)  # Increased labelpad
+        axes[3].set_ylabel("")  # Remove y-label
+        axes[3].set_ylim(0, 1.1)  # Set y-axis limits for better visibility
+        
+        # Increase spacing at bottom of plot
+        axes[3].tick_params(axis='x', pad=15)
+        
+        # Add grid
+        axes[3].grid(axis="y", alpha=0.3)
+    
+    # Apply consistent styling to all subplots
+    for ax in axes:
+        # Set all spines to black
+        for spine in ax.spines.values():
+            spine.set_color('black')
+            spine.set_linewidth(1.5)
+            spine.set_visible(True)
+        
+        # Set tick parameters - increased tick label size
+        ax.tick_params(axis='both', labelsize=tick_font_size, width=1.5, length=5)
+        
+        # Increase bottom padding for x-axis labels
+        ax.tick_params(axis='x', pad=25)  # Further increased padding for mode labels
+        
+        # Align x-tick labels
+        plt.setp(ax.get_xticklabels(), ha='center', fontsize=tick_font_size+2, fontweight='bold')  # Make mode labels larger and bold
+        
+        # Make tick marks longer for visibility
+        ax.tick_params(axis='x', length=8)
+        
+        # Set background color to white
+        ax.set_facecolor('white')
+    
+    # Save plot with adjusted tight layout and increased padding
+    plt.tight_layout(w_pad=6.0, h_pad=3.0, rect=[0, 0.1, 1, 0.95])  # Further increased bottom margin
+    combined_metrics_path = TOKEN_CHARTS / "combined_metrics"
+    combined_metrics_path.mkdir(exist_ok=True)
+    fig.savefig(combined_metrics_path / "combined_metrics_grid.pdf", dpi=300, bbox_inches='tight')
+    plt.close(fig)
+    logger.info("Combined metrics grid plot generated")
+
 def run_aws_analysis() -> None:
     """Execute the complete AWS analysis pipeline."""
     logger.info("Starting AWS analysis pipeline...")
@@ -1848,6 +2142,11 @@ def run_aws_analysis() -> None:
     
     # Toxicity analysis
     plot_toxicity_rate(data)
+    logger.info("Toxicity rate plot generated")
+    
+    # Add the new combined metrics plot
+    plot_combined_metrics_grid(data)
+    logger.info("Combined metrics grid plot generated")
     
     logger.info("AWS analysis pipeline completed successfully")
 

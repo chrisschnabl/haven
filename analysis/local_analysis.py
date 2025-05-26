@@ -1260,6 +1260,268 @@ def plot_toxicity_expected_vs_actual(data: Dict[str, Dict[str, pd.DataFrame]]) -
     plt.close(fig)
     logger.info("Toxicity propagation plot generated")
 
+def plot_merged_metrics(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
+    """Create a merged 1x4 plot with summarization BERT scores, toxicity rate, and classification accuracy.
+    
+    Args:
+        data: Dictionary containing model data by experiment type
+    """
+    logger.info("Creating merged metrics plot...")
+    
+    # Create figure with 4 subplots
+    fig, axes = plt.subplots(1, 4, figsize=(24, 6))
+    
+    # Add subplot labels (a), (b), (c), (d)
+    subplot_labels = ['(a)', '(b)', '(c)', '(d)']
+    for i, ax in enumerate(axes):
+        # Add label to top left corner of each subplot
+        ax.text(0.05, 0.95, subplot_labels[i], transform=ax.transAxes, 
+                fontsize=18, fontweight='bold', va='top', ha='left')
+    
+    # 1. Summarization BERT scores
+    # Collect BERT score data
+    all_scores = []
+    
+    for model_name, model_data in data.items():
+        if model_data.get("summarization") is not None:
+            df = model_data["summarization"]
+            if "score" in df.columns:
+                scores = df["score"].to_frame()
+                scores["model"] = model_name
+                all_scores.append(scores)
+    
+    if all_scores:
+        all_scores_df = pd.concat(all_scores)
+        
+        # Create violin plot
+        sns.violinplot(
+            data=all_scores_df,
+            x="model",
+            y="score",
+            palette="viridis",
+            inner=None,
+            ax=axes[0]
+        )
+        
+        # Overlay boxplot
+        sns.boxplot(
+            data=all_scores_df,
+            x="model",
+            y="score",
+            color="white",
+            width=0.3,
+            boxprops=dict(alpha=0.7),
+            ax=axes[0]
+        )
+        
+        # Add average score text annotations
+        for i, model_name in enumerate(all_scores_df["model"].unique()):
+            model_scores = all_scores_df[all_scores_df["model"] == model_name]
+            avg_score = model_scores["score"].mean()
+            
+            # Position the text inside the plot at a fixed position
+            y_pos = 0.75  # Fixed position inside the violin plot
+            
+            axes[0].text(
+                i, 
+                y_pos,
+                f"Avg: {avg_score:.3f}",
+                ha="center",
+                va="center",
+                fontsize=14,
+                bbox=dict(facecolor='white', alpha=0.7, edgecolor='none')
+            )
+        
+        # Customize plot
+        axes[0].set_xlabel("Model", fontsize=14)
+        axes[0].set_ylabel("BERT Score", fontsize=14)
+        # Remove title
+        axes[0].set_title("")
+        axes[0].tick_params(axis='both', labelsize=12)
+        axes[0].grid(axis="y", alpha=0.3)
+        
+        # Set all spines to black and visible
+        for spine in axes[0].spines.values():
+            spine.set_edgecolor('black')
+            spine.set_linewidth(1.5)
+            spine.set_visible(True)
+    
+    # 2. Toxicity rate
+    # Collect toxicity rate data
+    toxicity_rates = []
+    
+    for model_name, model_data in data.items():
+        if model_data.get("toxicity") is not None:
+            df = model_data["toxicity"]
+            if "toxic" in df.columns:
+                toxic_rate = df["toxic"].mean()
+            elif "confidence" in df.columns:
+                # Assuming confidence > 0.5 means toxic
+                toxic_rate = (df["confidence"] > 0.5).mean()
+            else:
+                toxic_rate = np.nan
+            
+            toxicity_rates.append({
+                "model": model_name,
+                "toxic_rate": toxic_rate,
+                "total_samples": len(df)
+            })
+    
+    if toxicity_rates:
+        rate_df = pd.DataFrame(toxicity_rates)
+        
+        # Create bar plot
+        bars = sns.barplot(
+            data=rate_df,
+            x="model",
+            y="toxic_rate",
+            palette="viridis",
+            ax=axes[1]
+        )
+        
+        # Add text annotations on the bars
+        for i, row in rate_df.iterrows():
+            # Position the text at the top of the bar
+            y_pos = row["toxic_rate"] + 0.001
+            
+            axes[1].text(
+                i, 
+                y_pos,
+                f"{row['toxic_rate']:.3f}\n({int(row['toxic_rate'] * row['total_samples'])}/{row['total_samples']})",
+                ha="center",
+                va="bottom",
+                fontsize=14,
+                color="black"
+            )
+        
+        # Customize plot
+        axes[1].set_xlabel("Model", fontsize=14)
+        axes[1].set_ylabel("Toxicity Rate", fontsize=14)
+        # Remove title
+        axes[1].set_title("")
+        axes[1].set_ylim(0, max(rate_df["toxic_rate"]) * 1.2)
+        axes[1].tick_params(axis='both', labelsize=12)
+        axes[1].grid(axis="y", alpha=0.3)
+        
+        # Set all spines to black and visible
+        for spine in axes[1].spines.values():
+            spine.set_edgecolor('black')
+            spine.set_linewidth(1.5)
+            spine.set_visible(True)
+    
+    # 3 & 4. Classification accuracy valid only (two plots)
+    # Collect accuracy data for valid responses only
+    accuracies = []
+    
+    for model_name, model_data in data.items():
+        if model_data.get("classification") is not None:
+            df = model_data["classification"]
+            # Consider only responses that are single letters A, B, C, or D
+            valid_responses = df["response"].str.strip().str.match('^[ABCD]$')
+            valid_df = df[valid_responses]
+            
+            if len(valid_df) > 0:
+                accuracy = valid_df["correct"].mean()
+                accuracies.append({
+                    "model": model_name,
+                    "accuracy": accuracy,
+                    "correct": valid_df["correct"].sum(),
+                    "total_valid": len(valid_df),
+                    "total_all": len(df),
+                    "valid_rate": len(valid_df) / len(df)
+                })
+    
+    if accuracies:
+        accuracy_df = pd.DataFrame(accuracies)
+        
+        # Plot 3: Accuracy for valid responses
+        bars = sns.barplot(
+            data=accuracy_df,
+            x="model",
+            y="accuracy",
+            palette="viridis",
+            ax=axes[2]
+        )
+        
+        # Add text annotations on the bars
+        for i, row in accuracy_df.iterrows():
+            # Position the text at the top of the bar
+            y_pos = row["accuracy"] + 0.001
+            
+            axes[2].text(
+                i, 
+                y_pos,
+                f"{row['accuracy']:.3f}\n({row['correct']}/{row['total_valid']})",
+                ha="center",
+                va="bottom",
+                fontsize=14,
+                color="black"
+            )
+        
+        # Customize plot
+        axes[2].set_xlabel("Model", fontsize=14)
+        axes[2].set_ylabel("Accuracy", fontsize=14)
+        # Remove title
+        axes[2].set_title("")
+        axes[2].set_ylim(0, 1.1)
+        axes[2].tick_params(axis='both', labelsize=12)
+        axes[2].grid(axis="y", alpha=0.3)
+        
+        # Set all spines to black and visible
+        for spine in axes[2].spines.values():
+            spine.set_edgecolor('black')
+            spine.set_linewidth(1.5)
+            spine.set_visible(True)
+        
+        # Plot 4: Valid response rate
+        bars = sns.barplot(
+            data=accuracy_df,
+            x="model",
+            y="valid_rate",
+            palette="viridis",
+            ax=axes[3]
+        )
+        
+        # Add text annotations on the bars
+        for i, row in accuracy_df.iterrows():
+            # Position the text at the top of the bar
+            y_pos = row["valid_rate"] + 0.001
+            
+            axes[3].text(
+                i, 
+                y_pos,
+                f"{row['valid_rate']:.3f}\n({row['total_valid']}/{row['total_all']})",
+                ha="center",
+                va="bottom",
+                fontsize=14,
+                color="black"
+            )
+        
+        # Customize plot
+        axes[3].set_xlabel("Model", fontsize=14)
+        axes[3].set_ylabel("Rate of Valid Responses", fontsize=14)
+        # Remove title
+        axes[3].set_title("")
+        axes[3].set_ylim(0, 1.1)
+        axes[3].tick_params(axis='both', labelsize=12)
+        axes[3].grid(axis="y", alpha=0.3)
+        
+        # Set all spines to black and visible
+        for spine in axes[3].spines.values():
+            spine.set_edgecolor('black')
+            spine.set_linewidth(1.5)
+            spine.set_visible(True)
+    
+    # Create a directory for merged plots if it doesn't exist
+    MERGED_CHARTS = CHART_DIR / 'merged'
+    MERGED_CHARTS.mkdir(parents=True, exist_ok=True)
+    
+    # Save the merged plot
+    plt.tight_layout()
+    fig.savefig(MERGED_CHARTS / "merged_metrics.pdf", dpi=300)
+    plt.close(fig)
+    logger.info("Merged metrics plot generated")
+
 def run_analysis() -> None:
     """Execute the complete analysis pipeline."""
     logger.info("Starting analysis pipeline...")
@@ -1279,7 +1541,11 @@ def run_analysis() -> None:
     # Summarization performance analysis
     analyze_summarization_performance(data)
     
+    # Toxicity performance analysis
     analyze_toxicity_performance(data)
+    
+    # Create merged metrics plot
+    plot_merged_metrics(data)
     
     logger.info("Analysis pipeline completed successfully")
 
