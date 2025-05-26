@@ -3,7 +3,7 @@ name = "attestation"
 version = "0.1.1"
 edition = "2018"
 authors = ["Chris Schnabl"]
-description = "TODO"
+description = "Helper crate to generate and verify attesations"
 license = "Apache-2.0"
 
 [dependencies]

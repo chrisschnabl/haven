@@ -8,7 +8,7 @@ use llama_cpp_2::model::{AddBos, LlamaModel, Special};
 use llama_cpp_2::sampling::LlamaSampler;
 
 use std::convert::TryInto;
-use tracing::{info, debug};
+use tracing::{info, debug, instrument};
 
 use crate::config::LlamaConfig;
 
@@ -22,7 +22,9 @@ pub struct LlamaRunner {
 }
 
 impl LlamaRunner {
+    #[instrument(skip(config), fields(threads = config.threads, context_size = config.context_size.get()))]
     pub fn new(config: LlamaConfig) -> Self {
+        info!("Creating new LlamaRunner instance");
         Self {
             config,
             backend: None,
@@ -32,14 +34,13 @@ impl LlamaRunner {
         }
     }
 
+    #[instrument(skip(self))]
     pub fn is_model_loaded(&self) -> bool {
         self.model.is_some()
     }
 
-    /// Load the model from `self.config.model_path`.
+    #[instrument(skip(self))]
     pub fn load_model(&mut self) -> Result<()> {
-        // TODO CS: revisit semantics of storing the model path in config
-        // TODO CS: wait for PR to be merged: https://github.com/ggerganov/llama.cpp/discussions/10990
         let model_path = self.config.model_path.as_ref().context("Model path is not set")?;
         
         info!("Loading model from path: {}", model_path);
@@ -70,6 +71,7 @@ impl LlamaRunner {
         Ok(())
     }
 
+    #[instrument(skip(self))]
     pub fn load_context(&mut self) -> Result<()> {
         if let (Some(backend), Some(model)) = (&self.backend, &self.model) {
             info!("Reloading context...");
@@ -91,8 +93,7 @@ impl LlamaRunner {
         }
     }
 
-    // Blocking generation that calls `on_token` for each token produced.
-    // TODO CS: return a tokio stream
+    #[instrument(skip(self, on_token), fields(prompt_len = prompt.len()))]
     pub fn generate_blocking<F>(&mut self, prompt: &str, mut on_token: F) -> Result<(i32, std::time::Duration, std::time::Duration, std::time::Duration, usize)>
     where
         F: FnMut(&str),
@@ -142,12 +143,9 @@ impl LlamaRunner {
             tokens_list
         };
 
-
         let t_prompt_start = ggml_time_us();
         let prompt_tokens = tokens_list.len();
-        // llama_init_from_model: n_batch       = 2048
-        // llama_init_from_model: n_ubatch      = 512
-        let mut batch = LlamaBatch::new(n_ctx.try_into().unwrap(), 1); // TODO CS: where does this come from?
+        let mut batch = LlamaBatch::new(n_ctx.try_into().unwrap(), 1);
         let last_index = (tokens_list.len() - 1) as i32;
         for (i, token) in (0_i32..).zip(tokens_list.into_iter()) {
             let is_last = i == last_index;
@@ -159,8 +157,6 @@ impl LlamaRunner {
         let t_prompt_end = ggml_time_us();
         let prompt_duration = std::time::Duration::from_micros((t_prompt_end - t_prompt_start) as u64);
         debug!("Prompt decoded in {:?}, {} tokens", prompt_duration, prompt_tokens);
-
-        // TODO CS: collect the durations for decoding the prompt tokens:
 
         let mut n_cur = batch.n_tokens();
         let mut n_decode = 0;
@@ -195,7 +191,6 @@ impl LlamaRunner {
                 .context("Failed to decode next token")?;
             n_decode += 1;
         }
-
 
         let t_main_end = ggml_time_us();
         let duration = std::time::Duration::from_micros((t_main_end - t_main_start) as u64);

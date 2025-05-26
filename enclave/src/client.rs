@@ -112,8 +112,7 @@ pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Op
                                         // TODO CS: check PCRs against expectation
                                         info!("payload {:?}", payload.pcrs);
                                     }
-                                    // TODO CS: do not panic here, but bail
-                                    Err(e) => panic!("parse_verify_with failed: {:?}", e.to_string()),
+                                    Err(e) => anyhow::bail!("parse_verify_with failed: {:?}", e.to_string()),
                                 }
                             
                                 println!("user data {:?}", payload.user_data);
@@ -133,14 +132,5 @@ pub async fn run_client(port: u32, cid: u32, file_path: Option<&str>, prompt: Op
             }
         }    
     }
-
-  
-    // TODO CS: handle attestatin here, and check it
-    // TODO CS: tihnk about the system picture more 
-    // TODO CS: the protocol includes quite some boilerplate, think about how to fix this
-    // -- we kind of like have a series of operations, that depend (in terms of time) on each other
-    // TODO CS: also think about the throughput of prompt requests, once we do run evaluations on scale
-
-    // TODO CS: what would be nice is to basically do an interactive terminal chat gpt mode
     Ok(())
 }

@@ -6,4 +6,6 @@ The following repository contains all artifacts for this MPhil project, which is
 - `verify_attestation` - the python code for verifying the attestation
 - `toxicity` - the python code for running a toxicity classifier
 - `llama_runner` - the rust code for running llama using llama-cpp2
+- `quantization` - quantize models in AWS Nitro Enclaves (through llama.cpp and pytorch)
 - `scripts` - the ducttape basically
+- `vsock` - 

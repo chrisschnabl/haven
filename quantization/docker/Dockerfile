@@ -18,9 +18,6 @@ RUN git clone --branch "$BRANCH" --single-branch \
 
 WORKDIR /workdir/llama.cpp/build
 
-#RUN wget https://huggingface.co/DevQuasar/openai-community.gpt2-GGUF/resolve/f20f986c8002cae7466401f7527f9d36f458d759/openai-community.gpt2.f16.gguf \
-# && mv openai-community.gpt2.f16.gguf gpt2.f16.gguf
-
 # Fetch a smaller <1 GiB model 
 RUN wget https://huggingface.co/mradermacher/pythia-70m-GGUF/resolve/main/pythia-70m.f16.gguf
 RUN mv pythia-70m.f16.gguf gpt2.f16.gguf

@@ -1,0 +1,4 @@
+# Quantization
+
+This repository provides a minimal working example demonstrating that you can run model quantization via llama.cpp and PyTorch inside AWS Nitro Enclaves, proving the approach is technically feasible. Currently, even a “minimal” Dockerfile blows the enclave image well beyond 1 GiB, because nitro-cli invokes linuxkit with a 1 GiB upper-image limit (linuxkit/linuxkit#3759) 
+GitHub. Until AWS upgrades to a newer linuxkit version, integrating this step into end-to-end pipelines with larger models is not practical. Once the linuxkit version is bumped, the solution will likely involve merging these quantization dependencies into the enclave image and then streaming the model weights over vsock after enclave startup.

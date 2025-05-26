@@ -1,4 +1,5 @@
 use std::num::NonZeroU32;
+use tracing::{info, instrument};
 
 pub struct LlamaConfig {
     pub model_path: Option<String>,
@@ -13,7 +14,9 @@ pub struct LlamaConfig {
 }
 
 impl LlamaConfig {
+    #[instrument]
     pub fn new() -> Self {
+        info!("Creating new LlamaConfig with default values");
         Self {
             model_path: None,
             seed: 1337,

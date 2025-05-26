@@ -2,7 +2,7 @@ use anyhow::Result;
 use std::thread;
 use tokio::sync::{mpsc as tokio_mpsc, oneshot};
 use std::sync::mpsc::{self, Sender, Receiver};
-use tracing::{error, info, debug};
+use tracing::{error, info, debug, instrument};
 
 use crate::runner::LlamaRunner;
 use crate::config::LlamaConfig;
@@ -31,6 +31,7 @@ impl LlamaActorHandle {
         Self { cmd_tx }
     }
 
+    #[instrument(skip(self), fields(model_path = model_path))]
     pub async fn load_model(&self, model_path: String) -> Result<()> {
         let (reply_tx, reply_rx) = oneshot::channel();
         let cmd = LlamaCommand::LoadModel {
@@ -44,7 +45,7 @@ impl LlamaActorHandle {
         reply_rx.await.map_err(|_| anyhow::anyhow!("Actor dropped reply"))?
     }
 
-    // Uses the same interface as the streaming version, just collects them 
+    #[instrument(skip(self), fields(prompt_len = prompt.len()))]
     pub async fn generate(&self, prompt: String) -> Result<String> {
         let (token_tx, mut token_rx) = tokio_mpsc::channel(64);
         let (reply_tx, reply_rx) = oneshot::channel();
@@ -69,7 +70,7 @@ impl LlamaActorHandle {
         Ok(output)
     }
 
-    /// Generate text as a stream: (Receiver, final oneshot)
+    #[instrument(skip(self), fields(prompt_len = prompt.len()))]
     pub async fn generate_stream(
         &self,
         prompt: String,
@@ -92,8 +93,7 @@ impl LlamaActorHandle {
     }
 }
 
-/// Start a dedicated thread that owns `LlamaRunner`.
-/// We do not require `Send` for the runner because it never leaves that thread.
+#[instrument(skip(config), fields(threads = config.threads, context_size = config.context_size.get()))]
 pub fn start_llama_thread(config: LlamaConfig) -> (LlamaActorHandle, thread::JoinHandle<()>) {
     let (cmd_tx, cmd_rx) = mpsc::channel();
     let handle = LlamaActorHandle::new(cmd_tx);
@@ -108,15 +108,17 @@ pub fn start_llama_thread(config: LlamaConfig) -> (LlamaActorHandle, thread::Joi
     (handle, join_handle)
 }
 
+#[instrument(skip(runner, cmd_rx))]
 fn actor_loop(runner: &mut LlamaRunner, cmd_rx: Receiver<LlamaCommand>) {
     while let Ok(cmd) = cmd_rx.recv() {
         match cmd {
             LlamaCommand::LoadModel { model_path, reply } => {
-                runner.config.model_path = Some(model_path);
+                runner.config.model_path = Some(model_path.clone());
                 if runner.is_model_loaded() {
                     info!("Model already loaded; skipping load.");
                     let _ = reply.send(Ok(()));
                 } else {
+                    info!("Loading model from path: {}", model_path);
                     let res = runner.load_model();
                     if let Err(e) = &res {
                         error!("Load model error: {:?}", e);
@@ -129,6 +131,7 @@ fn actor_loop(runner: &mut LlamaRunner, cmd_rx: Receiver<LlamaCommand>) {
                 token_tx,
                 reply,
             } => {
+                info!("Generating response for prompt of length {}", prompt.len());
                 let result = runner.generate_blocking(&prompt, |token_str| {
                     // This is blocking send because we're on a dedicated thread
                     let _ = token_tx.blocking_send(token_str.to_string());
@@ -142,6 +145,7 @@ fn actor_loop(runner: &mut LlamaRunner, cmd_rx: Receiver<LlamaCommand>) {
                         let _ = reply.send(Ok(()));
                     }
                     Err(e) => {
+                        error!("Generation error: {:?}", e);
                         let _ = reply.send(Err(e));
                     }
                 }

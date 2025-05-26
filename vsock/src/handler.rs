@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 pub type ServerHandler = Arc<dyn Fn(VsockStream) -> Pin<Box<dyn Future<Output = Result<()>> + Send>> + Send + Sync>;
 
-// TODO: we don't instrument here, but we should
+#[instrument(skip(handler), fields(port = port))]
 pub async fn run_server(port: u32, handler: ServerHandler) -> Result<()> {
     info!("Listening for connections on port: {}", port);
     
