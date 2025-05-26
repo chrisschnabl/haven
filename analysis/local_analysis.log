@@ -3927,3 +3927,867 @@ Accuracy statistics for Q8_0:
 2025-05-13 10:52:01,404 - __main__ - INFO - Toxicity rate plot generated
 2025-05-13 10:52:01,404 - __main__ - WARNING - No toxicity comparison data available
 2025-05-13 10:52:01,404 - __main__ - INFO - Analysis pipeline completed successfully
+2025-05-16 10:50:32,346 - __main__ - INFO - Starting analysis pipeline...
+2025-05-16 10:50:32,500 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:50:32,501 - __main__ - INFO - Loaded classification data for Q2_K: 1000 rows
+2025-05-16 10:50:32,530 - __main__ - INFO - Loaded summarization data for Q2_K: 243 rows
+2025-05-16 10:50:32,532 - __main__ - INFO - Loaded toxicity data for Q2_K: 500 rows
+2025-05-16 10:50:32,650 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:50:32,651 - __main__ - INFO - Loaded classification data for Q4_K_M: 1000 rows
+2025-05-16 10:50:32,678 - __main__ - INFO - Loaded summarization data for Q4_K_M: 243 rows
+2025-05-16 10:50:32,680 - __main__ - INFO - Loaded toxicity data for Q4_K_M: 500 rows
+2025-05-16 10:50:32,799 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:50:32,800 - __main__ - INFO - Loaded classification data for Q8_0: 1000 rows
+2025-05-16 10:50:32,829 - __main__ - INFO - Loaded summarization data for Q8_0: 243 rows
+2025-05-16 10:50:32,831 - __main__ - INFO - Loaded toxicity data for Q8_0: 500 rows
+2025-05-16 10:50:32,831 - __main__ - INFO - Analyzing token counts...
+2025-05-16 10:50:33,062 - __main__ - INFO - Token count comparison plot generated
+2025-05-16 10:50:33,518 - __main__ - INFO - Token distribution plot generated
+2025-05-16 10:50:33,700 - __main__ - INFO - Runtime distribution plot generated
+2025-05-16 10:50:33,700 - __main__ - INFO - Q2_K - classification:
+2025-05-16 10:50:33,700 - __main__ - INFO -   Total time: 1.113s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Prompt time: 3.377s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Response time: -2.264s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:50:33,700 - __main__ - INFO - Q2_K - summarization:
+2025-05-16 10:50:33,700 - __main__ - INFO -   Total time: 1.578s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Prompt time: 1.146s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Response time: 0.432s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:50:33,700 - __main__ - INFO - Q2_K - toxicity:
+2025-05-16 10:50:33,700 - __main__ - INFO -   Total time: 10.345s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Prompt time: 0.475s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Response time: 9.869s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:50:33,700 - __main__ - INFO - Q4_K_M - classification:
+2025-05-16 10:50:33,700 - __main__ - INFO -   Total time: 0.225s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Prompt time: 0.634s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Response time: -0.409s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:50:33,700 - __main__ - INFO - Q4_K_M - summarization:
+2025-05-16 10:50:33,700 - __main__ - INFO -   Total time: 1.832s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Prompt time: 1.126s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Response time: 0.706s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:50:33,700 - __main__ - INFO - Q4_K_M - toxicity:
+2025-05-16 10:50:33,700 - __main__ - INFO -   Total time: 5.093s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Prompt time: 0.466s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Response time: 4.627s
+2025-05-16 10:50:33,700 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:50:33,700 - __main__ - INFO - Q8_0 - classification:
+2025-05-16 10:50:33,701 - __main__ - INFO -   Total time: 0.399s
+2025-05-16 10:50:33,701 - __main__ - INFO -   Prompt time: 0.750s
+2025-05-16 10:50:33,701 - __main__ - INFO -   Response time: -0.351s
+2025-05-16 10:50:33,701 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:50:33,701 - __main__ - INFO - Q8_0 - summarization:
+2025-05-16 10:50:33,701 - __main__ - INFO -   Total time: 2.773s
+2025-05-16 10:50:33,701 - __main__ - INFO -   Prompt time: 1.076s
+2025-05-16 10:50:33,701 - __main__ - INFO -   Response time: 1.697s
+2025-05-16 10:50:33,701 - __main__ - INFO -   Tokenize time: 0.001s
+2025-05-16 10:50:33,701 - __main__ - INFO - Q8_0 - toxicity:
+2025-05-16 10:50:33,701 - __main__ - INFO -   Total time: 9.338s
+2025-05-16 10:50:33,701 - __main__ - INFO -   Prompt time: 0.442s
+2025-05-16 10:50:33,701 - __main__ - INFO -   Response time: 8.896s
+2025-05-16 10:50:33,701 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:50:33,786 - __main__ - INFO - Timing comparison plot generated
+2025-05-16 10:50:33,786 - __main__ - INFO - Analyzing classification performance...
+2025-05-16 10:50:33,829 - __main__ - INFO - Classification accuracy plot generated
+2025-05-16 10:50:33,831 - __main__ - INFO - Subjects in 'Others' for Q2_K:
+2025-05-16 10:50:33,831 - __main__ - INFO -   Law & Legal: acc=0.000, n=8
+2025-05-16 10:50:33,831 - __main__ - INFO -   Philosophy & Ethics: acc=0.312, n=16
+2025-05-16 10:50:33,832 - __main__ - INFO - 
+Accuracy statistics for Q2_K:
+2025-05-16 10:50:33,832 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:50:33,832 - __main__ - INFO - Significant groups: 4
+2025-05-16 10:50:33,832 - __main__ - INFO - Samples in Others: 24
+2025-05-16 10:50:33,834 - __main__ - INFO - 
+Accuracy statistics for Q4_K_M:
+2025-05-16 10:50:33,834 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:50:33,834 - __main__ - INFO - Significant groups: 6
+2025-05-16 10:50:33,834 - __main__ - INFO - Samples in Others: 0
+2025-05-16 10:50:33,836 - __main__ - INFO - Subjects in 'Others' for Q8_0:
+2025-05-16 10:50:33,836 - __main__ - INFO -   Law & Legal: acc=0.250, n=4
+2025-05-16 10:50:33,836 - __main__ - INFO - 
+Accuracy statistics for Q8_0:
+2025-05-16 10:50:33,836 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:50:33,836 - __main__ - INFO - Significant groups: 5
+2025-05-16 10:50:33,836 - __main__ - INFO - Samples in Others: 4
+2025-05-16 10:50:33,944 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-05-16 10:50:34,014 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-05-16 10:50:34,014 - __main__ - INFO - Analyzing summarization performance...
+2025-05-16 10:50:34,069 - __main__ - INFO - Summarization BERT scores plot generated
+2025-05-16 10:50:34,211 - __main__ - INFO - Summarization response length plot generated
+2025-05-16 10:50:34,211 - __main__ - INFO - Analyzing toxicity performance...
+2025-05-16 10:50:34,304 - __main__ - INFO - Toxicity rate plot generated
+2025-05-16 10:50:34,304 - __main__ - WARNING - No toxicity comparison data available
+2025-05-16 10:50:34,304 - __main__ - INFO - Creating merged metrics plot...
+2025-05-16 10:50:34,470 - __main__ - INFO - Merged metrics plot generated
+2025-05-16 10:50:34,470 - __main__ - INFO - Analysis pipeline completed successfully
+2025-05-16 10:52:01,831 - __main__ - INFO - Starting analysis pipeline...
+2025-05-16 10:52:02,039 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:52:02,041 - __main__ - INFO - Loaded classification data for Q2_K: 1000 rows
+2025-05-16 10:52:02,069 - __main__ - INFO - Loaded summarization data for Q2_K: 243 rows
+2025-05-16 10:52:02,073 - __main__ - INFO - Loaded toxicity data for Q2_K: 500 rows
+2025-05-16 10:52:02,211 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:52:02,212 - __main__ - INFO - Loaded classification data for Q4_K_M: 1000 rows
+2025-05-16 10:52:02,242 - __main__ - INFO - Loaded summarization data for Q4_K_M: 243 rows
+2025-05-16 10:52:02,244 - __main__ - INFO - Loaded toxicity data for Q4_K_M: 500 rows
+2025-05-16 10:52:02,375 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:52:02,376 - __main__ - INFO - Loaded classification data for Q8_0: 1000 rows
+2025-05-16 10:52:02,408 - __main__ - INFO - Loaded summarization data for Q8_0: 243 rows
+2025-05-16 10:52:02,411 - __main__ - INFO - Loaded toxicity data for Q8_0: 500 rows
+2025-05-16 10:52:02,411 - __main__ - INFO - Analyzing token counts...
+2025-05-16 10:52:02,638 - __main__ - INFO - Token count comparison plot generated
+2025-05-16 10:52:03,073 - __main__ - INFO - Token distribution plot generated
+2025-05-16 10:52:03,275 - __main__ - INFO - Runtime distribution plot generated
+2025-05-16 10:52:03,275 - __main__ - INFO - Q2_K - classification:
+2025-05-16 10:52:03,275 - __main__ - INFO -   Total time: 1.113s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Prompt time: 3.377s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Response time: -2.264s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:52:03,275 - __main__ - INFO - Q2_K - summarization:
+2025-05-16 10:52:03,275 - __main__ - INFO -   Total time: 1.578s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Prompt time: 1.146s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Response time: 0.432s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:52:03,275 - __main__ - INFO - Q2_K - toxicity:
+2025-05-16 10:52:03,275 - __main__ - INFO -   Total time: 10.345s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Prompt time: 0.475s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Response time: 9.869s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:52:03,275 - __main__ - INFO - Q4_K_M - classification:
+2025-05-16 10:52:03,275 - __main__ - INFO -   Total time: 0.225s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Prompt time: 0.634s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Response time: -0.409s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:52:03,275 - __main__ - INFO - Q4_K_M - summarization:
+2025-05-16 10:52:03,275 - __main__ - INFO -   Total time: 1.832s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Prompt time: 1.126s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Response time: 0.706s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:52:03,275 - __main__ - INFO - Q4_K_M - toxicity:
+2025-05-16 10:52:03,275 - __main__ - INFO -   Total time: 5.093s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Prompt time: 0.466s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Response time: 4.627s
+2025-05-16 10:52:03,275 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:52:03,276 - __main__ - INFO - Q8_0 - classification:
+2025-05-16 10:52:03,276 - __main__ - INFO -   Total time: 0.399s
+2025-05-16 10:52:03,276 - __main__ - INFO -   Prompt time: 0.750s
+2025-05-16 10:52:03,276 - __main__ - INFO -   Response time: -0.351s
+2025-05-16 10:52:03,276 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:52:03,276 - __main__ - INFO - Q8_0 - summarization:
+2025-05-16 10:52:03,276 - __main__ - INFO -   Total time: 2.773s
+2025-05-16 10:52:03,276 - __main__ - INFO -   Prompt time: 1.076s
+2025-05-16 10:52:03,276 - __main__ - INFO -   Response time: 1.697s
+2025-05-16 10:52:03,276 - __main__ - INFO -   Tokenize time: 0.001s
+2025-05-16 10:52:03,276 - __main__ - INFO - Q8_0 - toxicity:
+2025-05-16 10:52:03,276 - __main__ - INFO -   Total time: 9.338s
+2025-05-16 10:52:03,276 - __main__ - INFO -   Prompt time: 0.442s
+2025-05-16 10:52:03,276 - __main__ - INFO -   Response time: 8.896s
+2025-05-16 10:52:03,276 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:52:03,377 - __main__ - INFO - Timing comparison plot generated
+2025-05-16 10:52:03,377 - __main__ - INFO - Analyzing classification performance...
+2025-05-16 10:52:03,430 - __main__ - INFO - Classification accuracy plot generated
+2025-05-16 10:52:03,435 - __main__ - INFO - Subjects in 'Others' for Q2_K:
+2025-05-16 10:52:03,435 - __main__ - INFO -   Law & Legal: acc=0.000, n=8
+2025-05-16 10:52:03,435 - __main__ - INFO -   Philosophy & Ethics: acc=0.312, n=16
+2025-05-16 10:52:03,435 - __main__ - INFO - 
+Accuracy statistics for Q2_K:
+2025-05-16 10:52:03,435 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:52:03,435 - __main__ - INFO - Significant groups: 4
+2025-05-16 10:52:03,435 - __main__ - INFO - Samples in Others: 24
+2025-05-16 10:52:03,438 - __main__ - INFO - 
+Accuracy statistics for Q4_K_M:
+2025-05-16 10:52:03,438 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:52:03,438 - __main__ - INFO - Significant groups: 6
+2025-05-16 10:52:03,438 - __main__ - INFO - Samples in Others: 0
+2025-05-16 10:52:03,440 - __main__ - INFO - Subjects in 'Others' for Q8_0:
+2025-05-16 10:52:03,440 - __main__ - INFO -   Law & Legal: acc=0.250, n=4
+2025-05-16 10:52:03,441 - __main__ - INFO - 
+Accuracy statistics for Q8_0:
+2025-05-16 10:52:03,441 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:52:03,441 - __main__ - INFO - Significant groups: 5
+2025-05-16 10:52:03,441 - __main__ - INFO - Samples in Others: 4
+2025-05-16 10:52:03,560 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-05-16 10:52:03,636 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-05-16 10:52:03,636 - __main__ - INFO - Analyzing summarization performance...
+2025-05-16 10:52:03,695 - __main__ - INFO - Summarization BERT scores plot generated
+2025-05-16 10:52:03,850 - __main__ - INFO - Summarization response length plot generated
+2025-05-16 10:52:03,851 - __main__ - INFO - Analyzing toxicity performance...
+2025-05-16 10:52:03,960 - __main__ - INFO - Toxicity rate plot generated
+2025-05-16 10:52:03,961 - __main__ - WARNING - No toxicity comparison data available
+2025-05-16 10:52:03,961 - __main__ - INFO - Creating merged metrics plot...
+2025-05-16 10:52:04,139 - __main__ - INFO - Merged metrics plot generated
+2025-05-16 10:52:04,140 - __main__ - INFO - Analysis pipeline completed successfully
+2025-05-16 10:53:13,235 - __main__ - INFO - Starting analysis pipeline...
+2025-05-16 10:53:13,423 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:53:13,424 - __main__ - INFO - Loaded classification data for Q2_K: 1000 rows
+2025-05-16 10:53:13,452 - __main__ - INFO - Loaded summarization data for Q2_K: 243 rows
+2025-05-16 10:53:13,453 - __main__ - INFO - Loaded toxicity data for Q2_K: 500 rows
+2025-05-16 10:53:13,570 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:53:13,571 - __main__ - INFO - Loaded classification data for Q4_K_M: 1000 rows
+2025-05-16 10:53:13,597 - __main__ - INFO - Loaded summarization data for Q4_K_M: 243 rows
+2025-05-16 10:53:13,598 - __main__ - INFO - Loaded toxicity data for Q4_K_M: 500 rows
+2025-05-16 10:53:13,714 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:53:13,715 - __main__ - INFO - Loaded classification data for Q8_0: 1000 rows
+2025-05-16 10:53:13,741 - __main__ - INFO - Loaded summarization data for Q8_0: 243 rows
+2025-05-16 10:53:13,743 - __main__ - INFO - Loaded toxicity data for Q8_0: 500 rows
+2025-05-16 10:53:13,743 - __main__ - INFO - Analyzing token counts...
+2025-05-16 10:53:13,941 - __main__ - INFO - Token count comparison plot generated
+2025-05-16 10:53:14,368 - __main__ - INFO - Token distribution plot generated
+2025-05-16 10:53:14,545 - __main__ - INFO - Runtime distribution plot generated
+2025-05-16 10:53:14,545 - __main__ - INFO - Q2_K - classification:
+2025-05-16 10:53:14,545 - __main__ - INFO -   Total time: 1.113s
+2025-05-16 10:53:14,545 - __main__ - INFO -   Prompt time: 3.377s
+2025-05-16 10:53:14,545 - __main__ - INFO -   Response time: -2.264s
+2025-05-16 10:53:14,545 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:53:14,545 - __main__ - INFO - Q2_K - summarization:
+2025-05-16 10:53:14,545 - __main__ - INFO -   Total time: 1.578s
+2025-05-16 10:53:14,545 - __main__ - INFO -   Prompt time: 1.146s
+2025-05-16 10:53:14,545 - __main__ - INFO -   Response time: 0.432s
+2025-05-16 10:53:14,545 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:53:14,545 - __main__ - INFO - Q2_K - toxicity:
+2025-05-16 10:53:14,545 - __main__ - INFO -   Total time: 10.345s
+2025-05-16 10:53:14,545 - __main__ - INFO -   Prompt time: 0.475s
+2025-05-16 10:53:14,545 - __main__ - INFO -   Response time: 9.869s
+2025-05-16 10:53:14,545 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:53:14,546 - __main__ - INFO - Q4_K_M - classification:
+2025-05-16 10:53:14,546 - __main__ - INFO -   Total time: 0.225s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Prompt time: 0.634s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Response time: -0.409s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:53:14,546 - __main__ - INFO - Q4_K_M - summarization:
+2025-05-16 10:53:14,546 - __main__ - INFO -   Total time: 1.832s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Prompt time: 1.126s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Response time: 0.706s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:53:14,546 - __main__ - INFO - Q4_K_M - toxicity:
+2025-05-16 10:53:14,546 - __main__ - INFO -   Total time: 5.093s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Prompt time: 0.466s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Response time: 4.627s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:53:14,546 - __main__ - INFO - Q8_0 - classification:
+2025-05-16 10:53:14,546 - __main__ - INFO -   Total time: 0.399s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Prompt time: 0.750s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Response time: -0.351s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:53:14,546 - __main__ - INFO - Q8_0 - summarization:
+2025-05-16 10:53:14,546 - __main__ - INFO -   Total time: 2.773s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Prompt time: 1.076s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Response time: 1.697s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Tokenize time: 0.001s
+2025-05-16 10:53:14,546 - __main__ - INFO - Q8_0 - toxicity:
+2025-05-16 10:53:14,546 - __main__ - INFO -   Total time: 9.338s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Prompt time: 0.442s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Response time: 8.896s
+2025-05-16 10:53:14,546 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:53:14,630 - __main__ - INFO - Timing comparison plot generated
+2025-05-16 10:53:14,631 - __main__ - INFO - Analyzing classification performance...
+2025-05-16 10:53:14,674 - __main__ - INFO - Classification accuracy plot generated
+2025-05-16 10:53:14,676 - __main__ - INFO - Subjects in 'Others' for Q2_K:
+2025-05-16 10:53:14,677 - __main__ - INFO -   Law & Legal: acc=0.000, n=8
+2025-05-16 10:53:14,677 - __main__ - INFO -   Philosophy & Ethics: acc=0.312, n=16
+2025-05-16 10:53:14,677 - __main__ - INFO - 
+Accuracy statistics for Q2_K:
+2025-05-16 10:53:14,677 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:53:14,677 - __main__ - INFO - Significant groups: 4
+2025-05-16 10:53:14,677 - __main__ - INFO - Samples in Others: 24
+2025-05-16 10:53:14,679 - __main__ - INFO - 
+Accuracy statistics for Q4_K_M:
+2025-05-16 10:53:14,679 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:53:14,679 - __main__ - INFO - Significant groups: 6
+2025-05-16 10:53:14,679 - __main__ - INFO - Samples in Others: 0
+2025-05-16 10:53:14,681 - __main__ - INFO - Subjects in 'Others' for Q8_0:
+2025-05-16 10:53:14,681 - __main__ - INFO -   Law & Legal: acc=0.250, n=4
+2025-05-16 10:53:14,681 - __main__ - INFO - 
+Accuracy statistics for Q8_0:
+2025-05-16 10:53:14,681 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:53:14,681 - __main__ - INFO - Significant groups: 5
+2025-05-16 10:53:14,681 - __main__ - INFO - Samples in Others: 4
+2025-05-16 10:53:14,786 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-05-16 10:53:14,860 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-05-16 10:53:14,860 - __main__ - INFO - Analyzing summarization performance...
+2025-05-16 10:53:14,916 - __main__ - INFO - Summarization BERT scores plot generated
+2025-05-16 10:53:15,065 - __main__ - INFO - Summarization response length plot generated
+2025-05-16 10:53:15,065 - __main__ - INFO - Analyzing toxicity performance...
+2025-05-16 10:53:15,161 - __main__ - INFO - Toxicity rate plot generated
+2025-05-16 10:53:15,162 - __main__ - WARNING - No toxicity comparison data available
+2025-05-16 10:53:15,162 - __main__ - INFO - Creating merged metrics plot...
+2025-05-16 10:53:15,343 - __main__ - INFO - Merged metrics plot generated
+2025-05-16 10:53:15,343 - __main__ - INFO - Analysis pipeline completed successfully
+2025-05-16 10:54:32,783 - __main__ - INFO - Starting analysis pipeline...
+2025-05-16 10:54:32,946 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:54:32,948 - __main__ - INFO - Loaded classification data for Q2_K: 1000 rows
+2025-05-16 10:54:32,974 - __main__ - INFO - Loaded summarization data for Q2_K: 243 rows
+2025-05-16 10:54:32,975 - __main__ - INFO - Loaded toxicity data for Q2_K: 500 rows
+2025-05-16 10:54:33,094 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:54:33,095 - __main__ - INFO - Loaded classification data for Q4_K_M: 1000 rows
+2025-05-16 10:54:33,127 - __main__ - INFO - Loaded summarization data for Q4_K_M: 243 rows
+2025-05-16 10:54:33,129 - __main__ - INFO - Loaded toxicity data for Q4_K_M: 500 rows
+2025-05-16 10:54:33,256 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:54:33,257 - __main__ - INFO - Loaded classification data for Q8_0: 1000 rows
+2025-05-16 10:54:33,285 - __main__ - INFO - Loaded summarization data for Q8_0: 243 rows
+2025-05-16 10:54:33,287 - __main__ - INFO - Loaded toxicity data for Q8_0: 500 rows
+2025-05-16 10:54:33,287 - __main__ - INFO - Analyzing token counts...
+2025-05-16 10:54:33,498 - __main__ - INFO - Token count comparison plot generated
+2025-05-16 10:54:33,914 - __main__ - INFO - Token distribution plot generated
+2025-05-16 10:54:34,093 - __main__ - INFO - Runtime distribution plot generated
+2025-05-16 10:54:34,094 - __main__ - INFO - Q2_K - classification:
+2025-05-16 10:54:34,094 - __main__ - INFO -   Total time: 1.113s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Prompt time: 3.377s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Response time: -2.264s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:54:34,094 - __main__ - INFO - Q2_K - summarization:
+2025-05-16 10:54:34,094 - __main__ - INFO -   Total time: 1.578s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Prompt time: 1.146s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Response time: 0.432s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:54:34,094 - __main__ - INFO - Q2_K - toxicity:
+2025-05-16 10:54:34,094 - __main__ - INFO -   Total time: 10.345s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Prompt time: 0.475s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Response time: 9.869s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:54:34,094 - __main__ - INFO - Q4_K_M - classification:
+2025-05-16 10:54:34,094 - __main__ - INFO -   Total time: 0.225s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Prompt time: 0.634s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Response time: -0.409s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:54:34,094 - __main__ - INFO - Q4_K_M - summarization:
+2025-05-16 10:54:34,094 - __main__ - INFO -   Total time: 1.832s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Prompt time: 1.126s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Response time: 0.706s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:54:34,094 - __main__ - INFO - Q4_K_M - toxicity:
+2025-05-16 10:54:34,094 - __main__ - INFO -   Total time: 5.093s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Prompt time: 0.466s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Response time: 4.627s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:54:34,094 - __main__ - INFO - Q8_0 - classification:
+2025-05-16 10:54:34,094 - __main__ - INFO -   Total time: 0.399s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Prompt time: 0.750s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Response time: -0.351s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:54:34,094 - __main__ - INFO - Q8_0 - summarization:
+2025-05-16 10:54:34,094 - __main__ - INFO -   Total time: 2.773s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Prompt time: 1.076s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Response time: 1.697s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Tokenize time: 0.001s
+2025-05-16 10:54:34,094 - __main__ - INFO - Q8_0 - toxicity:
+2025-05-16 10:54:34,094 - __main__ - INFO -   Total time: 9.338s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Prompt time: 0.442s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Response time: 8.896s
+2025-05-16 10:54:34,094 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:54:34,179 - __main__ - INFO - Timing comparison plot generated
+2025-05-16 10:54:34,179 - __main__ - INFO - Analyzing classification performance...
+2025-05-16 10:54:34,226 - __main__ - INFO - Classification accuracy plot generated
+2025-05-16 10:54:34,228 - __main__ - INFO - Subjects in 'Others' for Q2_K:
+2025-05-16 10:54:34,228 - __main__ - INFO -   Law & Legal: acc=0.000, n=8
+2025-05-16 10:54:34,229 - __main__ - INFO -   Philosophy & Ethics: acc=0.312, n=16
+2025-05-16 10:54:34,229 - __main__ - INFO - 
+Accuracy statistics for Q2_K:
+2025-05-16 10:54:34,229 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:54:34,229 - __main__ - INFO - Significant groups: 4
+2025-05-16 10:54:34,229 - __main__ - INFO - Samples in Others: 24
+2025-05-16 10:54:34,231 - __main__ - INFO - 
+Accuracy statistics for Q4_K_M:
+2025-05-16 10:54:34,231 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:54:34,231 - __main__ - INFO - Significant groups: 6
+2025-05-16 10:54:34,231 - __main__ - INFO - Samples in Others: 0
+2025-05-16 10:54:34,233 - __main__ - INFO - Subjects in 'Others' for Q8_0:
+2025-05-16 10:54:34,233 - __main__ - INFO -   Law & Legal: acc=0.250, n=4
+2025-05-16 10:54:34,233 - __main__ - INFO - 
+Accuracy statistics for Q8_0:
+2025-05-16 10:54:34,233 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:54:34,233 - __main__ - INFO - Significant groups: 5
+2025-05-16 10:54:34,233 - __main__ - INFO - Samples in Others: 4
+2025-05-16 10:54:34,339 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-05-16 10:54:34,411 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-05-16 10:54:34,411 - __main__ - INFO - Analyzing summarization performance...
+2025-05-16 10:54:34,466 - __main__ - INFO - Summarization BERT scores plot generated
+2025-05-16 10:54:34,613 - __main__ - INFO - Summarization response length plot generated
+2025-05-16 10:54:34,613 - __main__ - INFO - Analyzing toxicity performance...
+2025-05-16 10:54:34,704 - __main__ - INFO - Toxicity rate plot generated
+2025-05-16 10:54:34,704 - __main__ - WARNING - No toxicity comparison data available
+2025-05-16 10:54:34,704 - __main__ - INFO - Creating merged metrics plot...
+2025-05-16 10:54:34,862 - __main__ - INFO - Merged metrics plot generated
+2025-05-16 10:54:34,862 - __main__ - INFO - Analysis pipeline completed successfully
+2025-05-16 10:54:49,969 - __main__ - INFO - Starting analysis pipeline...
+2025-05-16 10:54:50,126 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:54:50,128 - __main__ - INFO - Loaded classification data for Q2_K: 1000 rows
+2025-05-16 10:54:50,153 - __main__ - INFO - Loaded summarization data for Q2_K: 243 rows
+2025-05-16 10:54:50,154 - __main__ - INFO - Loaded toxicity data for Q2_K: 500 rows
+2025-05-16 10:54:50,264 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:54:50,265 - __main__ - INFO - Loaded classification data for Q4_K_M: 1000 rows
+2025-05-16 10:54:50,290 - __main__ - INFO - Loaded summarization data for Q4_K_M: 243 rows
+2025-05-16 10:54:50,291 - __main__ - INFO - Loaded toxicity data for Q4_K_M: 500 rows
+2025-05-16 10:54:50,403 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:54:50,405 - __main__ - INFO - Loaded classification data for Q8_0: 1000 rows
+2025-05-16 10:54:50,432 - __main__ - INFO - Loaded summarization data for Q8_0: 243 rows
+2025-05-16 10:54:50,433 - __main__ - INFO - Loaded toxicity data for Q8_0: 500 rows
+2025-05-16 10:54:50,433 - __main__ - INFO - Analyzing token counts...
+2025-05-16 10:54:50,630 - __main__ - INFO - Token count comparison plot generated
+2025-05-16 10:54:51,054 - __main__ - INFO - Token distribution plot generated
+2025-05-16 10:54:51,239 - __main__ - INFO - Runtime distribution plot generated
+2025-05-16 10:54:51,240 - __main__ - INFO - Q2_K - classification:
+2025-05-16 10:54:51,240 - __main__ - INFO -   Total time: 1.113s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Prompt time: 3.377s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Response time: -2.264s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:54:51,240 - __main__ - INFO - Q2_K - summarization:
+2025-05-16 10:54:51,240 - __main__ - INFO -   Total time: 1.578s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Prompt time: 1.146s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Response time: 0.432s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:54:51,240 - __main__ - INFO - Q2_K - toxicity:
+2025-05-16 10:54:51,240 - __main__ - INFO -   Total time: 10.345s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Prompt time: 0.475s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Response time: 9.869s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:54:51,240 - __main__ - INFO - Q4_K_M - classification:
+2025-05-16 10:54:51,240 - __main__ - INFO -   Total time: 0.225s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Prompt time: 0.634s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Response time: -0.409s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:54:51,240 - __main__ - INFO - Q4_K_M - summarization:
+2025-05-16 10:54:51,240 - __main__ - INFO -   Total time: 1.832s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Prompt time: 1.126s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Response time: 0.706s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:54:51,240 - __main__ - INFO - Q4_K_M - toxicity:
+2025-05-16 10:54:51,240 - __main__ - INFO -   Total time: 5.093s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Prompt time: 0.466s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Response time: 4.627s
+2025-05-16 10:54:51,240 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:54:51,241 - __main__ - INFO - Q8_0 - classification:
+2025-05-16 10:54:51,241 - __main__ - INFO -   Total time: 0.399s
+2025-05-16 10:54:51,241 - __main__ - INFO -   Prompt time: 0.750s
+2025-05-16 10:54:51,241 - __main__ - INFO -   Response time: -0.351s
+2025-05-16 10:54:51,241 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:54:51,241 - __main__ - INFO - Q8_0 - summarization:
+2025-05-16 10:54:51,241 - __main__ - INFO -   Total time: 2.773s
+2025-05-16 10:54:51,241 - __main__ - INFO -   Prompt time: 1.076s
+2025-05-16 10:54:51,241 - __main__ - INFO -   Response time: 1.697s
+2025-05-16 10:54:51,241 - __main__ - INFO -   Tokenize time: 0.001s
+2025-05-16 10:54:51,241 - __main__ - INFO - Q8_0 - toxicity:
+2025-05-16 10:54:51,241 - __main__ - INFO -   Total time: 9.338s
+2025-05-16 10:54:51,241 - __main__ - INFO -   Prompt time: 0.442s
+2025-05-16 10:54:51,241 - __main__ - INFO -   Response time: 8.896s
+2025-05-16 10:54:51,241 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:54:51,339 - __main__ - INFO - Timing comparison plot generated
+2025-05-16 10:54:51,339 - __main__ - INFO - Analyzing classification performance...
+2025-05-16 10:54:51,390 - __main__ - INFO - Classification accuracy plot generated
+2025-05-16 10:54:51,393 - __main__ - INFO - Subjects in 'Others' for Q2_K:
+2025-05-16 10:54:51,393 - __main__ - INFO -   Law & Legal: acc=0.000, n=8
+2025-05-16 10:54:51,393 - __main__ - INFO -   Philosophy & Ethics: acc=0.312, n=16
+2025-05-16 10:54:51,393 - __main__ - INFO - 
+Accuracy statistics for Q2_K:
+2025-05-16 10:54:51,393 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:54:51,393 - __main__ - INFO - Significant groups: 4
+2025-05-16 10:54:51,393 - __main__ - INFO - Samples in Others: 24
+2025-05-16 10:54:51,396 - __main__ - INFO - 
+Accuracy statistics for Q4_K_M:
+2025-05-16 10:54:51,396 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:54:51,396 - __main__ - INFO - Significant groups: 6
+2025-05-16 10:54:51,396 - __main__ - INFO - Samples in Others: 0
+2025-05-16 10:54:51,398 - __main__ - INFO - Subjects in 'Others' for Q8_0:
+2025-05-16 10:54:51,398 - __main__ - INFO -   Law & Legal: acc=0.250, n=4
+2025-05-16 10:54:51,398 - __main__ - INFO - 
+Accuracy statistics for Q8_0:
+2025-05-16 10:54:51,398 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:54:51,398 - __main__ - INFO - Significant groups: 5
+2025-05-16 10:54:51,398 - __main__ - INFO - Samples in Others: 4
+2025-05-16 10:54:51,514 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-05-16 10:54:51,587 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-05-16 10:54:51,587 - __main__ - INFO - Analyzing summarization performance...
+2025-05-16 10:54:51,645 - __main__ - INFO - Summarization BERT scores plot generated
+2025-05-16 10:54:51,794 - __main__ - INFO - Summarization response length plot generated
+2025-05-16 10:54:51,794 - __main__ - INFO - Analyzing toxicity performance...
+2025-05-16 10:54:51,895 - __main__ - INFO - Toxicity rate plot generated
+2025-05-16 10:54:51,895 - __main__ - WARNING - No toxicity comparison data available
+2025-05-16 10:54:51,895 - __main__ - INFO - Creating merged metrics plot...
+2025-05-16 10:54:52,058 - __main__ - INFO - Merged metrics plot generated
+2025-05-16 10:54:52,058 - __main__ - INFO - Analysis pipeline completed successfully
+2025-05-16 10:56:27,504 - __main__ - INFO - Starting analysis pipeline...
+2025-05-16 10:56:27,662 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:56:27,663 - __main__ - INFO - Loaded classification data for Q2_K: 1000 rows
+2025-05-16 10:56:27,688 - __main__ - INFO - Loaded summarization data for Q2_K: 243 rows
+2025-05-16 10:56:27,689 - __main__ - INFO - Loaded toxicity data for Q2_K: 500 rows
+2025-05-16 10:56:27,799 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:56:27,801 - __main__ - INFO - Loaded classification data for Q4_K_M: 1000 rows
+2025-05-16 10:56:27,824 - __main__ - INFO - Loaded summarization data for Q4_K_M: 243 rows
+2025-05-16 10:56:27,826 - __main__ - INFO - Loaded toxicity data for Q4_K_M: 500 rows
+2025-05-16 10:56:27,938 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:56:27,939 - __main__ - INFO - Loaded classification data for Q8_0: 1000 rows
+2025-05-16 10:56:27,965 - __main__ - INFO - Loaded summarization data for Q8_0: 243 rows
+2025-05-16 10:56:27,967 - __main__ - INFO - Loaded toxicity data for Q8_0: 500 rows
+2025-05-16 10:56:27,967 - __main__ - INFO - Analyzing token counts...
+2025-05-16 10:56:28,164 - __main__ - INFO - Token count comparison plot generated
+2025-05-16 10:56:28,581 - __main__ - INFO - Token distribution plot generated
+2025-05-16 10:56:28,758 - __main__ - INFO - Runtime distribution plot generated
+2025-05-16 10:56:28,758 - __main__ - INFO - Q2_K - classification:
+2025-05-16 10:56:28,759 - __main__ - INFO -   Total time: 1.113s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Prompt time: 3.377s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Response time: -2.264s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:56:28,759 - __main__ - INFO - Q2_K - summarization:
+2025-05-16 10:56:28,759 - __main__ - INFO -   Total time: 1.578s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Prompt time: 1.146s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Response time: 0.432s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:56:28,759 - __main__ - INFO - Q2_K - toxicity:
+2025-05-16 10:56:28,759 - __main__ - INFO -   Total time: 10.345s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Prompt time: 0.475s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Response time: 9.869s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:56:28,759 - __main__ - INFO - Q4_K_M - classification:
+2025-05-16 10:56:28,759 - __main__ - INFO -   Total time: 0.225s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Prompt time: 0.634s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Response time: -0.409s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:56:28,759 - __main__ - INFO - Q4_K_M - summarization:
+2025-05-16 10:56:28,759 - __main__ - INFO -   Total time: 1.832s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Prompt time: 1.126s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Response time: 0.706s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:56:28,759 - __main__ - INFO - Q4_K_M - toxicity:
+2025-05-16 10:56:28,759 - __main__ - INFO -   Total time: 5.093s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Prompt time: 0.466s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Response time: 4.627s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:56:28,759 - __main__ - INFO - Q8_0 - classification:
+2025-05-16 10:56:28,759 - __main__ - INFO -   Total time: 0.399s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Prompt time: 0.750s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Response time: -0.351s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:56:28,759 - __main__ - INFO - Q8_0 - summarization:
+2025-05-16 10:56:28,759 - __main__ - INFO -   Total time: 2.773s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Prompt time: 1.076s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Response time: 1.697s
+2025-05-16 10:56:28,759 - __main__ - INFO -   Tokenize time: 0.001s
+2025-05-16 10:56:28,760 - __main__ - INFO - Q8_0 - toxicity:
+2025-05-16 10:56:28,760 - __main__ - INFO -   Total time: 9.338s
+2025-05-16 10:56:28,760 - __main__ - INFO -   Prompt time: 0.442s
+2025-05-16 10:56:28,760 - __main__ - INFO -   Response time: 8.896s
+2025-05-16 10:56:28,760 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:56:28,843 - __main__ - INFO - Timing comparison plot generated
+2025-05-16 10:56:28,843 - __main__ - INFO - Analyzing classification performance...
+2025-05-16 10:56:28,886 - __main__ - INFO - Classification accuracy plot generated
+2025-05-16 10:56:28,888 - __main__ - INFO - Subjects in 'Others' for Q2_K:
+2025-05-16 10:56:28,888 - __main__ - INFO -   Law & Legal: acc=0.000, n=8
+2025-05-16 10:56:28,888 - __main__ - INFO -   Philosophy & Ethics: acc=0.312, n=16
+2025-05-16 10:56:28,889 - __main__ - INFO - 
+Accuracy statistics for Q2_K:
+2025-05-16 10:56:28,889 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:56:28,889 - __main__ - INFO - Significant groups: 4
+2025-05-16 10:56:28,889 - __main__ - INFO - Samples in Others: 24
+2025-05-16 10:56:28,891 - __main__ - INFO - 
+Accuracy statistics for Q4_K_M:
+2025-05-16 10:56:28,891 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:56:28,891 - __main__ - INFO - Significant groups: 6
+2025-05-16 10:56:28,891 - __main__ - INFO - Samples in Others: 0
+2025-05-16 10:56:28,893 - __main__ - INFO - Subjects in 'Others' for Q8_0:
+2025-05-16 10:56:28,893 - __main__ - INFO -   Law & Legal: acc=0.250, n=4
+2025-05-16 10:56:28,893 - __main__ - INFO - 
+Accuracy statistics for Q8_0:
+2025-05-16 10:56:28,893 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:56:28,893 - __main__ - INFO - Significant groups: 5
+2025-05-16 10:56:28,893 - __main__ - INFO - Samples in Others: 4
+2025-05-16 10:56:29,001 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-05-16 10:56:29,079 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-05-16 10:56:29,079 - __main__ - INFO - Analyzing summarization performance...
+2025-05-16 10:56:29,137 - __main__ - INFO - Summarization BERT scores plot generated
+2025-05-16 10:56:29,299 - __main__ - INFO - Summarization response length plot generated
+2025-05-16 10:56:29,299 - __main__ - INFO - Analyzing toxicity performance...
+2025-05-16 10:56:29,404 - __main__ - INFO - Toxicity rate plot generated
+2025-05-16 10:56:29,404 - __main__ - WARNING - No toxicity comparison data available
+2025-05-16 10:56:29,404 - __main__ - INFO - Creating merged metrics plot...
+2025-05-16 10:56:29,536 - __main__ - INFO - Merged metrics plot generated
+2025-05-16 10:56:29,536 - __main__ - INFO - Analysis pipeline completed successfully
+2025-05-16 10:56:47,143 - __main__ - INFO - Starting analysis pipeline...
+2025-05-16 10:56:47,338 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:56:47,340 - __main__ - INFO - Loaded classification data for Q2_K: 1000 rows
+2025-05-16 10:56:47,368 - __main__ - INFO - Loaded summarization data for Q2_K: 243 rows
+2025-05-16 10:56:47,370 - __main__ - INFO - Loaded toxicity data for Q2_K: 500 rows
+2025-05-16 10:56:47,485 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:56:47,486 - __main__ - INFO - Loaded classification data for Q4_K_M: 1000 rows
+2025-05-16 10:56:47,511 - __main__ - INFO - Loaded summarization data for Q4_K_M: 243 rows
+2025-05-16 10:56:47,512 - __main__ - INFO - Loaded toxicity data for Q4_K_M: 500 rows
+2025-05-16 10:56:47,630 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:56:47,631 - __main__ - INFO - Loaded classification data for Q8_0: 1000 rows
+2025-05-16 10:56:47,658 - __main__ - INFO - Loaded summarization data for Q8_0: 243 rows
+2025-05-16 10:56:47,660 - __main__ - INFO - Loaded toxicity data for Q8_0: 500 rows
+2025-05-16 10:56:47,660 - __main__ - INFO - Analyzing token counts...
+2025-05-16 10:56:47,849 - __main__ - INFO - Token count comparison plot generated
+2025-05-16 10:56:48,255 - __main__ - INFO - Token distribution plot generated
+2025-05-16 10:56:48,431 - __main__ - INFO - Runtime distribution plot generated
+2025-05-16 10:56:48,431 - __main__ - INFO - Q2_K - classification:
+2025-05-16 10:56:48,431 - __main__ - INFO -   Total time: 1.113s
+2025-05-16 10:56:48,431 - __main__ - INFO -   Prompt time: 3.377s
+2025-05-16 10:56:48,431 - __main__ - INFO -   Response time: -2.264s
+2025-05-16 10:56:48,431 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:56:48,431 - __main__ - INFO - Q2_K - summarization:
+2025-05-16 10:56:48,431 - __main__ - INFO -   Total time: 1.578s
+2025-05-16 10:56:48,431 - __main__ - INFO -   Prompt time: 1.146s
+2025-05-16 10:56:48,431 - __main__ - INFO -   Response time: 0.432s
+2025-05-16 10:56:48,431 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:56:48,432 - __main__ - INFO - Q2_K - toxicity:
+2025-05-16 10:56:48,432 - __main__ - INFO -   Total time: 10.345s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Prompt time: 0.475s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Response time: 9.869s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:56:48,432 - __main__ - INFO - Q4_K_M - classification:
+2025-05-16 10:56:48,432 - __main__ - INFO -   Total time: 0.225s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Prompt time: 0.634s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Response time: -0.409s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:56:48,432 - __main__ - INFO - Q4_K_M - summarization:
+2025-05-16 10:56:48,432 - __main__ - INFO -   Total time: 1.832s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Prompt time: 1.126s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Response time: 0.706s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:56:48,432 - __main__ - INFO - Q4_K_M - toxicity:
+2025-05-16 10:56:48,432 - __main__ - INFO -   Total time: 5.093s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Prompt time: 0.466s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Response time: 4.627s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:56:48,432 - __main__ - INFO - Q8_0 - classification:
+2025-05-16 10:56:48,432 - __main__ - INFO -   Total time: 0.399s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Prompt time: 0.750s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Response time: -0.351s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:56:48,432 - __main__ - INFO - Q8_0 - summarization:
+2025-05-16 10:56:48,432 - __main__ - INFO -   Total time: 2.773s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Prompt time: 1.076s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Response time: 1.697s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Tokenize time: 0.001s
+2025-05-16 10:56:48,432 - __main__ - INFO - Q8_0 - toxicity:
+2025-05-16 10:56:48,432 - __main__ - INFO -   Total time: 9.338s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Prompt time: 0.442s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Response time: 8.896s
+2025-05-16 10:56:48,432 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:56:48,520 - __main__ - INFO - Timing comparison plot generated
+2025-05-16 10:56:48,520 - __main__ - INFO - Analyzing classification performance...
+2025-05-16 10:56:48,566 - __main__ - INFO - Classification accuracy plot generated
+2025-05-16 10:56:48,569 - __main__ - INFO - Subjects in 'Others' for Q2_K:
+2025-05-16 10:56:48,569 - __main__ - INFO -   Law & Legal: acc=0.000, n=8
+2025-05-16 10:56:48,569 - __main__ - INFO -   Philosophy & Ethics: acc=0.312, n=16
+2025-05-16 10:56:48,569 - __main__ - INFO - 
+Accuracy statistics for Q2_K:
+2025-05-16 10:56:48,569 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:56:48,569 - __main__ - INFO - Significant groups: 4
+2025-05-16 10:56:48,569 - __main__ - INFO - Samples in Others: 24
+2025-05-16 10:56:48,571 - __main__ - INFO - 
+Accuracy statistics for Q4_K_M:
+2025-05-16 10:56:48,571 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:56:48,571 - __main__ - INFO - Significant groups: 6
+2025-05-16 10:56:48,571 - __main__ - INFO - Samples in Others: 0
+2025-05-16 10:56:48,573 - __main__ - INFO - Subjects in 'Others' for Q8_0:
+2025-05-16 10:56:48,573 - __main__ - INFO -   Law & Legal: acc=0.250, n=4
+2025-05-16 10:56:48,573 - __main__ - INFO - 
+Accuracy statistics for Q8_0:
+2025-05-16 10:56:48,573 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:56:48,573 - __main__ - INFO - Significant groups: 5
+2025-05-16 10:56:48,573 - __main__ - INFO - Samples in Others: 4
+2025-05-16 10:56:48,675 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-05-16 10:56:48,747 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-05-16 10:56:48,747 - __main__ - INFO - Analyzing summarization performance...
+2025-05-16 10:56:48,803 - __main__ - INFO - Summarization BERT scores plot generated
+2025-05-16 10:56:48,952 - __main__ - INFO - Summarization response length plot generated
+2025-05-16 10:56:48,952 - __main__ - INFO - Analyzing toxicity performance...
+2025-05-16 10:56:49,050 - __main__ - INFO - Toxicity rate plot generated
+2025-05-16 10:56:49,051 - __main__ - WARNING - No toxicity comparison data available
+2025-05-16 10:56:49,051 - __main__ - INFO - Creating merged metrics plot...
+2025-05-16 10:56:49,221 - __main__ - INFO - Merged metrics plot generated
+2025-05-16 10:56:49,221 - __main__ - INFO - Analysis pipeline completed successfully
+2025-05-16 10:58:07,974 - __main__ - INFO - Starting analysis pipeline...
+2025-05-16 10:58:08,125 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:58:08,127 - __main__ - INFO - Loaded classification data for Q2_K: 1000 rows
+2025-05-16 10:58:08,152 - __main__ - INFO - Loaded summarization data for Q2_K: 243 rows
+2025-05-16 10:58:08,153 - __main__ - INFO - Loaded toxicity data for Q2_K: 500 rows
+2025-05-16 10:58:08,261 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:58:08,262 - __main__ - INFO - Loaded classification data for Q4_K_M: 1000 rows
+2025-05-16 10:58:08,286 - __main__ - INFO - Loaded summarization data for Q4_K_M: 243 rows
+2025-05-16 10:58:08,287 - __main__ - INFO - Loaded toxicity data for Q4_K_M: 500 rows
+2025-05-16 10:58:08,400 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:58:08,401 - __main__ - INFO - Loaded classification data for Q8_0: 1000 rows
+2025-05-16 10:58:08,427 - __main__ - INFO - Loaded summarization data for Q8_0: 243 rows
+2025-05-16 10:58:08,428 - __main__ - INFO - Loaded toxicity data for Q8_0: 500 rows
+2025-05-16 10:58:08,428 - __main__ - INFO - Analyzing token counts...
+2025-05-16 10:58:08,615 - __main__ - INFO - Token count comparison plot generated
+2025-05-16 10:58:09,050 - __main__ - INFO - Token distribution plot generated
+2025-05-16 10:58:09,232 - __main__ - INFO - Runtime distribution plot generated
+2025-05-16 10:58:09,233 - __main__ - INFO - Q2_K - classification:
+2025-05-16 10:58:09,233 - __main__ - INFO -   Total time: 1.113s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Prompt time: 3.377s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Response time: -2.264s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:58:09,233 - __main__ - INFO - Q2_K - summarization:
+2025-05-16 10:58:09,233 - __main__ - INFO -   Total time: 1.578s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Prompt time: 1.146s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Response time: 0.432s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:58:09,233 - __main__ - INFO - Q2_K - toxicity:
+2025-05-16 10:58:09,233 - __main__ - INFO -   Total time: 10.345s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Prompt time: 0.475s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Response time: 9.869s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:58:09,233 - __main__ - INFO - Q4_K_M - classification:
+2025-05-16 10:58:09,233 - __main__ - INFO -   Total time: 0.225s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Prompt time: 0.634s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Response time: -0.409s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:58:09,233 - __main__ - INFO - Q4_K_M - summarization:
+2025-05-16 10:58:09,233 - __main__ - INFO -   Total time: 1.832s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Prompt time: 1.126s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Response time: 0.706s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:58:09,233 - __main__ - INFO - Q4_K_M - toxicity:
+2025-05-16 10:58:09,233 - __main__ - INFO -   Total time: 5.093s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Prompt time: 0.466s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Response time: 4.627s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:58:09,233 - __main__ - INFO - Q8_0 - classification:
+2025-05-16 10:58:09,233 - __main__ - INFO -   Total time: 0.399s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Prompt time: 0.750s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Response time: -0.351s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:58:09,233 - __main__ - INFO - Q8_0 - summarization:
+2025-05-16 10:58:09,233 - __main__ - INFO -   Total time: 2.773s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Prompt time: 1.076s
+2025-05-16 10:58:09,233 - __main__ - INFO -   Response time: 1.697s
+2025-05-16 10:58:09,234 - __main__ - INFO -   Tokenize time: 0.001s
+2025-05-16 10:58:09,234 - __main__ - INFO - Q8_0 - toxicity:
+2025-05-16 10:58:09,234 - __main__ - INFO -   Total time: 9.338s
+2025-05-16 10:58:09,234 - __main__ - INFO -   Prompt time: 0.442s
+2025-05-16 10:58:09,234 - __main__ - INFO -   Response time: 8.896s
+2025-05-16 10:58:09,234 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:58:09,333 - __main__ - INFO - Timing comparison plot generated
+2025-05-16 10:58:09,333 - __main__ - INFO - Analyzing classification performance...
+2025-05-16 10:58:09,383 - __main__ - INFO - Classification accuracy plot generated
+2025-05-16 10:58:09,386 - __main__ - INFO - Subjects in 'Others' for Q2_K:
+2025-05-16 10:58:09,386 - __main__ - INFO -   Law & Legal: acc=0.000, n=8
+2025-05-16 10:58:09,387 - __main__ - INFO -   Philosophy & Ethics: acc=0.312, n=16
+2025-05-16 10:58:09,387 - __main__ - INFO - 
+Accuracy statistics for Q2_K:
+2025-05-16 10:58:09,387 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:58:09,387 - __main__ - INFO - Significant groups: 4
+2025-05-16 10:58:09,387 - __main__ - INFO - Samples in Others: 24
+2025-05-16 10:58:09,389 - __main__ - INFO - 
+Accuracy statistics for Q4_K_M:
+2025-05-16 10:58:09,389 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:58:09,389 - __main__ - INFO - Significant groups: 6
+2025-05-16 10:58:09,389 - __main__ - INFO - Samples in Others: 0
+2025-05-16 10:58:09,392 - __main__ - INFO - Subjects in 'Others' for Q8_0:
+2025-05-16 10:58:09,392 - __main__ - INFO -   Law & Legal: acc=0.250, n=4
+2025-05-16 10:58:09,392 - __main__ - INFO - 
+Accuracy statistics for Q8_0:
+2025-05-16 10:58:09,392 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:58:09,392 - __main__ - INFO - Significant groups: 5
+2025-05-16 10:58:09,392 - __main__ - INFO - Samples in Others: 4
+2025-05-16 10:58:09,504 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-05-16 10:58:09,576 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-05-16 10:58:09,576 - __main__ - INFO - Analyzing summarization performance...
+2025-05-16 10:58:09,633 - __main__ - INFO - Summarization BERT scores plot generated
+2025-05-16 10:58:09,785 - __main__ - INFO - Summarization response length plot generated
+2025-05-16 10:58:09,785 - __main__ - INFO - Analyzing toxicity performance...
+2025-05-16 10:58:09,881 - __main__ - INFO - Toxicity rate plot generated
+2025-05-16 10:58:09,881 - __main__ - WARNING - No toxicity comparison data available
+2025-05-16 10:58:09,881 - __main__ - INFO - Creating merged metrics plot...
+2025-05-16 10:58:10,030 - __main__ - INFO - Merged metrics plot generated
+2025-05-16 10:58:10,030 - __main__ - INFO - Analysis pipeline completed successfully
+2025-05-16 10:59:13,969 - __main__ - INFO - Starting analysis pipeline...
+2025-05-16 10:59:14,129 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:59:14,131 - __main__ - INFO - Loaded classification data for Q2_K: 1000 rows
+2025-05-16 10:59:14,155 - __main__ - INFO - Loaded summarization data for Q2_K: 243 rows
+2025-05-16 10:59:14,156 - __main__ - INFO - Loaded toxicity data for Q2_K: 500 rows
+2025-05-16 10:59:14,269 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:59:14,270 - __main__ - INFO - Loaded classification data for Q4_K_M: 1000 rows
+2025-05-16 10:59:14,295 - __main__ - INFO - Loaded summarization data for Q4_K_M: 243 rows
+2025-05-16 10:59:14,296 - __main__ - INFO - Loaded toxicity data for Q4_K_M: 500 rows
+2025-05-16 10:59:14,420 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-05-16 10:59:14,421 - __main__ - INFO - Loaded classification data for Q8_0: 1000 rows
+2025-05-16 10:59:14,448 - __main__ - INFO - Loaded summarization data for Q8_0: 243 rows
+2025-05-16 10:59:14,450 - __main__ - INFO - Loaded toxicity data for Q8_0: 500 rows
+2025-05-16 10:59:14,450 - __main__ - INFO - Analyzing token counts...
+2025-05-16 10:59:14,638 - __main__ - INFO - Token count comparison plot generated
+2025-05-16 10:59:15,056 - __main__ - INFO - Token distribution plot generated
+2025-05-16 10:59:15,239 - __main__ - INFO - Runtime distribution plot generated
+2025-05-16 10:59:15,240 - __main__ - INFO - Q2_K - classification:
+2025-05-16 10:59:15,240 - __main__ - INFO -   Total time: 1.113s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Prompt time: 3.377s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Response time: -2.264s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:59:15,240 - __main__ - INFO - Q2_K - summarization:
+2025-05-16 10:59:15,240 - __main__ - INFO -   Total time: 1.578s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Prompt time: 1.146s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Response time: 0.432s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:59:15,240 - __main__ - INFO - Q2_K - toxicity:
+2025-05-16 10:59:15,240 - __main__ - INFO -   Total time: 10.345s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Prompt time: 0.475s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Response time: 9.869s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:59:15,240 - __main__ - INFO - Q4_K_M - classification:
+2025-05-16 10:59:15,240 - __main__ - INFO -   Total time: 0.225s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Prompt time: 0.634s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Response time: -0.409s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:59:15,240 - __main__ - INFO - Q4_K_M - summarization:
+2025-05-16 10:59:15,240 - __main__ - INFO -   Total time: 1.832s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Prompt time: 1.126s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Response time: 0.706s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:59:15,240 - __main__ - INFO - Q4_K_M - toxicity:
+2025-05-16 10:59:15,240 - __main__ - INFO -   Total time: 5.093s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Prompt time: 0.466s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Response time: 4.627s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:59:15,240 - __main__ - INFO - Q8_0 - classification:
+2025-05-16 10:59:15,240 - __main__ - INFO -   Total time: 0.399s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Prompt time: 0.750s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Response time: -0.351s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:59:15,240 - __main__ - INFO - Q8_0 - summarization:
+2025-05-16 10:59:15,240 - __main__ - INFO -   Total time: 2.773s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Prompt time: 1.076s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Response time: 1.697s
+2025-05-16 10:59:15,240 - __main__ - INFO -   Tokenize time: 0.001s
+2025-05-16 10:59:15,241 - __main__ - INFO - Q8_0 - toxicity:
+2025-05-16 10:59:15,241 - __main__ - INFO -   Total time: 9.338s
+2025-05-16 10:59:15,241 - __main__ - INFO -   Prompt time: 0.442s
+2025-05-16 10:59:15,241 - __main__ - INFO -   Response time: 8.896s
+2025-05-16 10:59:15,241 - __main__ - INFO -   Tokenize time: 0.000s
+2025-05-16 10:59:15,338 - __main__ - INFO - Timing comparison plot generated
+2025-05-16 10:59:15,338 - __main__ - INFO - Analyzing classification performance...
+2025-05-16 10:59:15,387 - __main__ - INFO - Classification accuracy plot generated
+2025-05-16 10:59:15,390 - __main__ - INFO - Subjects in 'Others' for Q2_K:
+2025-05-16 10:59:15,390 - __main__ - INFO -   Law & Legal: acc=0.000, n=8
+2025-05-16 10:59:15,390 - __main__ - INFO -   Philosophy & Ethics: acc=0.312, n=16
+2025-05-16 10:59:15,390 - __main__ - INFO - 
+Accuracy statistics for Q2_K:
+2025-05-16 10:59:15,390 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:59:15,390 - __main__ - INFO - Significant groups: 4
+2025-05-16 10:59:15,390 - __main__ - INFO - Samples in Others: 24
+2025-05-16 10:59:15,392 - __main__ - INFO - 
+Accuracy statistics for Q4_K_M:
+2025-05-16 10:59:15,392 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:59:15,393 - __main__ - INFO - Significant groups: 6
+2025-05-16 10:59:15,393 - __main__ - INFO - Samples in Others: 0
+2025-05-16 10:59:15,395 - __main__ - INFO - Subjects in 'Others' for Q8_0:
+2025-05-16 10:59:15,395 - __main__ - INFO -   Law & Legal: acc=0.250, n=4
+2025-05-16 10:59:15,395 - __main__ - INFO - 
+Accuracy statistics for Q8_0:
+2025-05-16 10:59:15,395 - __main__ - INFO - Total subject groups: 6
+2025-05-16 10:59:15,395 - __main__ - INFO - Significant groups: 5
+2025-05-16 10:59:15,395 - __main__ - INFO - Samples in Others: 4
+2025-05-16 10:59:15,503 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-05-16 10:59:15,575 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-05-16 10:59:15,575 - __main__ - INFO - Analyzing summarization performance...
+2025-05-16 10:59:15,630 - __main__ - INFO - Summarization BERT scores plot generated
+2025-05-16 10:59:15,776 - __main__ - INFO - Summarization response length plot generated
+2025-05-16 10:59:15,776 - __main__ - INFO - Analyzing toxicity performance...
+2025-05-16 10:59:15,870 - __main__ - INFO - Toxicity rate plot generated
+2025-05-16 10:59:15,870 - __main__ - WARNING - No toxicity comparison data available
+2025-05-16 10:59:15,870 - __main__ - INFO - Creating merged metrics plot...
+2025-05-16 10:59:16,014 - __main__ - INFO - Merged metrics plot generated
+2025-05-16 10:59:16,014 - __main__ - INFO - Analysis pipeline completed successfully
