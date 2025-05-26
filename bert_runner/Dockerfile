@@ -11,6 +11,5 @@ RUN echo "${LIBTORCH}/lib" > /etc/ld.so.conf.d/libtorch.conf && ldconfig
 ENV LD_LIBRARY_PATH=${LIBTORCH}/lib:$LD_LIBRARY_PATH
 
 COPY ./target/release/bert_runner_example bert_runner
-#RUN mkdir model
-#COPY ./bert_runner/model/ /model/
+
 CMD ["./bert_runner"]
