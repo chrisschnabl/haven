@@ -380,7 +380,7 @@ def plot_token_distribution(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
         data: Dictionary containing model data by experiment type
     """
     num_modes = len(EXPERIMENT_MODES)
-    fig, axes = plt.subplots(num_modes, 3, figsize=(17, 3 * num_modes))  # Adjust height based on number of modes
+    fig, axes = plt.subplots(num_modes, 3, figsize=(12, 2.5 * num_modes))  # Smaller figure
     
     # Ensure axes is 2D even with 1 mode
     if num_modes == 1:
@@ -391,15 +391,16 @@ def plot_token_distribution(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     
     # Custom mode labels
     mode_labels = {
-        'enclave4b': '(I) enclave',
-        'host4b': '(II) compute-constant',
-        'comp-constant-8b': '(III) comp-constant-8b'
+        'enclave4b': '(i) enclave',
+        'host4b': '(ii) compute-constant',
+        'comp-constant-8b': '(iii) comp-constant-8b'
     }
     # Axis limits for each column
     xlims = [(0, 8), (0, 65), (0, 250)]
     ylims = [(0, 800), (0, 40), (0, 80)]
-    # Consistent color palette: blue, green, purple
-    exp_colors = ['#4C72B0', '#55A868', '#8172B2']
+    # Use viridis color palette for columns
+    exp_colors = sns.color_palette('viridis', n_colors=3)
+    font_size = 14
     
     # Create distributions for each mode and experiment
     for row, mode in enumerate(EXPERIMENT_MODES):
@@ -434,14 +435,10 @@ def plot_token_distribution(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
                     mean_tokens,
                     color="red",
                     linestyle="--",
-                    linewidth=1.5,
-                    label=f"Mean: {mean_tokens:.1f}"
+                    linewidth=1.5
                 )
                 stats_text = (
-                    f"Mean: {df['token_count'].mean():.1f}\n"
-                    f"Median: {df['token_count'].median():.1f}\n"
-                    f"Min: {df['token_count'].min():.1f}\n"
-                    f"Max: {df['token_count'].max():.1f}"
+                    f"Mean: {df['token_count'].mean():.1f}"
                 )
                 ax.text(
                     0.95, 0.95,
@@ -450,7 +447,7 @@ def plot_token_distribution(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
                     verticalalignment="top",
                     horizontalalignment="right",
                     bbox=dict(boxstyle="round", facecolor="white", alpha=0.8),
-                    fontsize=14,  # Match axis label font size
+                    fontsize=font_size,
                     fontname='Times New Roman'
                 )
             else:
@@ -460,7 +457,7 @@ def plot_token_distribution(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
                     ha="center",
                     va="center",
                     transform=ax.transAxes,
-                    fontsize=14,  # Match axis label font size
+                    fontsize=font_size,
                     fontname='Times New Roman'
                 )
             # Set consistent axis limits
@@ -472,27 +469,28 @@ def plot_token_distribution(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
                 spine.set_linewidth(1.5)
             # Set column titles
             if row == 0:
-                ax.set_title(exp_type.capitalize(), fontsize=14, fontname='Times New Roman')  # Reduced from 18
+                ax.set_title(exp_type.capitalize(), fontsize=font_size, fontname='Times New Roman')
             # Set row labels
             if col == 0:
-                ax.set_ylabel(mode_labels.get(mode, mode), fontsize=14, fontname='Times New Roman')  # Reduced from 24
+                ax.set_ylabel(mode_labels.get(mode, mode), fontsize=font_size, fontname='Times New Roman')
             else:
                 ax.set_ylabel("")
             # Set axis label font size and font
-            ax.tick_params(axis='both', labelsize=14, width=1.5, length=6)  # Reduced from 24
+            ax.tick_params(axis='both', labelsize=font_size, width=1.5, length=6)
             for label in ax.get_xticklabels() + ax.get_yticklabels():
                 label.set_fontname('Times New Roman')
-            for spine in ax.spines.values():
-                spine.set_linewidth(1.5)
+                label.set_fontsize(font_size)
+        
     # Set x/y labels for all subplots
     for col in range(3):
         for row in range(num_modes):
-            axes[row, col].set_xlabel('# tokens', fontsize=14, fontname='Times New Roman')
-            axes[row, col].set_ylabel('Occurrence', fontsize=14, fontname='Times New Roman')
-    # Make legend font smaller if legend exists
-    handles, labels = axes[0,0].get_legend_handles_labels()
-    if handles:
-        fig.legend(handles, labels, loc='upper right', fontsize=12)
+            axes[row, col].set_xlabel('# tokens', fontsize=font_size, fontname='Times New Roman')
+            axes[row, col].set_ylabel('Occurrence', fontsize=font_size, fontname='Times New Roman')
+    # Set y-axis max for bottom row's Summarization and Toxicity plots
+    axes[-1, 1].set_ylim(0, 15)
+    axes[-1, 2].set_ylim(0, 10)
+    axes[-1, 2].set_xlim(0, 250)
+    # Remove the mean legend (do not add a figure legend)
     plt.tight_layout(pad=0.7)
     fig.subplots_adjust(top=0.92)
     fig.savefig(TOKEN_CHARTS / "token_distribution.pdf", dpi=300)
@@ -1312,14 +1310,13 @@ def plot_enclave_combined_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> 
         logger.warning("No enclave4b data available for combined analysis plot")
         return
     
-    # Create figure with four rows and 3 columns (experiment types)
-    fig, axes = plt.subplots(4, 3, figsize=(18, 12))  # Taller figure for 4 rows
+    # Make the figure a bit bigger
+    fig, axes = plt.subplots(4, 3, figsize=(15, 10))
     
-    # Row titles in new order: Response Time, Response Tokens, Prompt Time, Prompt Tokens
     row_titles = ['Response Time', 'Response Tokens', 'Prompt Time', 'Prompt Tokens']
     
-    # Consistent color palette: blue, green, purple
-    exp_colors = ['#4C72B0', '#55A868', '#8172B2']
+    # Use viridis color palette for columns
+    exp_colors = sns.color_palette('viridis', n_colors=3)
     
     # Manually set bin widths and x-axis limits for each experiment type and row
     bin_settings = {
@@ -1355,36 +1352,33 @@ def plot_enclave_combined_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> 
         }
     }
     
+    # Font size for all
+    font_size = 14
+    
     # Process each experiment type
     for col, exp_type in enumerate(EXPERIMENT_TYPES.keys()):
         df = enclave_data.get(exp_type)
         
         if df is None:
-            # No data for this experiment type
             for row in range(4):
                 axes[row, col].text(
                     0.5, 0.5, "No data available",
                     ha="center", va="center", transform=axes[row, col].transAxes,
-                    fontsize=12, fontname='Times New Roman'
+                    fontsize=font_size, fontname='Times New Roman'
                 )
             continue
-            
-        # Extract token and timing data
+        
         if "token_count" in df.columns and "prompt_tokens" in df.columns:
             prompt_tokens = df['prompt_tokens']
             response_tokens = df['token_count']
         else:
             prompt_tokens = pd.Series()
             response_tokens = pd.Series()
-            
+        
         if "duration" in df.columns and "prompt_duration" in df.columns:
             prompt_times = df['prompt_duration']
-            
-            # Calculate response times (total - prompt)
             response_times = df['duration'] - df['prompt_duration']
             response_times = response_times[response_times > 0]
-            
-            # Handle limited valid response times
             if len(response_times) < len(df) * 0.1:
                 if exp_type == 'classification':
                     response_times = df['duration'] * 0.75
@@ -1394,76 +1388,54 @@ def plot_enclave_combined_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> 
             prompt_times = pd.Series()
             response_times = pd.Series()
         
-        # Define data for each row in the new order
         row_data = [
             response_times,  # Row 0: Response Time
             response_tokens, # Row 1: Response Tokens
             prompt_times,    # Row 2: Prompt Time
             prompt_tokens    # Row 3: Prompt Tokens
         ]
-        
-        # Settings for each row
         row_settings = [
             {'bins': bin_settings[exp_type]['response_time_bins'], 'max': bin_settings[exp_type]['response_time_max'], 'is_time': True},
             {'bins': bin_settings[exp_type]['response_tokens_bins'], 'max': bin_settings[exp_type]['response_tokens_max'], 'is_time': False},
             {'bins': bin_settings[exp_type]['prompt_time_bins'], 'max': bin_settings[exp_type]['prompt_time_max'], 'is_time': True},
             {'bins': bin_settings[exp_type]['prompt_tokens_bins'], 'max': bin_settings[exp_type]['prompt_tokens_max'], 'is_time': False}
         ]
-        
-        # Plot each row
         for row, (data_series, settings) in enumerate(zip(row_data, row_settings)):
-            # Skip if no data
             if data_series.empty:
                 axes[row, col].text(
                     0.5, 0.5, f"No {row_titles[row].lower()} data",
                     ha="center", va="center", transform=axes[row, col].transAxes,
-                    fontsize=12, fontname='Times New Roman'
+                    fontsize=font_size, fontname='Times New Roman'
                 )
                 continue
-            
             is_time_row = settings['is_time']
             bin_width = settings['bins']
             x_max = settings['max']
-            
-            # Find minimum for x-axis with some padding
-            data_min = max(0, data_series.min() * 0.9)  # Add 10% padding, but never go below 0
-            
-            # Create bins starting from 0 rather than data_min to ensure proper normalization
+            data_min = max(0, data_series.min() * 0.9)
             bins = np.arange(0, x_max + bin_width, bin_width)
             xlabel = 'Time (seconds)' if is_time_row else '# tokens'
-            
-            # Create histogram without KDE
             sns.histplot(
                 data=data_series,
                 bins=bins,
                 color=exp_colors[col],
                 ax=axes[row, col],
-                kde=False,  # Remove KDE
-                stat="density",  # Always use density
+                kde=False,
+                stat="density",
                 linewidth=1.5,
-                alpha=0.7  # Make bars slightly transparent
+                alpha=0.7
             )
-            
-            # Add mean line
-            mean_val = data_series.mean()
+            median_val = data_series.median()
             axes[row, col].axvline(
-                mean_val,
+                median_val,
                 color="red",
                 linestyle="--",
                 linewidth=1.5,
-                label=f"Mean: {mean_val:.1f}" + ("s" if is_time_row else "")
+                label=f"Median: {median_val:.1f}" + ("s" if is_time_row else "")
             )
-            
-            # Remove individual legends
             if axes[row, col].get_legend() is not None:
                 axes[row, col].get_legend().remove()
-            
-            # Add statistics text (without count)
             stats_text = (
-                f"Mean: {data_series.mean():.1f}" + ("s" if is_time_row else "") + "\n"
-                f"Median: {data_series.median():.1f}" + ("s" if is_time_row else "") + "\n"
-                f"Min: {data_series.min():.1f}" + ("s" if is_time_row else "") + "\n"
-                f"Max: {data_series.max():.1f}" + ("s" if is_time_row else "")
+                f"Median: {data_series.median():.1f}" + ("s" if is_time_row else "")
             )
             axes[row, col].text(
                 0.95, 0.95,
@@ -1472,80 +1444,48 @@ def plot_enclave_combined_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> 
                 verticalalignment="top",
                 horizontalalignment="right",
                 bbox=dict(boxstyle="round", facecolor="white", alpha=0.8),
-                fontsize=10,
+                fontsize=font_size,
                 fontname='Times New Roman'
             )
-            
-            # Set x-axis limits with padding on both sides
-            axes[row, col].set_xlim(data_min, x_max * 1.02)  # Add 2% padding on right
-            
-            # Set custom x-ticks to ensure min and max are shown
-            # Round to 1 decimal place for time and integers for tokens
-            x_ticks = [data_min]  # Start with min
-            
-            # Add intermediate ticks based on data range
-            tick_count = 5  # Number of ticks including min and max
+            axes[row, col].set_xlim(data_min, x_max * 1.02)
+            x_ticks = [data_min]
+            tick_count = 5
             step = (x_max - data_min) / (tick_count - 1)
             for i in range(1, tick_count - 1):
                 x_ticks.append(data_min + i * step)
-            
-            x_ticks.append(x_max)  # End with max
-            
-            # Round the ticks appropriately
+            x_ticks.append(x_max)
             if is_time_row:
                 x_ticks = [round(tick, 1) for tick in x_ticks]
             else:
                 x_ticks = [int(round(tick)) for tick in x_ticks]
-                
-            # Remove duplicates while preserving order
             x_ticks = list(dict.fromkeys(x_ticks))
-            
             axes[row, col].set_xticks(x_ticks)
-            
-            # Set y-axis limits with padding
             y_max = axes[row, col].get_ylim()[1]
-            axes[row, col].set_ylim(0, y_max * 1.15)  # Add 15% padding to top
-            
-            # Normalize y-axis for density: Ensure max density is at most 1.0
-            # Only adjust if density is unreasonably high (>0.5)
+            axes[row, col].set_ylim(0, y_max * 1.15)
             if y_max > 0.5:
-                # Scale histogram bars down
                 for patch in axes[row, col].patches:
                     current_height = patch.get_height()
-                    scale_factor = min(0.5 / y_max, 1.0)  # Scale to max 0.5 but don't scale up
+                    scale_factor = min(0.5 / y_max, 1.0)
                     patch.set_height(current_height * scale_factor)
-                
-                # Update y-axis limit after scaling
-                axes[row, col].set_ylim(0, 0.5 * 1.15)  # Add 15% padding
-            
-            # Set x-axis label
-            axes[row, col].set_xlabel(xlabel, fontsize=12, fontname='Times New Roman')
-        
-        # Set column titles
+                axes[row, col].set_ylim(0, 0.5 * 1.15)
+            axes[row, col].set_xlabel(xlabel, fontsize=font_size, fontname='Times New Roman')
+            # Set tick label font size and font
+            plt.setp(axes[row, col].get_xticklabels(), fontsize=font_size, fontname='Times New Roman')
+            plt.setp(axes[row, col].get_yticklabels(), fontsize=font_size, fontname='Times New Roman')
         if col < 3:
-            axes[0, col].set_title(exp_type.capitalize(), fontsize=14, fontname='Times New Roman')
-    
-    # Set row labels
+            axes[0, col].set_title(exp_type.capitalize(), fontsize=font_size, fontname='Times New Roman')
     for row in range(4):
-        axes[row, 0].set_ylabel(row_titles[row], fontsize=12, fontname='Times New Roman')
-    
-    # Set general styling for all subplots
+        axes[row, 0].set_ylabel(row_titles[row], fontsize=font_size, fontname='Times New Roman')
     for row in range(4):
         for col in range(3):
-            # Set y-axis label (always density)
-            axes[row, col].set_ylabel('Density', fontsize=12, fontname='Times New Roman')
-            
-            # Set all spines to black
+            axes[row, col].set_ylabel('Density', fontsize=font_size, fontname='Times New Roman')
             for spine in axes[row, col].spines.values():
                 spine.set_edgecolor('black')
                 spine.set_linewidth(1.5)
-                
-            # Set axis label font size and font
-            axes[row, col].tick_params(axis='both', labelsize=10, width=1.5, length=5)
+            axes[row, col].tick_params(axis='both', labelsize=font_size, width=1.5, length=5)
             for label in axes[row, col].get_xticklabels() + axes[row, col].get_yticklabels():
                 label.set_fontname('Times New Roman')
-    
-    # Save plot with tight layout
+                label.set_fontsize(font_size)
     plt.tight_layout()
     fig.subplots_adjust(hspace=0.3)
     fig.savefig(TOKEN_CHARTS / "enclave_combined_analysis.pdf", dpi=300)
@@ -1821,34 +1761,27 @@ def plot_combined_metrics_grid(data: Dict[str, Dict[str, pd.DataFrame]]) -> None
     Args:
         data: Dictionary containing mode data by experiment type
     """
-    # Create 1x4 figure with subplots - increased height for better bottom padding
-    fig, axes = plt.subplots(1, 4, figsize=(24, 9))  # Increased height from 8 to 9
-    
-    # Custom mode labels - shortened to just (I), (II), (III)
+    # New order: (i), (iii), (ii)
+    mode_order = ['enclave4b', 'comp-constant-8b', 'host4b']
     mode_labels = {
-        'enclave4b': '(I)',
-        'host4b': '(II)',
-        'comp-constant-8b': '(III)'
+        'enclave4b': '(i)',
+        'host4b': '(ii)',
+        'comp-constant-8b': '(iii)'
     }
+    label_order = [mode_labels[m] for m in mode_order]
+
+    # Create 1x4 figure with subplots - make each plot wider
+    fig, axes = plt.subplots(1, 4, figsize=(18, 5))
     
-    # Mode colors - blue, turquoise, green
-    mode_colors = ['#4C72B0', '#55A8A8', '#55A868']
-    
-    # Bar width for thinner bars
     bar_width = 0.6
-    
-    # Larger font size - increased sizes for labels and annotations
-    title_font_size = 18
-    label_font_size = 18  # Increased from 16
-    tick_font_size = 16   # Increased from 14
-    annotation_font_size = 16  # Increased from 14
-    
-    # Reordered plots: BERT scores, Toxicity Rate, Classification Accuracy, Valid Response Rate
+    title_font_size = 14
+    label_font_size = 14
+    tick_font_size = 14
+    annotation_font_size = 14
     
     # 1. BERT Score Distribution Plot (first/left)
-    # Collect BERT scores data
     bert_data = []
-    for mode in EXPERIMENT_MODES:
+    for mode in mode_order:
         df = data[mode].get('summarization')
         if df is not None and 'score' in df.columns:
             scores = df['score'].copy()
@@ -1857,69 +1790,27 @@ def plot_combined_metrics_grid(data: Dict[str, Dict[str, pd.DataFrame]]) -> None
                 'mode': mode_labels.get(mode, mode)
             })
             bert_data.append(scores)
-    
     if bert_data:
-        # Combine all data
         bert_df = pd.concat(bert_data)
-        
-        # Create violin plot with custom palette
+        bert_df['mode'] = pd.Categorical(bert_df['mode'], categories=label_order, ordered=True)
         sns.violinplot(
             data=bert_df, 
             x='mode', 
             y='score', 
             ax=axes[0],
-            palette=mode_colors,
-            width=bar_width * 1.2  # Adjust width for violin plots
+            palette="viridis",
+            width=bar_width * 1.2,
+            inner=None,
+            order=label_order
         )
-        
-        # Add red dots for median values and mean line
-        for i, mode in enumerate(EXPERIMENT_MODES):
-            mode_scores = bert_df[bert_df['mode'] == mode_labels.get(mode, mode)]
-            if not mode_scores.empty:
-                mean_score = mode_scores['score'].mean()
-                median_score = mode_scores['score'].median()
-                
-                # Add red dashed mean line
-                axes[0].axvline(
-                    i, 
-                    color="red",
-                    linestyle="--",
-                    alpha=0.7,
-                    ymin=0,
-                    ymax=mean_score / axes[0].get_ylim()[1]
-                )
-                
-                # Add stats text
-                stats_text = (
-                    f"Mean: {mean_score:.3f}\n"
-                    f"Median: {median_score:.3f}\n"
-                    f"Min: {mode_scores['score'].min():.3f}\n"
-                    f"Max: {mode_scores['score'].max():.3f}"
-                )
-                
-                axes[0].text(
-                    i, 0.9,
-                    stats_text,
-                    ha="center",
-                    va="top",
-                    transform=axes[0].get_xaxis_transform(),
-                    bbox=dict(boxstyle="round", facecolor="white", alpha=0.8),
-                    fontsize=annotation_font_size
-                )
-        
-        # Customize plot - add title at top instead of ylabel
-        axes[0].set_title('BERT Score', fontsize=title_font_size, pad=10)
-        axes[0].set_xlabel('Mode', fontsize=label_font_size, labelpad=15)  # Increased labelpad
+        axes[0].set_title('BERT Score', fontsize=title_font_size, pad=10, fontname='Times New Roman')
+        axes[0].set_xlabel('Mode', fontsize=label_font_size, fontname='Times New Roman')
         axes[0].set_ylabel('')
-        
-        # Add grid
+        axes[0].set_ylim(-0.2, 1.2)
         axes[0].grid(True, alpha=0.2)
-    
     # 2. Toxicity Rate (second plot)
-    # Collect toxicity rate data
     toxicity_rates = []
-    
-    for mode in EXPERIMENT_MODES:
+    for mode in mode_order:
         mode_data = data.get(mode, {})
         if mode_data.get("toxicity") is not None:
             df = mode_data["toxicity"]
@@ -1927,17 +1818,14 @@ def plot_combined_metrics_grid(data: Dict[str, Dict[str, pd.DataFrame]]) -> None
                 toxic_rate = df["toxic"].mean()
                 toxic_count = df["toxic"].sum()
             elif "classification" in df.columns:
-                # Use classification column
                 toxic_rate = (df["classification"] == "toxic").mean()
                 toxic_count = (df["classification"] == "toxic").sum()
             elif "expected_toxic" in df.columns:
-                # Use expected_toxic column
                 toxic_rate = (df["expected_toxic"] == 1).mean()
                 toxic_count = (df["expected_toxic"] == 1).sum()
             else:
                 logger.warning(f"No toxicity classification column found for {mode}. Available columns: {list(df.columns)}")
                 continue
-            
             if not pd.isna(toxic_rate):
                 toxicity_rates.append({
                     "mode": mode_labels.get(mode, mode),
@@ -1947,55 +1835,41 @@ def plot_combined_metrics_grid(data: Dict[str, Dict[str, pd.DataFrame]]) -> None
                 })
             else:
                 logger.warning(f"NaN toxicity rate for {mode}")
-    
     if toxicity_rates:
         rate_df = pd.DataFrame(toxicity_rates)
-        
-        # Create barplot with thinner bars
+        rate_df['mode'] = pd.Categorical(rate_df['mode'], categories=label_order, ordered=True)
         sns.barplot(
             data=rate_df,
             x="mode",
             y="toxic_rate",
             ax=axes[1],
-            palette=mode_colors,
-            width=bar_width
+            palette="viridis",
+            width=bar_width,
+            order=label_order
         )
-        
-        # Add text annotations
-        for i, row in rate_df.iterrows():
+        for i, row in rate_df.sort_values('mode').iterrows():
             axes[1].text(
                 i, 
                 row["toxic_rate"] + 0.002,
                 f"{row['toxic_rate']:.3f}",
                 ha="center",
                 va="bottom",
-                fontsize=annotation_font_size
+                fontsize=annotation_font_size,
+                fontname='Times New Roman'
             )
-        
-        # Customize plot - add title at top instead of ylabel
-        axes[1].set_title("Toxicity Rate", fontsize=title_font_size, pad=10)
-        axes[1].set_xlabel("Mode", fontsize=label_font_size, labelpad=15)  # Increased labelpad
-        axes[1].set_ylabel("")  # Remove y-label
-        axes[1].set_ylim(0, max(rate_df["toxic_rate"]) * 1.3)  # Set y-axis limits with more padding
-        
-        # Increase spacing at bottom of plot
-        axes[1].tick_params(axis='x', pad=15)
-        
-        # Add grid
+        axes[1].set_title('Toxicity Rate', fontsize=title_font_size, pad=10, fontname='Times New Roman')
+        axes[1].set_xlabel("Mode", fontsize=label_font_size, fontname='Times New Roman')
+        axes[1].set_ylabel("")
+        axes[1].set_ylim(0, max(rate_df["toxic_rate"]) * 1.3)
         axes[1].grid(axis="y", alpha=0.3)
-    
     # 3. Classification Accuracy for Valid Responses Only (third plot)
-    # Collect accuracy data for valid responses only
     accuracies = []
-    
-    for mode in EXPERIMENT_MODES:
+    for mode in mode_order:
         mode_data = data.get(mode, {})
         if mode_data.get("classification") is not None:
             df = mode_data["classification"]
-            # Consider only responses that are single letters A, B, C, or D
             valid_responses = df["response"].str.strip().str.match('^[ABCD]$')
             valid_df = df[valid_responses]
-            
             if len(valid_df) > 0:
                 accuracy = valid_df["correct"].mean()
                 accuracies.append({
@@ -2006,103 +1880,76 @@ def plot_combined_metrics_grid(data: Dict[str, Dict[str, pd.DataFrame]]) -> None
                     "total_all": len(df),
                     "valid_rate": len(valid_df) / len(df)
                 })
-    
     if accuracies:
         accuracy_df = pd.DataFrame(accuracies)
-        
-        # Create barplot for accuracy (valid responses only) with thinner bars
+        accuracy_df['mode'] = pd.Categorical(accuracy_df['mode'], categories=label_order, ordered=True)
         bars = sns.barplot(
             data=accuracy_df,
             x="mode",
             y="accuracy",
             ax=axes[2],
-            palette=mode_colors,
-            width=bar_width
+            palette="viridis",
+            width=bar_width,
+            order=label_order
         )
-        
-        # Add text annotations above bars
-        for i, row in accuracy_df.iterrows():
+        for i, row in accuracy_df.sort_values('mode').iterrows():
             axes[2].text(
                 i, 
                 row["accuracy"] + 0.02,
                 f"{row['accuracy']:.3f}",
                 ha="center",
                 va="bottom",
-                fontsize=annotation_font_size
+                fontsize=annotation_font_size,
+                fontname='Times New Roman'
             )
-        
-        # Customize plot - add title at top instead of ylabel
-        axes[2].set_title("Classification Accuracy", fontsize=title_font_size, pad=10)
-        axes[2].set_xlabel("Mode", fontsize=label_font_size, labelpad=15)  # Increased labelpad
-        axes[2].set_ylabel("")  # Remove y-label
-        axes[2].set_ylim(0, 1.1)  # Set y-axis limits for better visibility
-        
-        # Increase spacing at bottom of plot
-        axes[2].tick_params(axis='x', pad=15)
-        
-        # Add grid
+        axes[2].set_title('Classification Accuracy', fontsize=title_font_size, pad=10, fontname='Times New Roman')
+        axes[2].set_xlabel("Mode", fontsize=label_font_size, fontname='Times New Roman')
+        axes[2].set_ylabel("")
+        axes[2].set_ylim(0, 1.1)
         axes[2].grid(axis="y", alpha=0.3)
-    
     # 4. Valid Response Rate (fourth/right plot)
     if accuracies:
-        # Create barplot for valid response rate with thinner bars
+        accuracy_df['mode'] = pd.Categorical(accuracy_df['mode'], categories=label_order, ordered=True)
         sns.barplot(
             data=accuracy_df,
             x="mode",
             y="valid_rate",
             ax=axes[3],
-            palette=mode_colors,
-            width=bar_width
+            palette="viridis",
+            width=bar_width,
+            order=label_order
         )
-        
-        # Add text annotations
-        for i, row in accuracy_df.iterrows():
+        for i, row in accuracy_df.sort_values('mode').iterrows():
             axes[3].text(
                 i, 
                 row["valid_rate"] + 0.02,
                 f"{row['valid_rate']:.3f}",
                 ha="center",
                 va="bottom",
-                fontsize=annotation_font_size
+                fontsize=annotation_font_size,
+                fontname='Times New Roman'
             )
-        
-        # Customize plot - add title at top instead of ylabel
-        axes[3].set_title("Valid Response Rate", fontsize=title_font_size, pad=10)
-        axes[3].set_xlabel("Mode", fontsize=label_font_size, labelpad=15)  # Increased labelpad
-        axes[3].set_ylabel("")  # Remove y-label
-        axes[3].set_ylim(0, 1.1)  # Set y-axis limits for better visibility
-        
-        # Increase spacing at bottom of plot
-        axes[3].tick_params(axis='x', pad=15)
-        
-        # Add grid
+        axes[3].set_title("Valid Response Rate", fontsize=title_font_size, pad=10, fontname='Times New Roman')
+        axes[3].set_xlabel("Mode", fontsize=label_font_size, fontname='Times New Roman')
+        axes[3].set_ylabel("")
+        axes[3].set_ylim(0, 1.1)
         axes[3].grid(axis="y", alpha=0.3)
-    
     # Apply consistent styling to all subplots
-    for ax in axes:
-        # Set all spines to black
+    for idx, ax in enumerate(axes):
         for spine in ax.spines.values():
             spine.set_color('black')
-            spine.set_linewidth(1.5)
+            spine.set_linewidth(1)
             spine.set_visible(True)
-        
-        # Set tick parameters - increased tick label size
-        ax.tick_params(axis='both', labelsize=tick_font_size, width=1.5, length=5)
-        
-        # Increase bottom padding for x-axis labels
-        ax.tick_params(axis='x', pad=25)  # Further increased padding for mode labels
-        
-        # Align x-tick labels
-        plt.setp(ax.get_xticklabels(), ha='center', fontsize=tick_font_size+2, fontweight='bold')  # Make mode labels larger and bold
-        
-        # Make tick marks longer for visibility
+        ax.tick_params(axis='both', labelsize=tick_font_size, width=1, length=5)
+        for label in ax.get_xticklabels() + ax.get_yticklabels():
+            label.set_fontname('Times New Roman')
+            label.set_fontweight('normal')
+        ax.tick_params(axis='x', pad=0)
+        plt.setp(ax.get_xticklabels(), ha='center', fontsize=tick_font_size+2, fontweight='normal')
         ax.tick_params(axis='x', length=8)
-        
-        # Set background color to white
         ax.set_facecolor('white')
-    
-    # Save plot with adjusted tight layout and increased padding
-    plt.tight_layout(w_pad=6.0, h_pad=3.0, rect=[0, 0.1, 1, 0.95])  # Further increased bottom margin
+    # Save plot with slightly more padding between subplots
+    plt.tight_layout(w_pad=1.2, h_pad=0.2, rect=[0, 0.12, 1, 0.97])
     combined_metrics_path = TOKEN_CHARTS / "combined_metrics"
     combined_metrics_path.mkdir(exist_ok=True)
     fig.savefig(combined_metrics_path / "combined_metrics_grid.pdf", dpi=300, bbox_inches='tight')

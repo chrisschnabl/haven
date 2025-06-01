@@ -1268,15 +1268,15 @@ def plot_merged_metrics(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     """
     logger.info("Creating merged metrics plot...")
     
-    # Create figure with 4 subplots
-    fig, axes = plt.subplots(1, 4, figsize=(24, 6))
+    # Create figure with 4 subplots - reduced size to 16,4
+    fig, axes = plt.subplots(1, 4, figsize=(16, 4))
     
     # Add subplot labels (a), (b), (c), (d)
     subplot_labels = ['(a)', '(b)', '(c)', '(d)']
     for i, ax in enumerate(axes):
-        # Add label to top left corner of each subplot
+        # Add label to top left corner of each subplot - consistent fontsize 14
         ax.text(0.05, 0.95, subplot_labels[i], transform=ax.transAxes, 
-                fontsize=18, fontweight='bold', va='top', ha='left')
+                fontsize=14, fontweight='bold', va='top', ha='left')
     
     # 1. Summarization BERT scores
     # Collect BERT score data
@@ -1293,7 +1293,7 @@ def plot_merged_metrics(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     if all_scores:
         all_scores_df = pd.concat(all_scores)
         
-        # Create violin plot
+        # Create violin plot without boxplot overlay
         sns.violinplot(
             data=all_scores_df,
             x="model",
@@ -1303,41 +1303,11 @@ def plot_merged_metrics(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
             ax=axes[0]
         )
         
-        # Overlay boxplot
-        sns.boxplot(
-            data=all_scores_df,
-            x="model",
-            y="score",
-            color="white",
-            width=0.3,
-            boxprops=dict(alpha=0.7),
-            ax=axes[0]
-        )
-        
-        # Add average score text annotations
-        for i, model_name in enumerate(all_scores_df["model"].unique()):
-            model_scores = all_scores_df[all_scores_df["model"] == model_name]
-            avg_score = model_scores["score"].mean()
-            
-            # Position the text inside the plot at a fixed position
-            y_pos = 0.75  # Fixed position inside the violin plot
-            
-            axes[0].text(
-                i, 
-                y_pos,
-                f"Avg: {avg_score:.3f}",
-                ha="center",
-                va="center",
-                fontsize=14,
-                bbox=dict(facecolor='white', alpha=0.7, edgecolor='none')
-            )
-        
         # Customize plot
         axes[0].set_xlabel("Model", fontsize=14)
         axes[0].set_ylabel("BERT Score", fontsize=14)
-        # Remove title
         axes[0].set_title("")
-        axes[0].tick_params(axis='both', labelsize=12)
+        axes[0].tick_params(axis='both', labelsize=14)
         axes[0].grid(axis="y", alpha=0.3)
         
         # Set all spines to black and visible
@@ -1397,10 +1367,9 @@ def plot_merged_metrics(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
         # Customize plot
         axes[1].set_xlabel("Model", fontsize=14)
         axes[1].set_ylabel("Toxicity Rate", fontsize=14)
-        # Remove title
         axes[1].set_title("")
         axes[1].set_ylim(0, max(rate_df["toxic_rate"]) * 1.2)
-        axes[1].tick_params(axis='both', labelsize=12)
+        axes[1].tick_params(axis='both', labelsize=14)
         axes[1].grid(axis="y", alpha=0.3)
         
         # Set all spines to black and visible
@@ -1461,10 +1430,9 @@ def plot_merged_metrics(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
         # Customize plot
         axes[2].set_xlabel("Model", fontsize=14)
         axes[2].set_ylabel("Accuracy", fontsize=14)
-        # Remove title
         axes[2].set_title("")
         axes[2].set_ylim(0, 1.1)
-        axes[2].tick_params(axis='both', labelsize=12)
+        axes[2].tick_params(axis='both', labelsize=14)
         axes[2].grid(axis="y", alpha=0.3)
         
         # Set all spines to black and visible
@@ -1500,10 +1468,9 @@ def plot_merged_metrics(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
         # Customize plot
         axes[3].set_xlabel("Model", fontsize=14)
         axes[3].set_ylabel("Rate of Valid Responses", fontsize=14)
-        # Remove title
         axes[3].set_title("")
         axes[3].set_ylim(0, 1.1)
-        axes[3].tick_params(axis='both', labelsize=12)
+        axes[3].tick_params(axis='both', labelsize=14)
         axes[3].grid(axis="y", alpha=0.3)
         
         # Set all spines to black and visible

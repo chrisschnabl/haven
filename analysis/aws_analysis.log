@@ -17864,3 +17864,1335 @@ Accuracy statistics for comp-constant-8b:
 2025-05-16 10:50:22,215 - __main__ - INFO - Combined metrics grid plot generated
 2025-05-16 10:50:22,216 - __main__ - INFO - Combined metrics grid plot generated
 2025-05-16 10:50:22,216 - __main__ - INFO - AWS analysis pipeline completed successfully
+2025-06-01 15:40:55,033 - __main__ - INFO - Starting AWS analysis pipeline...
+2025-06-01 15:40:55,033 - __main__ - INFO - Loading data for mode: enclave4b
+2025-06-01 15:40:55,033 - __main__ - INFO - Attempting to load classification data from: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-01 15:40:55,223 - __main__ - INFO - Loaded classification data for enclave4b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:40:55,224 - __main__ - INFO - Successfully loaded classification data for enclave4b: 1000 rows
+2025-06-01 15:40:55,224 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-01 15:40:55,249 - __main__ - INFO - Loaded summarization data for enclave4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:40:55,249 - __main__ - INFO - Successfully loaded summarization data for enclave4b: 243 rows
+2025-06-01 15:40:55,251 - __main__ - INFO - Analysis columns for enclave4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:40:55,251 - __main__ - INFO - Successfully loaded toxicity data for enclave4b: 500 rows
+2025-06-01 15:40:55,251 - __main__ - INFO - Loading data for mode: host4b
+2025-06-01 15:40:55,251 - __main__ - INFO - Attempting to load classification data from: remote_experiments/host4b/llama_classification.parquet
+2025-06-01 15:40:55,351 - __main__ - INFO - Loaded classification data for host4b with columns: ['id', 'question', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:40:55,367 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-06-01 15:40:55,368 - __main__ - INFO - Successfully loaded classification data for host4b: 1000 rows
+2025-06-01 15:40:55,368 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/host4b/llama_summaries.parquet
+2025-06-01 15:40:55,395 - __main__ - INFO - Loaded summarization data for host4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:40:55,396 - __main__ - INFO - Successfully loaded summarization data for host4b: 243 rows
+2025-06-01 15:40:55,496 - __main__ - INFO - Toxic columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:40:55,496 - __main__ - INFO - Analysis columns for host4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic']
+2025-06-01 15:40:55,500 - __main__ - INFO - Merged toxicity columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens', 'input_analysis', 'response_analysis', 'toxic', 'confidence', 'expected_toxic_analysis']
+2025-06-01 15:40:55,500 - __main__ - INFO - Successfully merged toxicity data for host4b: 1000 rows
+2025-06-01 15:40:55,500 - __main__ - INFO - Loading data for mode: comp-constant-8b
+2025-06-01 15:40:55,500 - __main__ - INFO - Attempting to load classification data from: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-01 15:40:55,566 - __main__ - INFO - Loaded classification data for comp-constant-8b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:40:55,566 - __main__ - INFO - Successfully loaded classification data for comp-constant-8b: 500 rows
+2025-06-01 15:40:55,566 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-01 15:40:55,582 - __main__ - INFO - Loaded summarization data for comp-constant-8b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:40:55,582 - __main__ - INFO - Successfully loaded summarization data for comp-constant-8b: 126 rows
+2025-06-01 15:40:55,584 - __main__ - INFO - Analysis columns for comp-constant-8b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:40:55,584 - __main__ - INFO - Successfully loaded toxicity data for comp-constant-8b: 100 rows
+2025-06-01 15:40:55,814 - __main__ - INFO - Token count comparison plot generated
+2025-06-01 15:40:56,212 - __main__ - INFO - Token distribution plot generated
+2025-06-01 15:40:56,610 - __main__ - INFO - Enclave combined analysis plot generated
+2025-06-01 15:40:57,315 - __main__ - INFO - Enclave merged analysis plot generated
+2025-06-01 15:40:57,328 - __main__ - INFO - classification enclave4b stats - median: 1.40s, mean: 1.26s, samples: 1000
+2025-06-01 15:40:57,328 - __main__ - INFO - classification host4b stats - median: 1.39s, mean: 1.25s, samples: 1000
+2025-06-01 15:40:57,328 - __main__ - INFO - classification comp-constant-8b stats - median: 0.37s, mean: 0.38s, samples: 500
+2025-06-01 15:40:57,343 - __main__ - INFO - summarization enclave4b stats - median: 10.56s, mean: 10.49s, samples: 243
+2025-06-01 15:40:57,343 - __main__ - INFO - summarization host4b stats - median: 10.72s, mean: 10.66s, samples: 243
+2025-06-01 15:40:57,343 - __main__ - INFO - summarization comp-constant-8b stats - median: 2.59s, mean: 2.70s, samples: 126
+2025-06-01 15:40:57,355 - __main__ - INFO - toxicity enclave4b stats - median: 61.70s, mean: 70.12s, samples: 500
+2025-06-01 15:40:57,356 - __main__ - INFO - toxicity host4b stats - median: 34.47s, mean: 32.18s, samples: 1000
+2025-06-01 15:40:57,356 - __main__ - INFO - toxicity comp-constant-8b stats - median: 12.90s, mean: 15.16s, samples: 100
+2025-06-01 15:40:57,472 - __main__ - INFO - Runtime distribution plot generated
+2025-06-01 15:40:57,557 - __main__ - INFO - Timing comparison plot generated
+2025-06-01 15:40:57,601 - __main__ - INFO - Classification accuracy plot generated
+2025-06-01 15:40:57,604 - __main__ - INFO - 
+Accuracy statistics for enclave4b:
+2025-06-01 15:40:57,605 - __main__ - INFO - Total subject groups: 6
+2025-06-01 15:40:57,605 - __main__ - INFO - Significant groups: 6
+2025-06-01 15:40:57,605 - __main__ - INFO - Samples in Others: 0
+2025-06-01 15:40:57,606 - __main__ - INFO - 
+Accuracy statistics for host4b:
+2025-06-01 15:40:57,606 - __main__ - INFO - Total subject groups: 6
+2025-06-01 15:40:57,606 - __main__ - INFO - Significant groups: 6
+2025-06-01 15:40:57,606 - __main__ - INFO - Samples in Others: 0
+2025-06-01 15:40:57,608 - __main__ - INFO - Subjects in 'Others' for comp-constant-8b:
+2025-06-01 15:40:57,608 - __main__ - INFO -   Law & Legal: acc=0.000, n=2
+2025-06-01 15:40:57,608 - __main__ - INFO -   Psychology & Social Sciences: acc=0.333, n=6
+2025-06-01 15:40:57,608 - __main__ - INFO - 
+Accuracy statistics for comp-constant-8b:
+2025-06-01 15:40:57,608 - __main__ - INFO - Total subject groups: 6
+2025-06-01 15:40:57,608 - __main__ - INFO - Significant groups: 4
+2025-06-01 15:40:57,608 - __main__ - INFO - Samples in Others: 8
+2025-06-01 15:40:57,717 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-06-01 15:40:57,805 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-01 15:40:57,813 - __main__ - INFO - BERT scores for enclave4b:
+2025-06-01 15:40:57,813 - __main__ - INFO -   Mean: 0.469
+2025-06-01 15:40:57,813 - __main__ - INFO -   Median: 0.466
+2025-06-01 15:40:57,813 - __main__ - INFO -   Std: 0.284
+2025-06-01 15:40:57,813 - __main__ - INFO -   Samples: 243
+2025-06-01 15:40:57,813 - __main__ - INFO - BERT scores for host4b:
+2025-06-01 15:40:57,813 - __main__ - INFO -   Mean: 0.490
+2025-06-01 15:40:57,813 - __main__ - INFO -   Median: 0.498
+2025-06-01 15:40:57,813 - __main__ - INFO -   Std: 0.155
+2025-06-01 15:40:57,813 - __main__ - INFO -   Samples: 243
+2025-06-01 15:40:57,813 - __main__ - INFO - BERT scores for comp-constant-8b:
+2025-06-01 15:40:57,814 - __main__ - INFO -   Mean: 0.501
+2025-06-01 15:40:57,814 - __main__ - INFO -   Median: 0.505
+2025-06-01 15:40:57,814 - __main__ - INFO -   Std: 0.145
+2025-06-01 15:40:57,814 - __main__ - INFO -   Samples: 126
+2025-06-01 15:40:57,878 - __main__ - INFO - BERT scores plot generated
+2025-06-01 15:40:58,082 - __main__ - INFO - Summarization response length plot generated
+2025-06-01 15:40:58,127 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 15:40:58,128 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 15:43:32,838 - __main__ - INFO - Starting AWS analysis pipeline...
+2025-06-01 15:43:32,838 - __main__ - INFO - Loading data for mode: enclave4b
+2025-06-01 15:43:32,838 - __main__ - INFO - Attempting to load classification data from: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-01 15:43:33,026 - __main__ - INFO - Loaded classification data for enclave4b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:43:33,027 - __main__ - INFO - Successfully loaded classification data for enclave4b: 1000 rows
+2025-06-01 15:43:33,027 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-01 15:43:33,054 - __main__ - INFO - Loaded summarization data for enclave4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:43:33,054 - __main__ - INFO - Successfully loaded summarization data for enclave4b: 243 rows
+2025-06-01 15:43:33,056 - __main__ - INFO - Analysis columns for enclave4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:43:33,056 - __main__ - INFO - Successfully loaded toxicity data for enclave4b: 500 rows
+2025-06-01 15:43:33,056 - __main__ - INFO - Loading data for mode: host4b
+2025-06-01 15:43:33,056 - __main__ - INFO - Attempting to load classification data from: remote_experiments/host4b/llama_classification.parquet
+2025-06-01 15:43:33,158 - __main__ - INFO - Loaded classification data for host4b with columns: ['id', 'question', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:43:33,175 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-06-01 15:43:33,176 - __main__ - INFO - Successfully loaded classification data for host4b: 1000 rows
+2025-06-01 15:43:33,176 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/host4b/llama_summaries.parquet
+2025-06-01 15:43:33,201 - __main__ - INFO - Loaded summarization data for host4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:43:33,201 - __main__ - INFO - Successfully loaded summarization data for host4b: 243 rows
+2025-06-01 15:43:33,310 - __main__ - INFO - Toxic columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:43:33,310 - __main__ - INFO - Analysis columns for host4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic']
+2025-06-01 15:43:33,314 - __main__ - INFO - Merged toxicity columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens', 'input_analysis', 'response_analysis', 'toxic', 'confidence', 'expected_toxic_analysis']
+2025-06-01 15:43:33,314 - __main__ - INFO - Successfully merged toxicity data for host4b: 1000 rows
+2025-06-01 15:43:33,314 - __main__ - INFO - Loading data for mode: comp-constant-8b
+2025-06-01 15:43:33,314 - __main__ - INFO - Attempting to load classification data from: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-01 15:43:33,384 - __main__ - INFO - Loaded classification data for comp-constant-8b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:43:33,384 - __main__ - INFO - Successfully loaded classification data for comp-constant-8b: 500 rows
+2025-06-01 15:43:33,384 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-01 15:43:33,400 - __main__ - INFO - Loaded summarization data for comp-constant-8b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:43:33,400 - __main__ - INFO - Successfully loaded summarization data for comp-constant-8b: 126 rows
+2025-06-01 15:43:33,402 - __main__ - INFO - Analysis columns for comp-constant-8b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:43:33,402 - __main__ - INFO - Successfully loaded toxicity data for comp-constant-8b: 100 rows
+2025-06-01 15:43:33,632 - __main__ - INFO - Token count comparison plot generated
+2025-06-01 15:43:34,001 - __main__ - INFO - Token distribution plot generated
+2025-06-01 15:43:34,416 - __main__ - INFO - Enclave combined analysis plot generated
+2025-06-01 15:43:35,130 - __main__ - INFO - Enclave merged analysis plot generated
+2025-06-01 15:43:35,143 - __main__ - INFO - classification enclave4b stats - median: 1.40s, mean: 1.26s, samples: 1000
+2025-06-01 15:43:35,143 - __main__ - INFO - classification host4b stats - median: 1.39s, mean: 1.25s, samples: 1000
+2025-06-01 15:43:35,143 - __main__ - INFO - classification comp-constant-8b stats - median: 0.37s, mean: 0.38s, samples: 500
+2025-06-01 15:43:35,158 - __main__ - INFO - summarization enclave4b stats - median: 10.56s, mean: 10.49s, samples: 243
+2025-06-01 15:43:35,159 - __main__ - INFO - summarization host4b stats - median: 10.72s, mean: 10.66s, samples: 243
+2025-06-01 15:43:35,159 - __main__ - INFO - summarization comp-constant-8b stats - median: 2.59s, mean: 2.70s, samples: 126
+2025-06-01 15:43:35,170 - __main__ - INFO - toxicity enclave4b stats - median: 61.70s, mean: 70.12s, samples: 500
+2025-06-01 15:43:35,171 - __main__ - INFO - toxicity host4b stats - median: 34.47s, mean: 32.18s, samples: 1000
+2025-06-01 15:43:35,171 - __main__ - INFO - toxicity comp-constant-8b stats - median: 12.90s, mean: 15.16s, samples: 100
+2025-06-01 15:43:35,293 - __main__ - INFO - Runtime distribution plot generated
+2025-06-01 15:43:35,378 - __main__ - INFO - Timing comparison plot generated
+2025-06-01 15:43:35,424 - __main__ - INFO - Classification accuracy plot generated
+2025-06-01 15:43:35,428 - __main__ - INFO - 
+Accuracy statistics for enclave4b:
+2025-06-01 15:43:35,428 - __main__ - INFO - Total subject groups: 6
+2025-06-01 15:43:35,428 - __main__ - INFO - Significant groups: 6
+2025-06-01 15:43:35,428 - __main__ - INFO - Samples in Others: 0
+2025-06-01 15:43:35,430 - __main__ - INFO - 
+Accuracy statistics for host4b:
+2025-06-01 15:43:35,430 - __main__ - INFO - Total subject groups: 6
+2025-06-01 15:43:35,430 - __main__ - INFO - Significant groups: 6
+2025-06-01 15:43:35,430 - __main__ - INFO - Samples in Others: 0
+2025-06-01 15:43:35,432 - __main__ - INFO - Subjects in 'Others' for comp-constant-8b:
+2025-06-01 15:43:35,432 - __main__ - INFO -   Law & Legal: acc=0.000, n=2
+2025-06-01 15:43:35,432 - __main__ - INFO -   Psychology & Social Sciences: acc=0.333, n=6
+2025-06-01 15:43:35,432 - __main__ - INFO - 
+Accuracy statistics for comp-constant-8b:
+2025-06-01 15:43:35,432 - __main__ - INFO - Total subject groups: 6
+2025-06-01 15:43:35,432 - __main__ - INFO - Significant groups: 4
+2025-06-01 15:43:35,432 - __main__ - INFO - Samples in Others: 8
+2025-06-01 15:43:35,538 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-06-01 15:43:35,614 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-01 15:43:35,622 - __main__ - INFO - BERT scores for enclave4b:
+2025-06-01 15:43:35,623 - __main__ - INFO -   Mean: 0.469
+2025-06-01 15:43:35,623 - __main__ - INFO -   Median: 0.466
+2025-06-01 15:43:35,623 - __main__ - INFO -   Std: 0.284
+2025-06-01 15:43:35,623 - __main__ - INFO -   Samples: 243
+2025-06-01 15:43:35,623 - __main__ - INFO - BERT scores for host4b:
+2025-06-01 15:43:35,623 - __main__ - INFO -   Mean: 0.490
+2025-06-01 15:43:35,623 - __main__ - INFO -   Median: 0.498
+2025-06-01 15:43:35,623 - __main__ - INFO -   Std: 0.155
+2025-06-01 15:43:35,623 - __main__ - INFO -   Samples: 243
+2025-06-01 15:43:35,623 - __main__ - INFO - BERT scores for comp-constant-8b:
+2025-06-01 15:43:35,623 - __main__ - INFO -   Mean: 0.501
+2025-06-01 15:43:35,623 - __main__ - INFO -   Median: 0.505
+2025-06-01 15:43:35,623 - __main__ - INFO -   Std: 0.145
+2025-06-01 15:43:35,623 - __main__ - INFO -   Samples: 126
+2025-06-01 15:43:35,689 - __main__ - INFO - BERT scores plot generated
+2025-06-01 15:43:35,888 - __main__ - INFO - Summarization response length plot generated
+2025-06-01 15:43:35,930 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 15:43:35,930 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 15:43:36,101 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 15:43:36,101 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 15:43:36,101 - __main__ - INFO - AWS analysis pipeline completed successfully
+2025-06-01 15:47:07,943 - __main__ - INFO - Starting AWS analysis pipeline...
+2025-06-01 15:47:07,943 - __main__ - INFO - Loading data for mode: enclave4b
+2025-06-01 15:47:07,943 - __main__ - INFO - Attempting to load classification data from: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-01 15:47:08,137 - __main__ - INFO - Loaded classification data for enclave4b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:47:08,138 - __main__ - INFO - Successfully loaded classification data for enclave4b: 1000 rows
+2025-06-01 15:47:08,138 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-01 15:47:08,170 - __main__ - INFO - Loaded summarization data for enclave4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:47:08,170 - __main__ - INFO - Successfully loaded summarization data for enclave4b: 243 rows
+2025-06-01 15:47:08,172 - __main__ - INFO - Analysis columns for enclave4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:47:08,172 - __main__ - INFO - Successfully loaded toxicity data for enclave4b: 500 rows
+2025-06-01 15:47:08,172 - __main__ - INFO - Loading data for mode: host4b
+2025-06-01 15:47:08,172 - __main__ - INFO - Attempting to load classification data from: remote_experiments/host4b/llama_classification.parquet
+2025-06-01 15:47:08,294 - __main__ - INFO - Loaded classification data for host4b with columns: ['id', 'question', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:47:08,313 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-06-01 15:47:08,314 - __main__ - INFO - Successfully loaded classification data for host4b: 1000 rows
+2025-06-01 15:47:08,314 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/host4b/llama_summaries.parquet
+2025-06-01 15:47:08,343 - __main__ - INFO - Loaded summarization data for host4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:47:08,344 - __main__ - INFO - Successfully loaded summarization data for host4b: 243 rows
+2025-06-01 15:47:08,460 - __main__ - INFO - Toxic columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:47:08,460 - __main__ - INFO - Analysis columns for host4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic']
+2025-06-01 15:47:08,464 - __main__ - INFO - Merged toxicity columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens', 'input_analysis', 'response_analysis', 'toxic', 'confidence', 'expected_toxic_analysis']
+2025-06-01 15:47:08,464 - __main__ - INFO - Successfully merged toxicity data for host4b: 1000 rows
+2025-06-01 15:47:08,464 - __main__ - INFO - Loading data for mode: comp-constant-8b
+2025-06-01 15:47:08,464 - __main__ - INFO - Attempting to load classification data from: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-01 15:47:08,536 - __main__ - INFO - Loaded classification data for comp-constant-8b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:47:08,537 - __main__ - INFO - Successfully loaded classification data for comp-constant-8b: 500 rows
+2025-06-01 15:47:08,537 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-01 15:47:08,553 - __main__ - INFO - Loaded summarization data for comp-constant-8b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:47:08,553 - __main__ - INFO - Successfully loaded summarization data for comp-constant-8b: 126 rows
+2025-06-01 15:47:08,555 - __main__ - INFO - Analysis columns for comp-constant-8b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 15:47:08,555 - __main__ - INFO - Successfully loaded toxicity data for comp-constant-8b: 100 rows
+2025-06-01 15:47:08,779 - __main__ - INFO - Token count comparison plot generated
+2025-06-01 15:47:09,130 - __main__ - INFO - Token distribution plot generated
+2025-06-01 15:47:09,479 - __main__ - INFO - Enclave combined analysis plot generated
+2025-06-01 15:47:10,192 - __main__ - INFO - Enclave merged analysis plot generated
+2025-06-01 15:47:10,208 - __main__ - INFO - classification enclave4b stats - median: 1.40s, mean: 1.26s, samples: 1000
+2025-06-01 15:47:10,208 - __main__ - INFO - classification host4b stats - median: 1.39s, mean: 1.25s, samples: 1000
+2025-06-01 15:47:10,208 - __main__ - INFO - classification comp-constant-8b stats - median: 0.37s, mean: 0.38s, samples: 500
+2025-06-01 15:47:10,227 - __main__ - INFO - summarization enclave4b stats - median: 10.56s, mean: 10.49s, samples: 243
+2025-06-01 15:47:10,227 - __main__ - INFO - summarization host4b stats - median: 10.72s, mean: 10.66s, samples: 243
+2025-06-01 15:47:10,227 - __main__ - INFO - summarization comp-constant-8b stats - median: 2.59s, mean: 2.70s, samples: 126
+2025-06-01 15:47:10,243 - __main__ - INFO - toxicity enclave4b stats - median: 61.70s, mean: 70.12s, samples: 500
+2025-06-01 15:47:10,243 - __main__ - INFO - toxicity host4b stats - median: 34.47s, mean: 32.18s, samples: 1000
+2025-06-01 15:47:10,243 - __main__ - INFO - toxicity comp-constant-8b stats - median: 12.90s, mean: 15.16s, samples: 100
+2025-06-01 15:47:10,378 - __main__ - INFO - Runtime distribution plot generated
+2025-06-01 15:47:10,462 - __main__ - INFO - Timing comparison plot generated
+2025-06-01 15:47:10,508 - __main__ - INFO - Classification accuracy plot generated
+2025-06-01 15:47:10,511 - __main__ - INFO - 
+Accuracy statistics for enclave4b:
+2025-06-01 15:47:10,511 - __main__ - INFO - Total subject groups: 6
+2025-06-01 15:47:10,511 - __main__ - INFO - Significant groups: 6
+2025-06-01 15:47:10,511 - __main__ - INFO - Samples in Others: 0
+2025-06-01 15:47:10,513 - __main__ - INFO - 
+Accuracy statistics for host4b:
+2025-06-01 15:47:10,513 - __main__ - INFO - Total subject groups: 6
+2025-06-01 15:47:10,513 - __main__ - INFO - Significant groups: 6
+2025-06-01 15:47:10,513 - __main__ - INFO - Samples in Others: 0
+2025-06-01 15:47:10,514 - __main__ - INFO - Subjects in 'Others' for comp-constant-8b:
+2025-06-01 15:47:10,514 - __main__ - INFO -   Law & Legal: acc=0.000, n=2
+2025-06-01 15:47:10,514 - __main__ - INFO -   Psychology & Social Sciences: acc=0.333, n=6
+2025-06-01 15:47:10,515 - __main__ - INFO - 
+Accuracy statistics for comp-constant-8b:
+2025-06-01 15:47:10,515 - __main__ - INFO - Total subject groups: 6
+2025-06-01 15:47:10,515 - __main__ - INFO - Significant groups: 4
+2025-06-01 15:47:10,515 - __main__ - INFO - Samples in Others: 8
+2025-06-01 15:47:10,619 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-06-01 15:47:10,692 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-01 15:47:10,701 - __main__ - INFO - BERT scores for enclave4b:
+2025-06-01 15:47:10,701 - __main__ - INFO -   Mean: 0.469
+2025-06-01 15:47:10,701 - __main__ - INFO -   Median: 0.466
+2025-06-01 15:47:10,701 - __main__ - INFO -   Std: 0.284
+2025-06-01 15:47:10,701 - __main__ - INFO -   Samples: 243
+2025-06-01 15:47:10,701 - __main__ - INFO - BERT scores for host4b:
+2025-06-01 15:47:10,701 - __main__ - INFO -   Mean: 0.490
+2025-06-01 15:47:10,701 - __main__ - INFO -   Median: 0.498
+2025-06-01 15:47:10,701 - __main__ - INFO -   Std: 0.155
+2025-06-01 15:47:10,701 - __main__ - INFO -   Samples: 243
+2025-06-01 15:47:10,702 - __main__ - INFO - BERT scores for comp-constant-8b:
+2025-06-01 15:47:10,702 - __main__ - INFO -   Mean: 0.501
+2025-06-01 15:47:10,702 - __main__ - INFO -   Median: 0.505
+2025-06-01 15:47:10,702 - __main__ - INFO -   Std: 0.145
+2025-06-01 15:47:10,702 - __main__ - INFO -   Samples: 126
+2025-06-01 15:47:10,765 - __main__ - INFO - BERT scores plot generated
+2025-06-01 15:47:10,949 - __main__ - INFO - Summarization response length plot generated
+2025-06-01 15:47:10,990 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 15:47:10,990 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 15:47:11,154 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 15:47:11,154 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 15:47:11,154 - __main__ - INFO - AWS analysis pipeline completed successfully
+2025-06-01 16:01:52,953 - __main__ - INFO - Starting AWS analysis pipeline...
+2025-06-01 16:01:52,953 - __main__ - INFO - Loading data for mode: enclave4b
+2025-06-01 16:01:52,953 - __main__ - INFO - Attempting to load classification data from: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-01 16:01:53,148 - __main__ - INFO - Loaded classification data for enclave4b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:01:53,148 - __main__ - INFO - Successfully loaded classification data for enclave4b: 1000 rows
+2025-06-01 16:01:53,149 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-01 16:01:53,179 - __main__ - INFO - Loaded summarization data for enclave4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:01:53,179 - __main__ - INFO - Successfully loaded summarization data for enclave4b: 243 rows
+2025-06-01 16:01:53,181 - __main__ - INFO - Analysis columns for enclave4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:01:53,181 - __main__ - INFO - Successfully loaded toxicity data for enclave4b: 500 rows
+2025-06-01 16:01:53,181 - __main__ - INFO - Loading data for mode: host4b
+2025-06-01 16:01:53,181 - __main__ - INFO - Attempting to load classification data from: remote_experiments/host4b/llama_classification.parquet
+2025-06-01 16:01:53,286 - __main__ - INFO - Loaded classification data for host4b with columns: ['id', 'question', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:01:53,302 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-06-01 16:01:53,304 - __main__ - INFO - Successfully loaded classification data for host4b: 1000 rows
+2025-06-01 16:01:53,304 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/host4b/llama_summaries.parquet
+2025-06-01 16:01:53,332 - __main__ - INFO - Loaded summarization data for host4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:01:53,332 - __main__ - INFO - Successfully loaded summarization data for host4b: 243 rows
+2025-06-01 16:01:53,437 - __main__ - INFO - Toxic columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:01:53,437 - __main__ - INFO - Analysis columns for host4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic']
+2025-06-01 16:01:53,441 - __main__ - INFO - Merged toxicity columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens', 'input_analysis', 'response_analysis', 'toxic', 'confidence', 'expected_toxic_analysis']
+2025-06-01 16:01:53,441 - __main__ - INFO - Successfully merged toxicity data for host4b: 1000 rows
+2025-06-01 16:01:53,441 - __main__ - INFO - Loading data for mode: comp-constant-8b
+2025-06-01 16:01:53,441 - __main__ - INFO - Attempting to load classification data from: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-01 16:01:53,505 - __main__ - INFO - Loaded classification data for comp-constant-8b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:01:53,505 - __main__ - INFO - Successfully loaded classification data for comp-constant-8b: 500 rows
+2025-06-01 16:01:53,505 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-01 16:01:53,521 - __main__ - INFO - Loaded summarization data for comp-constant-8b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:01:53,521 - __main__ - INFO - Successfully loaded summarization data for comp-constant-8b: 126 rows
+2025-06-01 16:01:53,523 - __main__ - INFO - Analysis columns for comp-constant-8b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:01:53,523 - __main__ - INFO - Successfully loaded toxicity data for comp-constant-8b: 100 rows
+2025-06-01 16:01:53,753 - __main__ - INFO - Token count comparison plot generated
+2025-06-01 16:01:54,132 - __main__ - INFO - Token distribution plot generated
+2025-06-01 16:01:54,496 - __main__ - INFO - Enclave combined analysis plot generated
+2025-06-01 16:01:55,238 - __main__ - INFO - Enclave merged analysis plot generated
+2025-06-01 16:01:55,252 - __main__ - INFO - classification enclave4b stats - median: 1.40s, mean: 1.26s, samples: 1000
+2025-06-01 16:01:55,252 - __main__ - INFO - classification host4b stats - median: 1.39s, mean: 1.25s, samples: 1000
+2025-06-01 16:01:55,252 - __main__ - INFO - classification comp-constant-8b stats - median: 0.37s, mean: 0.38s, samples: 500
+2025-06-01 16:01:55,272 - __main__ - INFO - summarization enclave4b stats - median: 10.56s, mean: 10.49s, samples: 243
+2025-06-01 16:01:55,272 - __main__ - INFO - summarization host4b stats - median: 10.72s, mean: 10.66s, samples: 243
+2025-06-01 16:01:55,272 - __main__ - INFO - summarization comp-constant-8b stats - median: 2.59s, mean: 2.70s, samples: 126
+2025-06-01 16:01:55,289 - __main__ - INFO - toxicity enclave4b stats - median: 61.70s, mean: 70.12s, samples: 500
+2025-06-01 16:01:55,289 - __main__ - INFO - toxicity host4b stats - median: 34.47s, mean: 32.18s, samples: 1000
+2025-06-01 16:01:55,289 - __main__ - INFO - toxicity comp-constant-8b stats - median: 12.90s, mean: 15.16s, samples: 100
+2025-06-01 16:01:55,407 - __main__ - INFO - Runtime distribution plot generated
+2025-06-01 16:01:55,488 - __main__ - INFO - Timing comparison plot generated
+2025-06-01 16:01:55,535 - __main__ - INFO - Classification accuracy plot generated
+2025-06-01 16:01:55,538 - __main__ - INFO - 
+Accuracy statistics for enclave4b:
+2025-06-01 16:01:55,538 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:01:55,538 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:01:55,538 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:01:55,540 - __main__ - INFO - 
+Accuracy statistics for host4b:
+2025-06-01 16:01:55,540 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:01:55,540 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:01:55,540 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:01:55,542 - __main__ - INFO - Subjects in 'Others' for comp-constant-8b:
+2025-06-01 16:01:55,542 - __main__ - INFO -   Law & Legal: acc=0.000, n=2
+2025-06-01 16:01:55,542 - __main__ - INFO -   Psychology & Social Sciences: acc=0.333, n=6
+2025-06-01 16:01:55,542 - __main__ - INFO - 
+Accuracy statistics for comp-constant-8b:
+2025-06-01 16:01:55,542 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:01:55,542 - __main__ - INFO - Significant groups: 4
+2025-06-01 16:01:55,542 - __main__ - INFO - Samples in Others: 8
+2025-06-01 16:01:55,645 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-06-01 16:01:55,721 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-01 16:01:55,729 - __main__ - INFO - BERT scores for enclave4b:
+2025-06-01 16:01:55,730 - __main__ - INFO -   Mean: 0.469
+2025-06-01 16:01:55,730 - __main__ - INFO -   Median: 0.466
+2025-06-01 16:01:55,730 - __main__ - INFO -   Std: 0.284
+2025-06-01 16:01:55,730 - __main__ - INFO -   Samples: 243
+2025-06-01 16:01:55,730 - __main__ - INFO - BERT scores for host4b:
+2025-06-01 16:01:55,730 - __main__ - INFO -   Mean: 0.490
+2025-06-01 16:01:55,730 - __main__ - INFO -   Median: 0.498
+2025-06-01 16:01:55,730 - __main__ - INFO -   Std: 0.155
+2025-06-01 16:01:55,730 - __main__ - INFO -   Samples: 243
+2025-06-01 16:01:55,730 - __main__ - INFO - BERT scores for comp-constant-8b:
+2025-06-01 16:01:55,730 - __main__ - INFO -   Mean: 0.501
+2025-06-01 16:01:55,730 - __main__ - INFO -   Median: 0.505
+2025-06-01 16:01:55,730 - __main__ - INFO -   Std: 0.145
+2025-06-01 16:01:55,730 - __main__ - INFO -   Samples: 126
+2025-06-01 16:01:55,795 - __main__ - INFO - BERT scores plot generated
+2025-06-01 16:01:55,975 - __main__ - INFO - Summarization response length plot generated
+2025-06-01 16:01:56,015 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:01:56,015 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:01:56,170 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:01:56,170 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:01:56,170 - __main__ - INFO - AWS analysis pipeline completed successfully
+2025-06-01 16:04:23,288 - __main__ - INFO - Starting AWS analysis pipeline...
+2025-06-01 16:04:23,289 - __main__ - INFO - Loading data for mode: enclave4b
+2025-06-01 16:04:23,289 - __main__ - INFO - Attempting to load classification data from: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-01 16:04:23,466 - __main__ - INFO - Loaded classification data for enclave4b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:04:23,467 - __main__ - INFO - Successfully loaded classification data for enclave4b: 1000 rows
+2025-06-01 16:04:23,467 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-01 16:04:23,492 - __main__ - INFO - Loaded summarization data for enclave4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:04:23,492 - __main__ - INFO - Successfully loaded summarization data for enclave4b: 243 rows
+2025-06-01 16:04:23,493 - __main__ - INFO - Analysis columns for enclave4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:04:23,493 - __main__ - INFO - Successfully loaded toxicity data for enclave4b: 500 rows
+2025-06-01 16:04:23,493 - __main__ - INFO - Loading data for mode: host4b
+2025-06-01 16:04:23,493 - __main__ - INFO - Attempting to load classification data from: remote_experiments/host4b/llama_classification.parquet
+2025-06-01 16:04:23,593 - __main__ - INFO - Loaded classification data for host4b with columns: ['id', 'question', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:04:23,607 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-06-01 16:04:23,609 - __main__ - INFO - Successfully loaded classification data for host4b: 1000 rows
+2025-06-01 16:04:23,609 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/host4b/llama_summaries.parquet
+2025-06-01 16:04:23,634 - __main__ - INFO - Loaded summarization data for host4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:04:23,634 - __main__ - INFO - Successfully loaded summarization data for host4b: 243 rows
+2025-06-01 16:04:23,731 - __main__ - INFO - Toxic columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:04:23,731 - __main__ - INFO - Analysis columns for host4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic']
+2025-06-01 16:04:23,735 - __main__ - INFO - Merged toxicity columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens', 'input_analysis', 'response_analysis', 'toxic', 'confidence', 'expected_toxic_analysis']
+2025-06-01 16:04:23,735 - __main__ - INFO - Successfully merged toxicity data for host4b: 1000 rows
+2025-06-01 16:04:23,735 - __main__ - INFO - Loading data for mode: comp-constant-8b
+2025-06-01 16:04:23,735 - __main__ - INFO - Attempting to load classification data from: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-01 16:04:23,802 - __main__ - INFO - Loaded classification data for comp-constant-8b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:04:23,802 - __main__ - INFO - Successfully loaded classification data for comp-constant-8b: 500 rows
+2025-06-01 16:04:23,802 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-01 16:04:23,817 - __main__ - INFO - Loaded summarization data for comp-constant-8b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:04:23,817 - __main__ - INFO - Successfully loaded summarization data for comp-constant-8b: 126 rows
+2025-06-01 16:04:23,819 - __main__ - INFO - Analysis columns for comp-constant-8b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:04:23,820 - __main__ - INFO - Successfully loaded toxicity data for comp-constant-8b: 100 rows
+2025-06-01 16:04:24,060 - __main__ - INFO - Token count comparison plot generated
+2025-06-01 16:04:24,432 - __main__ - INFO - Token distribution plot generated
+2025-06-01 16:04:24,791 - __main__ - INFO - Enclave combined analysis plot generated
+2025-06-01 16:04:25,556 - __main__ - INFO - Enclave merged analysis plot generated
+2025-06-01 16:04:25,568 - __main__ - INFO - classification enclave4b stats - median: 1.40s, mean: 1.26s, samples: 1000
+2025-06-01 16:04:25,568 - __main__ - INFO - classification host4b stats - median: 1.39s, mean: 1.25s, samples: 1000
+2025-06-01 16:04:25,568 - __main__ - INFO - classification comp-constant-8b stats - median: 0.37s, mean: 0.38s, samples: 500
+2025-06-01 16:04:25,586 - __main__ - INFO - summarization enclave4b stats - median: 10.56s, mean: 10.49s, samples: 243
+2025-06-01 16:04:25,586 - __main__ - INFO - summarization host4b stats - median: 10.72s, mean: 10.66s, samples: 243
+2025-06-01 16:04:25,586 - __main__ - INFO - summarization comp-constant-8b stats - median: 2.59s, mean: 2.70s, samples: 126
+2025-06-01 16:04:25,600 - __main__ - INFO - toxicity enclave4b stats - median: 61.70s, mean: 70.12s, samples: 500
+2025-06-01 16:04:25,600 - __main__ - INFO - toxicity host4b stats - median: 34.47s, mean: 32.18s, samples: 1000
+2025-06-01 16:04:25,600 - __main__ - INFO - toxicity comp-constant-8b stats - median: 12.90s, mean: 15.16s, samples: 100
+2025-06-01 16:04:25,718 - __main__ - INFO - Runtime distribution plot generated
+2025-06-01 16:04:25,804 - __main__ - INFO - Timing comparison plot generated
+2025-06-01 16:04:25,851 - __main__ - INFO - Classification accuracy plot generated
+2025-06-01 16:04:25,854 - __main__ - INFO - 
+Accuracy statistics for enclave4b:
+2025-06-01 16:04:25,854 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:04:25,854 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:04:25,854 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:04:25,856 - __main__ - INFO - 
+Accuracy statistics for host4b:
+2025-06-01 16:04:25,856 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:04:25,856 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:04:25,856 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:04:25,857 - __main__ - INFO - Subjects in 'Others' for comp-constant-8b:
+2025-06-01 16:04:25,858 - __main__ - INFO -   Law & Legal: acc=0.000, n=2
+2025-06-01 16:04:25,858 - __main__ - INFO -   Psychology & Social Sciences: acc=0.333, n=6
+2025-06-01 16:04:25,858 - __main__ - INFO - 
+Accuracy statistics for comp-constant-8b:
+2025-06-01 16:04:25,858 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:04:25,858 - __main__ - INFO - Significant groups: 4
+2025-06-01 16:04:25,858 - __main__ - INFO - Samples in Others: 8
+2025-06-01 16:04:25,964 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-06-01 16:04:26,039 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-01 16:04:26,048 - __main__ - INFO - BERT scores for enclave4b:
+2025-06-01 16:04:26,048 - __main__ - INFO -   Mean: 0.469
+2025-06-01 16:04:26,048 - __main__ - INFO -   Median: 0.466
+2025-06-01 16:04:26,048 - __main__ - INFO -   Std: 0.284
+2025-06-01 16:04:26,048 - __main__ - INFO -   Samples: 243
+2025-06-01 16:04:26,048 - __main__ - INFO - BERT scores for host4b:
+2025-06-01 16:04:26,048 - __main__ - INFO -   Mean: 0.490
+2025-06-01 16:04:26,048 - __main__ - INFO -   Median: 0.498
+2025-06-01 16:04:26,048 - __main__ - INFO -   Std: 0.155
+2025-06-01 16:04:26,048 - __main__ - INFO -   Samples: 243
+2025-06-01 16:04:26,048 - __main__ - INFO - BERT scores for comp-constant-8b:
+2025-06-01 16:04:26,048 - __main__ - INFO -   Mean: 0.501
+2025-06-01 16:04:26,049 - __main__ - INFO -   Median: 0.505
+2025-06-01 16:04:26,049 - __main__ - INFO -   Std: 0.145
+2025-06-01 16:04:26,049 - __main__ - INFO -   Samples: 126
+2025-06-01 16:04:26,114 - __main__ - INFO - BERT scores plot generated
+2025-06-01 16:04:26,307 - __main__ - INFO - Summarization response length plot generated
+2025-06-01 16:04:26,348 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:04:26,348 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:04:26,519 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:04:26,519 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:04:26,519 - __main__ - INFO - AWS analysis pipeline completed successfully
+2025-06-01 16:08:05,294 - __main__ - INFO - Starting AWS analysis pipeline...
+2025-06-01 16:08:05,295 - __main__ - INFO - Loading data for mode: enclave4b
+2025-06-01 16:08:05,295 - __main__ - INFO - Attempting to load classification data from: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-01 16:08:05,487 - __main__ - INFO - Loaded classification data for enclave4b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:08:05,488 - __main__ - INFO - Successfully loaded classification data for enclave4b: 1000 rows
+2025-06-01 16:08:05,488 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-01 16:08:05,517 - __main__ - INFO - Loaded summarization data for enclave4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:08:05,517 - __main__ - INFO - Successfully loaded summarization data for enclave4b: 243 rows
+2025-06-01 16:08:05,519 - __main__ - INFO - Analysis columns for enclave4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:08:05,519 - __main__ - INFO - Successfully loaded toxicity data for enclave4b: 500 rows
+2025-06-01 16:08:05,519 - __main__ - INFO - Loading data for mode: host4b
+2025-06-01 16:08:05,519 - __main__ - INFO - Attempting to load classification data from: remote_experiments/host4b/llama_classification.parquet
+2025-06-01 16:08:05,622 - __main__ - INFO - Loaded classification data for host4b with columns: ['id', 'question', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:08:05,638 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-06-01 16:08:05,639 - __main__ - INFO - Successfully loaded classification data for host4b: 1000 rows
+2025-06-01 16:08:05,639 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/host4b/llama_summaries.parquet
+2025-06-01 16:08:05,665 - __main__ - INFO - Loaded summarization data for host4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:08:05,665 - __main__ - INFO - Successfully loaded summarization data for host4b: 243 rows
+2025-06-01 16:08:05,767 - __main__ - INFO - Toxic columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:08:05,767 - __main__ - INFO - Analysis columns for host4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic']
+2025-06-01 16:08:05,771 - __main__ - INFO - Merged toxicity columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens', 'input_analysis', 'response_analysis', 'toxic', 'confidence', 'expected_toxic_analysis']
+2025-06-01 16:08:05,771 - __main__ - INFO - Successfully merged toxicity data for host4b: 1000 rows
+2025-06-01 16:08:05,771 - __main__ - INFO - Loading data for mode: comp-constant-8b
+2025-06-01 16:08:05,771 - __main__ - INFO - Attempting to load classification data from: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-01 16:08:05,840 - __main__ - INFO - Loaded classification data for comp-constant-8b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:08:05,840 - __main__ - INFO - Successfully loaded classification data for comp-constant-8b: 500 rows
+2025-06-01 16:08:05,840 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-01 16:08:05,856 - __main__ - INFO - Loaded summarization data for comp-constant-8b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:08:05,856 - __main__ - INFO - Successfully loaded summarization data for comp-constant-8b: 126 rows
+2025-06-01 16:08:05,858 - __main__ - INFO - Analysis columns for comp-constant-8b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:08:05,858 - __main__ - INFO - Successfully loaded toxicity data for comp-constant-8b: 100 rows
+2025-06-01 16:08:06,074 - __main__ - INFO - Token count comparison plot generated
+2025-06-01 16:08:06,451 - __main__ - INFO - Token distribution plot generated
+2025-06-01 16:08:06,812 - __main__ - INFO - Enclave combined analysis plot generated
+2025-06-01 16:08:07,566 - __main__ - INFO - Enclave merged analysis plot generated
+2025-06-01 16:08:07,578 - __main__ - INFO - classification enclave4b stats - median: 1.40s, mean: 1.26s, samples: 1000
+2025-06-01 16:08:07,578 - __main__ - INFO - classification host4b stats - median: 1.39s, mean: 1.25s, samples: 1000
+2025-06-01 16:08:07,578 - __main__ - INFO - classification comp-constant-8b stats - median: 0.37s, mean: 0.38s, samples: 500
+2025-06-01 16:08:07,593 - __main__ - INFO - summarization enclave4b stats - median: 10.56s, mean: 10.49s, samples: 243
+2025-06-01 16:08:07,593 - __main__ - INFO - summarization host4b stats - median: 10.72s, mean: 10.66s, samples: 243
+2025-06-01 16:08:07,593 - __main__ - INFO - summarization comp-constant-8b stats - median: 2.59s, mean: 2.70s, samples: 126
+2025-06-01 16:08:07,605 - __main__ - INFO - toxicity enclave4b stats - median: 61.70s, mean: 70.12s, samples: 500
+2025-06-01 16:08:07,605 - __main__ - INFO - toxicity host4b stats - median: 34.47s, mean: 32.18s, samples: 1000
+2025-06-01 16:08:07,605 - __main__ - INFO - toxicity comp-constant-8b stats - median: 12.90s, mean: 15.16s, samples: 100
+2025-06-01 16:08:07,721 - __main__ - INFO - Runtime distribution plot generated
+2025-06-01 16:08:07,803 - __main__ - INFO - Timing comparison plot generated
+2025-06-01 16:08:07,848 - __main__ - INFO - Classification accuracy plot generated
+2025-06-01 16:08:07,851 - __main__ - INFO - 
+Accuracy statistics for enclave4b:
+2025-06-01 16:08:07,851 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:08:07,851 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:08:07,851 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:08:07,853 - __main__ - INFO - 
+Accuracy statistics for host4b:
+2025-06-01 16:08:07,853 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:08:07,853 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:08:07,853 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:08:07,855 - __main__ - INFO - Subjects in 'Others' for comp-constant-8b:
+2025-06-01 16:08:07,855 - __main__ - INFO -   Law & Legal: acc=0.000, n=2
+2025-06-01 16:08:07,855 - __main__ - INFO -   Psychology & Social Sciences: acc=0.333, n=6
+2025-06-01 16:08:07,855 - __main__ - INFO - 
+Accuracy statistics for comp-constant-8b:
+2025-06-01 16:08:07,855 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:08:07,855 - __main__ - INFO - Significant groups: 4
+2025-06-01 16:08:07,855 - __main__ - INFO - Samples in Others: 8
+2025-06-01 16:08:07,960 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-06-01 16:08:08,036 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-01 16:08:08,044 - __main__ - INFO - BERT scores for enclave4b:
+2025-06-01 16:08:08,044 - __main__ - INFO -   Mean: 0.469
+2025-06-01 16:08:08,044 - __main__ - INFO -   Median: 0.466
+2025-06-01 16:08:08,044 - __main__ - INFO -   Std: 0.284
+2025-06-01 16:08:08,044 - __main__ - INFO -   Samples: 243
+2025-06-01 16:08:08,045 - __main__ - INFO - BERT scores for host4b:
+2025-06-01 16:08:08,045 - __main__ - INFO -   Mean: 0.490
+2025-06-01 16:08:08,045 - __main__ - INFO -   Median: 0.498
+2025-06-01 16:08:08,045 - __main__ - INFO -   Std: 0.155
+2025-06-01 16:08:08,045 - __main__ - INFO -   Samples: 243
+2025-06-01 16:08:08,045 - __main__ - INFO - BERT scores for comp-constant-8b:
+2025-06-01 16:08:08,045 - __main__ - INFO -   Mean: 0.501
+2025-06-01 16:08:08,045 - __main__ - INFO -   Median: 0.505
+2025-06-01 16:08:08,045 - __main__ - INFO -   Std: 0.145
+2025-06-01 16:08:08,045 - __main__ - INFO -   Samples: 126
+2025-06-01 16:08:08,110 - __main__ - INFO - BERT scores plot generated
+2025-06-01 16:08:08,291 - __main__ - INFO - Summarization response length plot generated
+2025-06-01 16:08:08,331 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:08:08,331 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:08:08,473 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:08:08,473 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:08:08,473 - __main__ - INFO - AWS analysis pipeline completed successfully
+2025-06-01 16:11:28,720 - __main__ - INFO - Starting AWS analysis pipeline...
+2025-06-01 16:11:28,720 - __main__ - INFO - Loading data for mode: enclave4b
+2025-06-01 16:11:28,720 - __main__ - INFO - Attempting to load classification data from: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-01 16:11:28,896 - __main__ - INFO - Loaded classification data for enclave4b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:11:28,897 - __main__ - INFO - Successfully loaded classification data for enclave4b: 1000 rows
+2025-06-01 16:11:28,897 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-01 16:11:28,926 - __main__ - INFO - Loaded summarization data for enclave4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:11:28,926 - __main__ - INFO - Successfully loaded summarization data for enclave4b: 243 rows
+2025-06-01 16:11:28,929 - __main__ - INFO - Analysis columns for enclave4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:11:28,929 - __main__ - INFO - Successfully loaded toxicity data for enclave4b: 500 rows
+2025-06-01 16:11:28,929 - __main__ - INFO - Loading data for mode: host4b
+2025-06-01 16:11:28,929 - __main__ - INFO - Attempting to load classification data from: remote_experiments/host4b/llama_classification.parquet
+2025-06-01 16:11:29,036 - __main__ - INFO - Loaded classification data for host4b with columns: ['id', 'question', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:11:29,054 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-06-01 16:11:29,055 - __main__ - INFO - Successfully loaded classification data for host4b: 1000 rows
+2025-06-01 16:11:29,055 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/host4b/llama_summaries.parquet
+2025-06-01 16:11:29,086 - __main__ - INFO - Loaded summarization data for host4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:11:29,086 - __main__ - INFO - Successfully loaded summarization data for host4b: 243 rows
+2025-06-01 16:11:29,218 - __main__ - INFO - Toxic columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:11:29,218 - __main__ - INFO - Analysis columns for host4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic']
+2025-06-01 16:11:29,222 - __main__ - INFO - Merged toxicity columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens', 'input_analysis', 'response_analysis', 'toxic', 'confidence', 'expected_toxic_analysis']
+2025-06-01 16:11:29,222 - __main__ - INFO - Successfully merged toxicity data for host4b: 1000 rows
+2025-06-01 16:11:29,222 - __main__ - INFO - Loading data for mode: comp-constant-8b
+2025-06-01 16:11:29,222 - __main__ - INFO - Attempting to load classification data from: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-01 16:11:29,302 - __main__ - INFO - Loaded classification data for comp-constant-8b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:11:29,303 - __main__ - INFO - Successfully loaded classification data for comp-constant-8b: 500 rows
+2025-06-01 16:11:29,303 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-01 16:11:29,321 - __main__ - INFO - Loaded summarization data for comp-constant-8b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:11:29,321 - __main__ - INFO - Successfully loaded summarization data for comp-constant-8b: 126 rows
+2025-06-01 16:11:29,324 - __main__ - INFO - Analysis columns for comp-constant-8b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:11:29,324 - __main__ - INFO - Successfully loaded toxicity data for comp-constant-8b: 100 rows
+2025-06-01 16:11:29,556 - __main__ - INFO - Token count comparison plot generated
+2025-06-01 16:11:29,923 - __main__ - INFO - Token distribution plot generated
+2025-06-01 16:11:30,280 - __main__ - INFO - Enclave combined analysis plot generated
+2025-06-01 16:11:30,977 - __main__ - INFO - Enclave merged analysis plot generated
+2025-06-01 16:11:30,990 - __main__ - INFO - classification enclave4b stats - median: 1.40s, mean: 1.26s, samples: 1000
+2025-06-01 16:11:30,990 - __main__ - INFO - classification host4b stats - median: 1.39s, mean: 1.25s, samples: 1000
+2025-06-01 16:11:30,990 - __main__ - INFO - classification comp-constant-8b stats - median: 0.37s, mean: 0.38s, samples: 500
+2025-06-01 16:11:31,005 - __main__ - INFO - summarization enclave4b stats - median: 10.56s, mean: 10.49s, samples: 243
+2025-06-01 16:11:31,005 - __main__ - INFO - summarization host4b stats - median: 10.72s, mean: 10.66s, samples: 243
+2025-06-01 16:11:31,006 - __main__ - INFO - summarization comp-constant-8b stats - median: 2.59s, mean: 2.70s, samples: 126
+2025-06-01 16:11:31,018 - __main__ - INFO - toxicity enclave4b stats - median: 61.70s, mean: 70.12s, samples: 500
+2025-06-01 16:11:31,018 - __main__ - INFO - toxicity host4b stats - median: 34.47s, mean: 32.18s, samples: 1000
+2025-06-01 16:11:31,018 - __main__ - INFO - toxicity comp-constant-8b stats - median: 12.90s, mean: 15.16s, samples: 100
+2025-06-01 16:11:31,157 - __main__ - INFO - Runtime distribution plot generated
+2025-06-01 16:11:31,254 - __main__ - INFO - Timing comparison plot generated
+2025-06-01 16:11:31,300 - __main__ - INFO - Classification accuracy plot generated
+2025-06-01 16:11:31,303 - __main__ - INFO - 
+Accuracy statistics for enclave4b:
+2025-06-01 16:11:31,304 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:11:31,304 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:11:31,304 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:11:31,305 - __main__ - INFO - 
+Accuracy statistics for host4b:
+2025-06-01 16:11:31,305 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:11:31,305 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:11:31,305 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:11:31,307 - __main__ - INFO - Subjects in 'Others' for comp-constant-8b:
+2025-06-01 16:11:31,307 - __main__ - INFO -   Law & Legal: acc=0.000, n=2
+2025-06-01 16:11:31,307 - __main__ - INFO -   Psychology & Social Sciences: acc=0.333, n=6
+2025-06-01 16:11:31,307 - __main__ - INFO - 
+Accuracy statistics for comp-constant-8b:
+2025-06-01 16:11:31,307 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:11:31,307 - __main__ - INFO - Significant groups: 4
+2025-06-01 16:11:31,307 - __main__ - INFO - Samples in Others: 8
+2025-06-01 16:11:31,415 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-06-01 16:11:31,490 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-01 16:11:31,499 - __main__ - INFO - BERT scores for enclave4b:
+2025-06-01 16:11:31,499 - __main__ - INFO -   Mean: 0.469
+2025-06-01 16:11:31,499 - __main__ - INFO -   Median: 0.466
+2025-06-01 16:11:31,499 - __main__ - INFO -   Std: 0.284
+2025-06-01 16:11:31,499 - __main__ - INFO -   Samples: 243
+2025-06-01 16:11:31,499 - __main__ - INFO - BERT scores for host4b:
+2025-06-01 16:11:31,499 - __main__ - INFO -   Mean: 0.490
+2025-06-01 16:11:31,499 - __main__ - INFO -   Median: 0.498
+2025-06-01 16:11:31,499 - __main__ - INFO -   Std: 0.155
+2025-06-01 16:11:31,499 - __main__ - INFO -   Samples: 243
+2025-06-01 16:11:31,500 - __main__ - INFO - BERT scores for comp-constant-8b:
+2025-06-01 16:11:31,500 - __main__ - INFO -   Mean: 0.501
+2025-06-01 16:11:31,500 - __main__ - INFO -   Median: 0.505
+2025-06-01 16:11:31,500 - __main__ - INFO -   Std: 0.145
+2025-06-01 16:11:31,500 - __main__ - INFO -   Samples: 126
+2025-06-01 16:11:31,564 - __main__ - INFO - BERT scores plot generated
+2025-06-01 16:11:31,746 - __main__ - INFO - Summarization response length plot generated
+2025-06-01 16:11:31,788 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:11:31,788 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:11:31,954 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:11:31,955 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:11:31,955 - __main__ - INFO - AWS analysis pipeline completed successfully
+2025-06-01 16:16:52,279 - __main__ - INFO - Starting AWS analysis pipeline...
+2025-06-01 16:16:52,280 - __main__ - INFO - Loading data for mode: enclave4b
+2025-06-01 16:16:52,280 - __main__ - INFO - Attempting to load classification data from: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-01 16:16:52,460 - __main__ - INFO - Loaded classification data for enclave4b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:16:52,461 - __main__ - INFO - Successfully loaded classification data for enclave4b: 1000 rows
+2025-06-01 16:16:52,461 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-01 16:16:52,486 - __main__ - INFO - Loaded summarization data for enclave4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:16:52,486 - __main__ - INFO - Successfully loaded summarization data for enclave4b: 243 rows
+2025-06-01 16:16:52,488 - __main__ - INFO - Analysis columns for enclave4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:16:52,488 - __main__ - INFO - Successfully loaded toxicity data for enclave4b: 500 rows
+2025-06-01 16:16:52,488 - __main__ - INFO - Loading data for mode: host4b
+2025-06-01 16:16:52,488 - __main__ - INFO - Attempting to load classification data from: remote_experiments/host4b/llama_classification.parquet
+2025-06-01 16:16:52,583 - __main__ - INFO - Loaded classification data for host4b with columns: ['id', 'question', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:16:52,598 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-06-01 16:16:52,600 - __main__ - INFO - Successfully loaded classification data for host4b: 1000 rows
+2025-06-01 16:16:52,600 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/host4b/llama_summaries.parquet
+2025-06-01 16:16:52,627 - __main__ - INFO - Loaded summarization data for host4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:16:52,627 - __main__ - INFO - Successfully loaded summarization data for host4b: 243 rows
+2025-06-01 16:16:52,724 - __main__ - INFO - Toxic columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:16:52,724 - __main__ - INFO - Analysis columns for host4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic']
+2025-06-01 16:16:52,727 - __main__ - INFO - Merged toxicity columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens', 'input_analysis', 'response_analysis', 'toxic', 'confidence', 'expected_toxic_analysis']
+2025-06-01 16:16:52,727 - __main__ - INFO - Successfully merged toxicity data for host4b: 1000 rows
+2025-06-01 16:16:52,727 - __main__ - INFO - Loading data for mode: comp-constant-8b
+2025-06-01 16:16:52,728 - __main__ - INFO - Attempting to load classification data from: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-01 16:16:52,795 - __main__ - INFO - Loaded classification data for comp-constant-8b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:16:52,795 - __main__ - INFO - Successfully loaded classification data for comp-constant-8b: 500 rows
+2025-06-01 16:16:52,796 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-01 16:16:52,811 - __main__ - INFO - Loaded summarization data for comp-constant-8b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:16:52,811 - __main__ - INFO - Successfully loaded summarization data for comp-constant-8b: 126 rows
+2025-06-01 16:16:52,813 - __main__ - INFO - Analysis columns for comp-constant-8b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:16:52,813 - __main__ - INFO - Successfully loaded toxicity data for comp-constant-8b: 100 rows
+2025-06-01 16:16:53,047 - __main__ - INFO - Token count comparison plot generated
+2025-06-01 16:16:53,459 - __main__ - INFO - Token distribution plot generated
+2025-06-01 16:16:53,769 - __main__ - INFO - Enclave combined analysis plot generated
+2025-06-01 16:16:54,492 - __main__ - INFO - Enclave merged analysis plot generated
+2025-06-01 16:16:54,504 - __main__ - INFO - classification enclave4b stats - median: 1.40s, mean: 1.26s, samples: 1000
+2025-06-01 16:16:54,504 - __main__ - INFO - classification host4b stats - median: 1.39s, mean: 1.25s, samples: 1000
+2025-06-01 16:16:54,504 - __main__ - INFO - classification comp-constant-8b stats - median: 0.37s, mean: 0.38s, samples: 500
+2025-06-01 16:16:54,522 - __main__ - INFO - summarization enclave4b stats - median: 10.56s, mean: 10.49s, samples: 243
+2025-06-01 16:16:54,522 - __main__ - INFO - summarization host4b stats - median: 10.72s, mean: 10.66s, samples: 243
+2025-06-01 16:16:54,522 - __main__ - INFO - summarization comp-constant-8b stats - median: 2.59s, mean: 2.70s, samples: 126
+2025-06-01 16:16:54,535 - __main__ - INFO - toxicity enclave4b stats - median: 61.70s, mean: 70.12s, samples: 500
+2025-06-01 16:16:54,535 - __main__ - INFO - toxicity host4b stats - median: 34.47s, mean: 32.18s, samples: 1000
+2025-06-01 16:16:54,535 - __main__ - INFO - toxicity comp-constant-8b stats - median: 12.90s, mean: 15.16s, samples: 100
+2025-06-01 16:16:54,655 - __main__ - INFO - Runtime distribution plot generated
+2025-06-01 16:16:54,739 - __main__ - INFO - Timing comparison plot generated
+2025-06-01 16:16:54,786 - __main__ - INFO - Classification accuracy plot generated
+2025-06-01 16:16:54,790 - __main__ - INFO - 
+Accuracy statistics for enclave4b:
+2025-06-01 16:16:54,790 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:16:54,790 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:16:54,790 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:16:54,792 - __main__ - INFO - 
+Accuracy statistics for host4b:
+2025-06-01 16:16:54,792 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:16:54,792 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:16:54,792 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:16:54,794 - __main__ - INFO - Subjects in 'Others' for comp-constant-8b:
+2025-06-01 16:16:54,794 - __main__ - INFO -   Law & Legal: acc=0.000, n=2
+2025-06-01 16:16:54,794 - __main__ - INFO -   Psychology & Social Sciences: acc=0.333, n=6
+2025-06-01 16:16:54,794 - __main__ - INFO - 
+Accuracy statistics for comp-constant-8b:
+2025-06-01 16:16:54,794 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:16:54,794 - __main__ - INFO - Significant groups: 4
+2025-06-01 16:16:54,794 - __main__ - INFO - Samples in Others: 8
+2025-06-01 16:16:54,904 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-06-01 16:16:54,994 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-01 16:16:55,006 - __main__ - INFO - BERT scores for enclave4b:
+2025-06-01 16:16:55,006 - __main__ - INFO -   Mean: 0.469
+2025-06-01 16:16:55,006 - __main__ - INFO -   Median: 0.466
+2025-06-01 16:16:55,006 - __main__ - INFO -   Std: 0.284
+2025-06-01 16:16:55,006 - __main__ - INFO -   Samples: 243
+2025-06-01 16:16:55,006 - __main__ - INFO - BERT scores for host4b:
+2025-06-01 16:16:55,006 - __main__ - INFO -   Mean: 0.490
+2025-06-01 16:16:55,006 - __main__ - INFO -   Median: 0.498
+2025-06-01 16:16:55,006 - __main__ - INFO -   Std: 0.155
+2025-06-01 16:16:55,006 - __main__ - INFO -   Samples: 243
+2025-06-01 16:16:55,006 - __main__ - INFO - BERT scores for comp-constant-8b:
+2025-06-01 16:16:55,006 - __main__ - INFO -   Mean: 0.501
+2025-06-01 16:16:55,006 - __main__ - INFO -   Median: 0.505
+2025-06-01 16:16:55,006 - __main__ - INFO -   Std: 0.145
+2025-06-01 16:16:55,007 - __main__ - INFO -   Samples: 126
+2025-06-01 16:16:55,078 - __main__ - INFO - BERT scores plot generated
+2025-06-01 16:16:55,243 - __main__ - INFO - Summarization response length plot generated
+2025-06-01 16:16:55,296 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:16:55,297 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:16:55,528 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:16:55,528 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:16:55,528 - __main__ - INFO - AWS analysis pipeline completed successfully
+2025-06-01 16:19:29,304 - __main__ - INFO - Starting AWS analysis pipeline...
+2025-06-01 16:19:29,304 - __main__ - INFO - Loading data for mode: enclave4b
+2025-06-01 16:19:29,304 - __main__ - INFO - Attempting to load classification data from: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-01 16:19:29,461 - __main__ - INFO - Loaded classification data for enclave4b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:19:29,461 - __main__ - INFO - Successfully loaded classification data for enclave4b: 1000 rows
+2025-06-01 16:19:29,461 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-01 16:19:29,489 - __main__ - INFO - Loaded summarization data for enclave4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:19:29,489 - __main__ - INFO - Successfully loaded summarization data for enclave4b: 243 rows
+2025-06-01 16:19:29,491 - __main__ - INFO - Analysis columns for enclave4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:19:29,491 - __main__ - INFO - Successfully loaded toxicity data for enclave4b: 500 rows
+2025-06-01 16:19:29,491 - __main__ - INFO - Loading data for mode: host4b
+2025-06-01 16:19:29,491 - __main__ - INFO - Attempting to load classification data from: remote_experiments/host4b/llama_classification.parquet
+2025-06-01 16:19:29,593 - __main__ - INFO - Loaded classification data for host4b with columns: ['id', 'question', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:19:29,606 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-06-01 16:19:29,607 - __main__ - INFO - Successfully loaded classification data for host4b: 1000 rows
+2025-06-01 16:19:29,607 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/host4b/llama_summaries.parquet
+2025-06-01 16:19:29,633 - __main__ - INFO - Loaded summarization data for host4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:19:29,634 - __main__ - INFO - Successfully loaded summarization data for host4b: 243 rows
+2025-06-01 16:19:29,733 - __main__ - INFO - Toxic columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:19:29,733 - __main__ - INFO - Analysis columns for host4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic']
+2025-06-01 16:19:29,735 - __main__ - INFO - Merged toxicity columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens', 'input_analysis', 'response_analysis', 'toxic', 'confidence', 'expected_toxic_analysis']
+2025-06-01 16:19:29,735 - __main__ - INFO - Successfully merged toxicity data for host4b: 1000 rows
+2025-06-01 16:19:29,735 - __main__ - INFO - Loading data for mode: comp-constant-8b
+2025-06-01 16:19:29,735 - __main__ - INFO - Attempting to load classification data from: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-01 16:19:29,800 - __main__ - INFO - Loaded classification data for comp-constant-8b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:19:29,801 - __main__ - INFO - Successfully loaded classification data for comp-constant-8b: 500 rows
+2025-06-01 16:19:29,801 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-01 16:19:29,816 - __main__ - INFO - Loaded summarization data for comp-constant-8b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:19:29,816 - __main__ - INFO - Successfully loaded summarization data for comp-constant-8b: 126 rows
+2025-06-01 16:19:29,817 - __main__ - INFO - Analysis columns for comp-constant-8b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:19:29,817 - __main__ - INFO - Successfully loaded toxicity data for comp-constant-8b: 100 rows
+2025-06-01 16:19:30,030 - __main__ - INFO - Token count comparison plot generated
+2025-06-01 16:19:30,405 - __main__ - INFO - Token distribution plot generated
+2025-06-01 16:19:30,722 - __main__ - INFO - Enclave combined analysis plot generated
+2025-06-01 16:19:31,500 - __main__ - INFO - Enclave merged analysis plot generated
+2025-06-01 16:19:31,512 - __main__ - INFO - classification enclave4b stats - median: 1.40s, mean: 1.26s, samples: 1000
+2025-06-01 16:19:31,512 - __main__ - INFO - classification host4b stats - median: 1.39s, mean: 1.25s, samples: 1000
+2025-06-01 16:19:31,512 - __main__ - INFO - classification comp-constant-8b stats - median: 0.37s, mean: 0.38s, samples: 500
+2025-06-01 16:19:31,527 - __main__ - INFO - summarization enclave4b stats - median: 10.56s, mean: 10.49s, samples: 243
+2025-06-01 16:19:31,527 - __main__ - INFO - summarization host4b stats - median: 10.72s, mean: 10.66s, samples: 243
+2025-06-01 16:19:31,527 - __main__ - INFO - summarization comp-constant-8b stats - median: 2.59s, mean: 2.70s, samples: 126
+2025-06-01 16:19:31,540 - __main__ - INFO - toxicity enclave4b stats - median: 61.70s, mean: 70.12s, samples: 500
+2025-06-01 16:19:31,541 - __main__ - INFO - toxicity host4b stats - median: 34.47s, mean: 32.18s, samples: 1000
+2025-06-01 16:19:31,541 - __main__ - INFO - toxicity comp-constant-8b stats - median: 12.90s, mean: 15.16s, samples: 100
+2025-06-01 16:19:31,660 - __main__ - INFO - Runtime distribution plot generated
+2025-06-01 16:19:31,747 - __main__ - INFO - Timing comparison plot generated
+2025-06-01 16:19:31,796 - __main__ - INFO - Classification accuracy plot generated
+2025-06-01 16:19:31,799 - __main__ - INFO - 
+Accuracy statistics for enclave4b:
+2025-06-01 16:19:31,799 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:19:31,799 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:19:31,799 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:19:31,801 - __main__ - INFO - 
+Accuracy statistics for host4b:
+2025-06-01 16:19:31,801 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:19:31,801 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:19:31,801 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:19:31,803 - __main__ - INFO - Subjects in 'Others' for comp-constant-8b:
+2025-06-01 16:19:31,803 - __main__ - INFO -   Law & Legal: acc=0.000, n=2
+2025-06-01 16:19:31,803 - __main__ - INFO -   Psychology & Social Sciences: acc=0.333, n=6
+2025-06-01 16:19:31,803 - __main__ - INFO - 
+Accuracy statistics for comp-constant-8b:
+2025-06-01 16:19:31,803 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:19:31,803 - __main__ - INFO - Significant groups: 4
+2025-06-01 16:19:31,803 - __main__ - INFO - Samples in Others: 8
+2025-06-01 16:19:31,916 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-06-01 16:19:31,994 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-01 16:19:32,002 - __main__ - INFO - BERT scores for enclave4b:
+2025-06-01 16:19:32,002 - __main__ - INFO -   Mean: 0.469
+2025-06-01 16:19:32,002 - __main__ - INFO -   Median: 0.466
+2025-06-01 16:19:32,002 - __main__ - INFO -   Std: 0.284
+2025-06-01 16:19:32,002 - __main__ - INFO -   Samples: 243
+2025-06-01 16:19:32,002 - __main__ - INFO - BERT scores for host4b:
+2025-06-01 16:19:32,002 - __main__ - INFO -   Mean: 0.490
+2025-06-01 16:19:32,002 - __main__ - INFO -   Median: 0.498
+2025-06-01 16:19:32,002 - __main__ - INFO -   Std: 0.155
+2025-06-01 16:19:32,002 - __main__ - INFO -   Samples: 243
+2025-06-01 16:19:32,002 - __main__ - INFO - BERT scores for comp-constant-8b:
+2025-06-01 16:19:32,002 - __main__ - INFO -   Mean: 0.501
+2025-06-01 16:19:32,002 - __main__ - INFO -   Median: 0.505
+2025-06-01 16:19:32,003 - __main__ - INFO -   Std: 0.145
+2025-06-01 16:19:32,003 - __main__ - INFO -   Samples: 126
+2025-06-01 16:19:32,068 - __main__ - INFO - BERT scores plot generated
+2025-06-01 16:19:32,201 - __main__ - INFO - Summarization response length plot generated
+2025-06-01 16:19:32,246 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:19:32,246 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:19:32,505 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:19:32,505 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:19:32,505 - __main__ - INFO - AWS analysis pipeline completed successfully
+2025-06-01 16:23:45,606 - __main__ - INFO - Starting AWS analysis pipeline...
+2025-06-01 16:23:45,607 - __main__ - INFO - Loading data for mode: enclave4b
+2025-06-01 16:23:45,607 - __main__ - INFO - Attempting to load classification data from: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-01 16:23:45,783 - __main__ - INFO - Loaded classification data for enclave4b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:23:45,783 - __main__ - INFO - Successfully loaded classification data for enclave4b: 1000 rows
+2025-06-01 16:23:45,783 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-01 16:23:45,811 - __main__ - INFO - Loaded summarization data for enclave4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:23:45,811 - __main__ - INFO - Successfully loaded summarization data for enclave4b: 243 rows
+2025-06-01 16:23:45,812 - __main__ - INFO - Analysis columns for enclave4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:23:45,812 - __main__ - INFO - Successfully loaded toxicity data for enclave4b: 500 rows
+2025-06-01 16:23:45,812 - __main__ - INFO - Loading data for mode: host4b
+2025-06-01 16:23:45,812 - __main__ - INFO - Attempting to load classification data from: remote_experiments/host4b/llama_classification.parquet
+2025-06-01 16:23:45,913 - __main__ - INFO - Loaded classification data for host4b with columns: ['id', 'question', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:23:45,926 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-06-01 16:23:45,927 - __main__ - INFO - Successfully loaded classification data for host4b: 1000 rows
+2025-06-01 16:23:45,927 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/host4b/llama_summaries.parquet
+2025-06-01 16:23:45,953 - __main__ - INFO - Loaded summarization data for host4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:23:45,953 - __main__ - INFO - Successfully loaded summarization data for host4b: 243 rows
+2025-06-01 16:23:46,049 - __main__ - INFO - Toxic columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:23:46,050 - __main__ - INFO - Analysis columns for host4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic']
+2025-06-01 16:23:46,051 - __main__ - INFO - Merged toxicity columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens', 'input_analysis', 'response_analysis', 'toxic', 'confidence', 'expected_toxic_analysis']
+2025-06-01 16:23:46,051 - __main__ - INFO - Successfully merged toxicity data for host4b: 1000 rows
+2025-06-01 16:23:46,051 - __main__ - INFO - Loading data for mode: comp-constant-8b
+2025-06-01 16:23:46,051 - __main__ - INFO - Attempting to load classification data from: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-01 16:23:46,115 - __main__ - INFO - Loaded classification data for comp-constant-8b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:23:46,115 - __main__ - INFO - Successfully loaded classification data for comp-constant-8b: 500 rows
+2025-06-01 16:23:46,115 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-01 16:23:46,129 - __main__ - INFO - Loaded summarization data for comp-constant-8b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:23:46,130 - __main__ - INFO - Successfully loaded summarization data for comp-constant-8b: 126 rows
+2025-06-01 16:23:46,131 - __main__ - INFO - Analysis columns for comp-constant-8b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:23:46,131 - __main__ - INFO - Successfully loaded toxicity data for comp-constant-8b: 100 rows
+2025-06-01 16:23:46,337 - __main__ - INFO - Token count comparison plot generated
+2025-06-01 16:23:46,699 - __main__ - INFO - Token distribution plot generated
+2025-06-01 16:23:47,019 - __main__ - INFO - Enclave combined analysis plot generated
+2025-06-01 16:23:47,712 - __main__ - INFO - Enclave merged analysis plot generated
+2025-06-01 16:23:47,724 - __main__ - INFO - classification enclave4b stats - median: 1.40s, mean: 1.26s, samples: 1000
+2025-06-01 16:23:47,724 - __main__ - INFO - classification host4b stats - median: 1.39s, mean: 1.25s, samples: 1000
+2025-06-01 16:23:47,724 - __main__ - INFO - classification comp-constant-8b stats - median: 0.37s, mean: 0.38s, samples: 500
+2025-06-01 16:23:47,738 - __main__ - INFO - summarization enclave4b stats - median: 10.56s, mean: 10.49s, samples: 243
+2025-06-01 16:23:47,738 - __main__ - INFO - summarization host4b stats - median: 10.72s, mean: 10.66s, samples: 243
+2025-06-01 16:23:47,738 - __main__ - INFO - summarization comp-constant-8b stats - median: 2.59s, mean: 2.70s, samples: 126
+2025-06-01 16:23:47,750 - __main__ - INFO - toxicity enclave4b stats - median: 61.70s, mean: 70.12s, samples: 500
+2025-06-01 16:23:47,750 - __main__ - INFO - toxicity host4b stats - median: 34.47s, mean: 32.18s, samples: 1000
+2025-06-01 16:23:47,750 - __main__ - INFO - toxicity comp-constant-8b stats - median: 12.90s, mean: 15.16s, samples: 100
+2025-06-01 16:23:47,868 - __main__ - INFO - Runtime distribution plot generated
+2025-06-01 16:23:47,955 - __main__ - INFO - Timing comparison plot generated
+2025-06-01 16:23:48,001 - __main__ - INFO - Classification accuracy plot generated
+2025-06-01 16:23:48,003 - __main__ - INFO - 
+Accuracy statistics for enclave4b:
+2025-06-01 16:23:48,003 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:23:48,003 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:23:48,003 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:23:48,005 - __main__ - INFO - 
+Accuracy statistics for host4b:
+2025-06-01 16:23:48,005 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:23:48,005 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:23:48,005 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:23:48,007 - __main__ - INFO - Subjects in 'Others' for comp-constant-8b:
+2025-06-01 16:23:48,007 - __main__ - INFO -   Law & Legal: acc=0.000, n=2
+2025-06-01 16:23:48,007 - __main__ - INFO -   Psychology & Social Sciences: acc=0.333, n=6
+2025-06-01 16:23:48,007 - __main__ - INFO - 
+Accuracy statistics for comp-constant-8b:
+2025-06-01 16:23:48,007 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:23:48,007 - __main__ - INFO - Significant groups: 4
+2025-06-01 16:23:48,007 - __main__ - INFO - Samples in Others: 8
+2025-06-01 16:23:48,109 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-06-01 16:23:48,191 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-01 16:23:48,200 - __main__ - INFO - BERT scores for enclave4b:
+2025-06-01 16:23:48,201 - __main__ - INFO -   Mean: 0.469
+2025-06-01 16:23:48,201 - __main__ - INFO -   Median: 0.466
+2025-06-01 16:23:48,201 - __main__ - INFO -   Std: 0.284
+2025-06-01 16:23:48,201 - __main__ - INFO -   Samples: 243
+2025-06-01 16:23:48,201 - __main__ - INFO - BERT scores for host4b:
+2025-06-01 16:23:48,201 - __main__ - INFO -   Mean: 0.490
+2025-06-01 16:23:48,201 - __main__ - INFO -   Median: 0.498
+2025-06-01 16:23:48,201 - __main__ - INFO -   Std: 0.155
+2025-06-01 16:23:48,201 - __main__ - INFO -   Samples: 243
+2025-06-01 16:23:48,201 - __main__ - INFO - BERT scores for comp-constant-8b:
+2025-06-01 16:23:48,201 - __main__ - INFO -   Mean: 0.501
+2025-06-01 16:23:48,201 - __main__ - INFO -   Median: 0.505
+2025-06-01 16:23:48,201 - __main__ - INFO -   Std: 0.145
+2025-06-01 16:23:48,201 - __main__ - INFO -   Samples: 126
+2025-06-01 16:23:48,267 - __main__ - INFO - BERT scores plot generated
+2025-06-01 16:23:48,399 - __main__ - INFO - Summarization response length plot generated
+2025-06-01 16:23:48,441 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:23:48,441 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:23:48,665 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:23:48,665 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:23:48,665 - __main__ - INFO - AWS analysis pipeline completed successfully
+2025-06-01 16:24:38,086 - __main__ - INFO - Starting AWS analysis pipeline...
+2025-06-01 16:24:38,086 - __main__ - INFO - Loading data for mode: enclave4b
+2025-06-01 16:24:38,086 - __main__ - INFO - Attempting to load classification data from: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-01 16:24:38,228 - __main__ - INFO - Loaded classification data for enclave4b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:24:38,228 - __main__ - INFO - Successfully loaded classification data for enclave4b: 1000 rows
+2025-06-01 16:24:38,228 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-01 16:24:38,252 - __main__ - INFO - Loaded summarization data for enclave4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:24:38,252 - __main__ - INFO - Successfully loaded summarization data for enclave4b: 243 rows
+2025-06-01 16:24:38,253 - __main__ - INFO - Analysis columns for enclave4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:24:38,253 - __main__ - INFO - Successfully loaded toxicity data for enclave4b: 500 rows
+2025-06-01 16:24:38,253 - __main__ - INFO - Loading data for mode: host4b
+2025-06-01 16:24:38,253 - __main__ - INFO - Attempting to load classification data from: remote_experiments/host4b/llama_classification.parquet
+2025-06-01 16:24:38,353 - __main__ - INFO - Loaded classification data for host4b with columns: ['id', 'question', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:24:38,366 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-06-01 16:24:38,367 - __main__ - INFO - Successfully loaded classification data for host4b: 1000 rows
+2025-06-01 16:24:38,367 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/host4b/llama_summaries.parquet
+2025-06-01 16:24:38,392 - __main__ - INFO - Loaded summarization data for host4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:24:38,392 - __main__ - INFO - Successfully loaded summarization data for host4b: 243 rows
+2025-06-01 16:24:38,482 - __main__ - INFO - Toxic columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:24:38,482 - __main__ - INFO - Analysis columns for host4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic']
+2025-06-01 16:24:38,483 - __main__ - INFO - Merged toxicity columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens', 'input_analysis', 'response_analysis', 'toxic', 'confidence', 'expected_toxic_analysis']
+2025-06-01 16:24:38,484 - __main__ - INFO - Successfully merged toxicity data for host4b: 1000 rows
+2025-06-01 16:24:38,484 - __main__ - INFO - Loading data for mode: comp-constant-8b
+2025-06-01 16:24:38,484 - __main__ - INFO - Attempting to load classification data from: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-01 16:24:38,542 - __main__ - INFO - Loaded classification data for comp-constant-8b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:24:38,542 - __main__ - INFO - Successfully loaded classification data for comp-constant-8b: 500 rows
+2025-06-01 16:24:38,542 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-01 16:24:38,556 - __main__ - INFO - Loaded summarization data for comp-constant-8b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:24:38,556 - __main__ - INFO - Successfully loaded summarization data for comp-constant-8b: 126 rows
+2025-06-01 16:24:38,557 - __main__ - INFO - Analysis columns for comp-constant-8b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:24:38,557 - __main__ - INFO - Successfully loaded toxicity data for comp-constant-8b: 100 rows
+2025-06-01 16:24:38,743 - __main__ - INFO - Token count comparison plot generated
+2025-06-01 16:24:39,111 - __main__ - INFO - Token distribution plot generated
+2025-06-01 16:24:39,488 - __main__ - INFO - Enclave combined analysis plot generated
+2025-06-01 16:24:40,206 - __main__ - INFO - Enclave merged analysis plot generated
+2025-06-01 16:24:40,218 - __main__ - INFO - classification enclave4b stats - median: 1.40s, mean: 1.26s, samples: 1000
+2025-06-01 16:24:40,218 - __main__ - INFO - classification host4b stats - median: 1.39s, mean: 1.25s, samples: 1000
+2025-06-01 16:24:40,218 - __main__ - INFO - classification comp-constant-8b stats - median: 0.37s, mean: 0.38s, samples: 500
+2025-06-01 16:24:40,233 - __main__ - INFO - summarization enclave4b stats - median: 10.56s, mean: 10.49s, samples: 243
+2025-06-01 16:24:40,233 - __main__ - INFO - summarization host4b stats - median: 10.72s, mean: 10.66s, samples: 243
+2025-06-01 16:24:40,233 - __main__ - INFO - summarization comp-constant-8b stats - median: 2.59s, mean: 2.70s, samples: 126
+2025-06-01 16:24:40,246 - __main__ - INFO - toxicity enclave4b stats - median: 61.70s, mean: 70.12s, samples: 500
+2025-06-01 16:24:40,246 - __main__ - INFO - toxicity host4b stats - median: 34.47s, mean: 32.18s, samples: 1000
+2025-06-01 16:24:40,246 - __main__ - INFO - toxicity comp-constant-8b stats - median: 12.90s, mean: 15.16s, samples: 100
+2025-06-01 16:24:40,364 - __main__ - INFO - Runtime distribution plot generated
+2025-06-01 16:24:40,446 - __main__ - INFO - Timing comparison plot generated
+2025-06-01 16:24:40,491 - __main__ - INFO - Classification accuracy plot generated
+2025-06-01 16:24:40,493 - __main__ - INFO - 
+Accuracy statistics for enclave4b:
+2025-06-01 16:24:40,493 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:24:40,493 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:24:40,493 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:24:40,495 - __main__ - INFO - 
+Accuracy statistics for host4b:
+2025-06-01 16:24:40,495 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:24:40,495 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:24:40,495 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:24:40,496 - __main__ - INFO - Subjects in 'Others' for comp-constant-8b:
+2025-06-01 16:24:40,496 - __main__ - INFO -   Law & Legal: acc=0.000, n=2
+2025-06-01 16:24:40,497 - __main__ - INFO -   Psychology & Social Sciences: acc=0.333, n=6
+2025-06-01 16:24:40,497 - __main__ - INFO - 
+Accuracy statistics for comp-constant-8b:
+2025-06-01 16:24:40,497 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:24:40,497 - __main__ - INFO - Significant groups: 4
+2025-06-01 16:24:40,497 - __main__ - INFO - Samples in Others: 8
+2025-06-01 16:24:40,598 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-06-01 16:24:40,679 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-01 16:24:40,687 - __main__ - INFO - BERT scores for enclave4b:
+2025-06-01 16:24:40,687 - __main__ - INFO -   Mean: 0.469
+2025-06-01 16:24:40,687 - __main__ - INFO -   Median: 0.466
+2025-06-01 16:24:40,687 - __main__ - INFO -   Std: 0.284
+2025-06-01 16:24:40,687 - __main__ - INFO -   Samples: 243
+2025-06-01 16:24:40,687 - __main__ - INFO - BERT scores for host4b:
+2025-06-01 16:24:40,687 - __main__ - INFO -   Mean: 0.490
+2025-06-01 16:24:40,687 - __main__ - INFO -   Median: 0.498
+2025-06-01 16:24:40,688 - __main__ - INFO -   Std: 0.155
+2025-06-01 16:24:40,688 - __main__ - INFO -   Samples: 243
+2025-06-01 16:24:40,688 - __main__ - INFO - BERT scores for comp-constant-8b:
+2025-06-01 16:24:40,688 - __main__ - INFO -   Mean: 0.501
+2025-06-01 16:24:40,688 - __main__ - INFO -   Median: 0.505
+2025-06-01 16:24:40,688 - __main__ - INFO -   Std: 0.145
+2025-06-01 16:24:40,688 - __main__ - INFO -   Samples: 126
+2025-06-01 16:24:40,752 - __main__ - INFO - BERT scores plot generated
+2025-06-01 16:24:40,881 - __main__ - INFO - Summarization response length plot generated
+2025-06-01 16:24:40,922 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:24:40,922 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:24:41,163 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:24:41,163 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:24:41,163 - __main__ - INFO - AWS analysis pipeline completed successfully
+2025-06-01 16:31:09,970 - __main__ - INFO - Starting AWS analysis pipeline...
+2025-06-01 16:31:09,970 - __main__ - INFO - Loading data for mode: enclave4b
+2025-06-01 16:31:09,970 - __main__ - INFO - Attempting to load classification data from: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-01 16:31:10,118 - __main__ - INFO - Loaded classification data for enclave4b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:31:10,118 - __main__ - INFO - Successfully loaded classification data for enclave4b: 1000 rows
+2025-06-01 16:31:10,118 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-01 16:31:10,147 - __main__ - INFO - Loaded summarization data for enclave4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:31:10,147 - __main__ - INFO - Successfully loaded summarization data for enclave4b: 243 rows
+2025-06-01 16:31:10,149 - __main__ - INFO - Analysis columns for enclave4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:31:10,149 - __main__ - INFO - Successfully loaded toxicity data for enclave4b: 500 rows
+2025-06-01 16:31:10,149 - __main__ - INFO - Loading data for mode: host4b
+2025-06-01 16:31:10,149 - __main__ - INFO - Attempting to load classification data from: remote_experiments/host4b/llama_classification.parquet
+2025-06-01 16:31:10,251 - __main__ - INFO - Loaded classification data for host4b with columns: ['id', 'question', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:31:10,268 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-06-01 16:31:10,271 - __main__ - INFO - Successfully loaded classification data for host4b: 1000 rows
+2025-06-01 16:31:10,271 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/host4b/llama_summaries.parquet
+2025-06-01 16:31:10,298 - __main__ - INFO - Loaded summarization data for host4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:31:10,298 - __main__ - INFO - Successfully loaded summarization data for host4b: 243 rows
+2025-06-01 16:31:10,398 - __main__ - INFO - Toxic columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:31:10,398 - __main__ - INFO - Analysis columns for host4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic']
+2025-06-01 16:31:10,400 - __main__ - INFO - Merged toxicity columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens', 'input_analysis', 'response_analysis', 'toxic', 'confidence', 'expected_toxic_analysis']
+2025-06-01 16:31:10,400 - __main__ - INFO - Successfully merged toxicity data for host4b: 1000 rows
+2025-06-01 16:31:10,400 - __main__ - INFO - Loading data for mode: comp-constant-8b
+2025-06-01 16:31:10,400 - __main__ - INFO - Attempting to load classification data from: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-01 16:31:10,470 - __main__ - INFO - Loaded classification data for comp-constant-8b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:31:10,470 - __main__ - INFO - Successfully loaded classification data for comp-constant-8b: 500 rows
+2025-06-01 16:31:10,470 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-01 16:31:10,485 - __main__ - INFO - Loaded summarization data for comp-constant-8b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:31:10,485 - __main__ - INFO - Successfully loaded summarization data for comp-constant-8b: 126 rows
+2025-06-01 16:31:10,487 - __main__ - INFO - Analysis columns for comp-constant-8b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:31:10,487 - __main__ - INFO - Successfully loaded toxicity data for comp-constant-8b: 100 rows
+2025-06-01 16:31:10,705 - __main__ - INFO - Token count comparison plot generated
+2025-06-01 16:31:11,063 - __main__ - INFO - Token distribution plot generated
+2025-06-01 16:31:11,434 - __main__ - INFO - Enclave combined analysis plot generated
+2025-06-01 16:31:12,125 - __main__ - INFO - Enclave merged analysis plot generated
+2025-06-01 16:31:12,137 - __main__ - INFO - classification enclave4b stats - median: 1.40s, mean: 1.26s, samples: 1000
+2025-06-01 16:31:12,137 - __main__ - INFO - classification host4b stats - median: 1.39s, mean: 1.25s, samples: 1000
+2025-06-01 16:31:12,137 - __main__ - INFO - classification comp-constant-8b stats - median: 0.37s, mean: 0.38s, samples: 500
+2025-06-01 16:31:12,151 - __main__ - INFO - summarization enclave4b stats - median: 10.56s, mean: 10.49s, samples: 243
+2025-06-01 16:31:12,151 - __main__ - INFO - summarization host4b stats - median: 10.72s, mean: 10.66s, samples: 243
+2025-06-01 16:31:12,152 - __main__ - INFO - summarization comp-constant-8b stats - median: 2.59s, mean: 2.70s, samples: 126
+2025-06-01 16:31:12,164 - __main__ - INFO - toxicity enclave4b stats - median: 61.70s, mean: 70.12s, samples: 500
+2025-06-01 16:31:12,164 - __main__ - INFO - toxicity host4b stats - median: 34.47s, mean: 32.18s, samples: 1000
+2025-06-01 16:31:12,164 - __main__ - INFO - toxicity comp-constant-8b stats - median: 12.90s, mean: 15.16s, samples: 100
+2025-06-01 16:31:12,279 - __main__ - INFO - Runtime distribution plot generated
+2025-06-01 16:31:12,361 - __main__ - INFO - Timing comparison plot generated
+2025-06-01 16:31:12,409 - __main__ - INFO - Classification accuracy plot generated
+2025-06-01 16:31:12,411 - __main__ - INFO - 
+Accuracy statistics for enclave4b:
+2025-06-01 16:31:12,411 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:31:12,411 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:31:12,411 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:31:12,413 - __main__ - INFO - 
+Accuracy statistics for host4b:
+2025-06-01 16:31:12,413 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:31:12,413 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:31:12,413 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:31:12,415 - __main__ - INFO - Subjects in 'Others' for comp-constant-8b:
+2025-06-01 16:31:12,415 - __main__ - INFO -   Law & Legal: acc=0.000, n=2
+2025-06-01 16:31:12,415 - __main__ - INFO -   Psychology & Social Sciences: acc=0.333, n=6
+2025-06-01 16:31:12,415 - __main__ - INFO - 
+Accuracy statistics for comp-constant-8b:
+2025-06-01 16:31:12,415 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:31:12,415 - __main__ - INFO - Significant groups: 4
+2025-06-01 16:31:12,415 - __main__ - INFO - Samples in Others: 8
+2025-06-01 16:31:12,520 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-06-01 16:31:12,595 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-01 16:31:12,603 - __main__ - INFO - BERT scores for enclave4b:
+2025-06-01 16:31:12,603 - __main__ - INFO -   Mean: 0.469
+2025-06-01 16:31:12,603 - __main__ - INFO -   Median: 0.466
+2025-06-01 16:31:12,604 - __main__ - INFO -   Std: 0.284
+2025-06-01 16:31:12,604 - __main__ - INFO -   Samples: 243
+2025-06-01 16:31:12,604 - __main__ - INFO - BERT scores for host4b:
+2025-06-01 16:31:12,604 - __main__ - INFO -   Mean: 0.490
+2025-06-01 16:31:12,604 - __main__ - INFO -   Median: 0.498
+2025-06-01 16:31:12,604 - __main__ - INFO -   Std: 0.155
+2025-06-01 16:31:12,604 - __main__ - INFO -   Samples: 243
+2025-06-01 16:31:12,604 - __main__ - INFO - BERT scores for comp-constant-8b:
+2025-06-01 16:31:12,604 - __main__ - INFO -   Mean: 0.501
+2025-06-01 16:31:12,604 - __main__ - INFO -   Median: 0.505
+2025-06-01 16:31:12,604 - __main__ - INFO -   Std: 0.145
+2025-06-01 16:31:12,604 - __main__ - INFO -   Samples: 126
+2025-06-01 16:31:12,666 - __main__ - INFO - BERT scores plot generated
+2025-06-01 16:31:12,796 - __main__ - INFO - Summarization response length plot generated
+2025-06-01 16:31:12,839 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:31:12,839 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:31:13,086 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:31:13,086 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:31:13,086 - __main__ - INFO - AWS analysis pipeline completed successfully
+2025-06-01 16:32:19,423 - __main__ - INFO - Starting AWS analysis pipeline...
+2025-06-01 16:32:19,424 - __main__ - INFO - Loading data for mode: enclave4b
+2025-06-01 16:32:19,424 - __main__ - INFO - Attempting to load classification data from: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-01 16:32:19,577 - __main__ - INFO - Loaded classification data for enclave4b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:32:19,577 - __main__ - INFO - Successfully loaded classification data for enclave4b: 1000 rows
+2025-06-01 16:32:19,577 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-01 16:32:19,603 - __main__ - INFO - Loaded summarization data for enclave4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:32:19,603 - __main__ - INFO - Successfully loaded summarization data for enclave4b: 243 rows
+2025-06-01 16:32:19,604 - __main__ - INFO - Analysis columns for enclave4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:32:19,604 - __main__ - INFO - Successfully loaded toxicity data for enclave4b: 500 rows
+2025-06-01 16:32:19,604 - __main__ - INFO - Loading data for mode: host4b
+2025-06-01 16:32:19,604 - __main__ - INFO - Attempting to load classification data from: remote_experiments/host4b/llama_classification.parquet
+2025-06-01 16:32:19,698 - __main__ - INFO - Loaded classification data for host4b with columns: ['id', 'question', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:32:19,711 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-06-01 16:32:19,712 - __main__ - INFO - Successfully loaded classification data for host4b: 1000 rows
+2025-06-01 16:32:19,712 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/host4b/llama_summaries.parquet
+2025-06-01 16:32:19,736 - __main__ - INFO - Loaded summarization data for host4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:32:19,736 - __main__ - INFO - Successfully loaded summarization data for host4b: 243 rows
+2025-06-01 16:32:19,825 - __main__ - INFO - Toxic columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:32:19,825 - __main__ - INFO - Analysis columns for host4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic']
+2025-06-01 16:32:19,827 - __main__ - INFO - Merged toxicity columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens', 'input_analysis', 'response_analysis', 'toxic', 'confidence', 'expected_toxic_analysis']
+2025-06-01 16:32:19,827 - __main__ - INFO - Successfully merged toxicity data for host4b: 1000 rows
+2025-06-01 16:32:19,827 - __main__ - INFO - Loading data for mode: comp-constant-8b
+2025-06-01 16:32:19,827 - __main__ - INFO - Attempting to load classification data from: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-01 16:32:19,885 - __main__ - INFO - Loaded classification data for comp-constant-8b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:32:19,885 - __main__ - INFO - Successfully loaded classification data for comp-constant-8b: 500 rows
+2025-06-01 16:32:19,885 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-01 16:32:19,899 - __main__ - INFO - Loaded summarization data for comp-constant-8b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:32:19,899 - __main__ - INFO - Successfully loaded summarization data for comp-constant-8b: 126 rows
+2025-06-01 16:32:19,900 - __main__ - INFO - Analysis columns for comp-constant-8b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:32:19,900 - __main__ - INFO - Successfully loaded toxicity data for comp-constant-8b: 100 rows
+2025-06-01 16:32:20,095 - __main__ - INFO - Token count comparison plot generated
+2025-06-01 16:32:20,443 - __main__ - INFO - Token distribution plot generated
+2025-06-01 16:32:20,753 - __main__ - INFO - Enclave combined analysis plot generated
+2025-06-01 16:32:21,494 - __main__ - INFO - Enclave merged analysis plot generated
+2025-06-01 16:32:21,505 - __main__ - INFO - classification enclave4b stats - median: 1.40s, mean: 1.26s, samples: 1000
+2025-06-01 16:32:21,506 - __main__ - INFO - classification host4b stats - median: 1.39s, mean: 1.25s, samples: 1000
+2025-06-01 16:32:21,506 - __main__ - INFO - classification comp-constant-8b stats - median: 0.37s, mean: 0.38s, samples: 500
+2025-06-01 16:32:21,520 - __main__ - INFO - summarization enclave4b stats - median: 10.56s, mean: 10.49s, samples: 243
+2025-06-01 16:32:21,520 - __main__ - INFO - summarization host4b stats - median: 10.72s, mean: 10.66s, samples: 243
+2025-06-01 16:32:21,520 - __main__ - INFO - summarization comp-constant-8b stats - median: 2.59s, mean: 2.70s, samples: 126
+2025-06-01 16:32:21,531 - __main__ - INFO - toxicity enclave4b stats - median: 61.70s, mean: 70.12s, samples: 500
+2025-06-01 16:32:21,531 - __main__ - INFO - toxicity host4b stats - median: 34.47s, mean: 32.18s, samples: 1000
+2025-06-01 16:32:21,531 - __main__ - INFO - toxicity comp-constant-8b stats - median: 12.90s, mean: 15.16s, samples: 100
+2025-06-01 16:32:21,646 - __main__ - INFO - Runtime distribution plot generated
+2025-06-01 16:32:21,727 - __main__ - INFO - Timing comparison plot generated
+2025-06-01 16:32:21,770 - __main__ - INFO - Classification accuracy plot generated
+2025-06-01 16:32:21,772 - __main__ - INFO - 
+Accuracy statistics for enclave4b:
+2025-06-01 16:32:21,772 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:32:21,772 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:32:21,772 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:32:21,774 - __main__ - INFO - 
+Accuracy statistics for host4b:
+2025-06-01 16:32:21,774 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:32:21,774 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:32:21,774 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:32:21,775 - __main__ - INFO - Subjects in 'Others' for comp-constant-8b:
+2025-06-01 16:32:21,775 - __main__ - INFO -   Law & Legal: acc=0.000, n=2
+2025-06-01 16:32:21,775 - __main__ - INFO -   Psychology & Social Sciences: acc=0.333, n=6
+2025-06-01 16:32:21,776 - __main__ - INFO - 
+Accuracy statistics for comp-constant-8b:
+2025-06-01 16:32:21,776 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:32:21,776 - __main__ - INFO - Significant groups: 4
+2025-06-01 16:32:21,776 - __main__ - INFO - Samples in Others: 8
+2025-06-01 16:32:21,874 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-06-01 16:32:21,947 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-01 16:32:21,955 - __main__ - INFO - BERT scores for enclave4b:
+2025-06-01 16:32:21,955 - __main__ - INFO -   Mean: 0.469
+2025-06-01 16:32:21,955 - __main__ - INFO -   Median: 0.466
+2025-06-01 16:32:21,955 - __main__ - INFO -   Std: 0.284
+2025-06-01 16:32:21,955 - __main__ - INFO -   Samples: 243
+2025-06-01 16:32:21,956 - __main__ - INFO - BERT scores for host4b:
+2025-06-01 16:32:21,956 - __main__ - INFO -   Mean: 0.490
+2025-06-01 16:32:21,956 - __main__ - INFO -   Median: 0.498
+2025-06-01 16:32:21,956 - __main__ - INFO -   Std: 0.155
+2025-06-01 16:32:21,956 - __main__ - INFO -   Samples: 243
+2025-06-01 16:32:21,956 - __main__ - INFO - BERT scores for comp-constant-8b:
+2025-06-01 16:32:21,956 - __main__ - INFO -   Mean: 0.501
+2025-06-01 16:32:21,956 - __main__ - INFO -   Median: 0.505
+2025-06-01 16:32:21,956 - __main__ - INFO -   Std: 0.145
+2025-06-01 16:32:21,956 - __main__ - INFO -   Samples: 126
+2025-06-01 16:32:22,019 - __main__ - INFO - BERT scores plot generated
+2025-06-01 16:32:22,144 - __main__ - INFO - Summarization response length plot generated
+2025-06-01 16:32:22,185 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:32:22,185 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:32:22,399 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:32:22,399 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:32:22,399 - __main__ - INFO - AWS analysis pipeline completed successfully
+2025-06-01 16:34:56,634 - __main__ - INFO - Starting AWS analysis pipeline...
+2025-06-01 16:34:56,634 - __main__ - INFO - Loading data for mode: enclave4b
+2025-06-01 16:34:56,634 - __main__ - INFO - Attempting to load classification data from: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-01 16:34:56,792 - __main__ - INFO - Loaded classification data for enclave4b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:34:56,792 - __main__ - INFO - Successfully loaded classification data for enclave4b: 1000 rows
+2025-06-01 16:34:56,792 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-01 16:34:56,822 - __main__ - INFO - Loaded summarization data for enclave4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:34:56,822 - __main__ - INFO - Successfully loaded summarization data for enclave4b: 243 rows
+2025-06-01 16:34:56,824 - __main__ - INFO - Analysis columns for enclave4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:34:56,824 - __main__ - INFO - Successfully loaded toxicity data for enclave4b: 500 rows
+2025-06-01 16:34:56,824 - __main__ - INFO - Loading data for mode: host4b
+2025-06-01 16:34:56,824 - __main__ - INFO - Attempting to load classification data from: remote_experiments/host4b/llama_classification.parquet
+2025-06-01 16:34:56,929 - __main__ - INFO - Loaded classification data for host4b with columns: ['id', 'question', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:34:56,943 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-06-01 16:34:56,944 - __main__ - INFO - Successfully loaded classification data for host4b: 1000 rows
+2025-06-01 16:34:56,944 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/host4b/llama_summaries.parquet
+2025-06-01 16:34:56,971 - __main__ - INFO - Loaded summarization data for host4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:34:56,972 - __main__ - INFO - Successfully loaded summarization data for host4b: 243 rows
+2025-06-01 16:34:57,095 - __main__ - INFO - Toxic columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:34:57,095 - __main__ - INFO - Analysis columns for host4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic']
+2025-06-01 16:34:57,097 - __main__ - INFO - Merged toxicity columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens', 'input_analysis', 'response_analysis', 'toxic', 'confidence', 'expected_toxic_analysis']
+2025-06-01 16:34:57,097 - __main__ - INFO - Successfully merged toxicity data for host4b: 1000 rows
+2025-06-01 16:34:57,097 - __main__ - INFO - Loading data for mode: comp-constant-8b
+2025-06-01 16:34:57,097 - __main__ - INFO - Attempting to load classification data from: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-01 16:34:57,169 - __main__ - INFO - Loaded classification data for comp-constant-8b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:34:57,169 - __main__ - INFO - Successfully loaded classification data for comp-constant-8b: 500 rows
+2025-06-01 16:34:57,169 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-01 16:34:57,186 - __main__ - INFO - Loaded summarization data for comp-constant-8b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:34:57,186 - __main__ - INFO - Successfully loaded summarization data for comp-constant-8b: 126 rows
+2025-06-01 16:34:57,188 - __main__ - INFO - Analysis columns for comp-constant-8b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:34:57,188 - __main__ - INFO - Successfully loaded toxicity data for comp-constant-8b: 100 rows
+2025-06-01 16:34:57,406 - __main__ - INFO - Token count comparison plot generated
+2025-06-01 16:34:57,742 - __main__ - INFO - Token distribution plot generated
+2025-06-01 16:34:58,066 - __main__ - INFO - Enclave combined analysis plot generated
+2025-06-01 16:34:58,779 - __main__ - INFO - Enclave merged analysis plot generated
+2025-06-01 16:34:58,790 - __main__ - INFO - classification enclave4b stats - median: 1.40s, mean: 1.26s, samples: 1000
+2025-06-01 16:34:58,790 - __main__ - INFO - classification host4b stats - median: 1.39s, mean: 1.25s, samples: 1000
+2025-06-01 16:34:58,791 - __main__ - INFO - classification comp-constant-8b stats - median: 0.37s, mean: 0.38s, samples: 500
+2025-06-01 16:34:58,805 - __main__ - INFO - summarization enclave4b stats - median: 10.56s, mean: 10.49s, samples: 243
+2025-06-01 16:34:58,805 - __main__ - INFO - summarization host4b stats - median: 10.72s, mean: 10.66s, samples: 243
+2025-06-01 16:34:58,805 - __main__ - INFO - summarization comp-constant-8b stats - median: 2.59s, mean: 2.70s, samples: 126
+2025-06-01 16:34:58,817 - __main__ - INFO - toxicity enclave4b stats - median: 61.70s, mean: 70.12s, samples: 500
+2025-06-01 16:34:58,817 - __main__ - INFO - toxicity host4b stats - median: 34.47s, mean: 32.18s, samples: 1000
+2025-06-01 16:34:58,817 - __main__ - INFO - toxicity comp-constant-8b stats - median: 12.90s, mean: 15.16s, samples: 100
+2025-06-01 16:34:58,942 - __main__ - INFO - Runtime distribution plot generated
+2025-06-01 16:34:59,034 - __main__ - INFO - Timing comparison plot generated
+2025-06-01 16:34:59,082 - __main__ - INFO - Classification accuracy plot generated
+2025-06-01 16:34:59,084 - __main__ - INFO - 
+Accuracy statistics for enclave4b:
+2025-06-01 16:34:59,084 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:34:59,084 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:34:59,084 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:34:59,086 - __main__ - INFO - 
+Accuracy statistics for host4b:
+2025-06-01 16:34:59,086 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:34:59,086 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:34:59,086 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:34:59,088 - __main__ - INFO - Subjects in 'Others' for comp-constant-8b:
+2025-06-01 16:34:59,088 - __main__ - INFO -   Law & Legal: acc=0.000, n=2
+2025-06-01 16:34:59,088 - __main__ - INFO -   Psychology & Social Sciences: acc=0.333, n=6
+2025-06-01 16:34:59,089 - __main__ - INFO - 
+Accuracy statistics for comp-constant-8b:
+2025-06-01 16:34:59,089 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:34:59,089 - __main__ - INFO - Significant groups: 4
+2025-06-01 16:34:59,089 - __main__ - INFO - Samples in Others: 8
+2025-06-01 16:34:59,213 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-06-01 16:34:59,303 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-01 16:34:59,314 - __main__ - INFO - BERT scores for enclave4b:
+2025-06-01 16:34:59,315 - __main__ - INFO -   Mean: 0.469
+2025-06-01 16:34:59,315 - __main__ - INFO -   Median: 0.466
+2025-06-01 16:34:59,315 - __main__ - INFO -   Std: 0.284
+2025-06-01 16:34:59,315 - __main__ - INFO -   Samples: 243
+2025-06-01 16:34:59,315 - __main__ - INFO - BERT scores for host4b:
+2025-06-01 16:34:59,315 - __main__ - INFO -   Mean: 0.490
+2025-06-01 16:34:59,315 - __main__ - INFO -   Median: 0.498
+2025-06-01 16:34:59,315 - __main__ - INFO -   Std: 0.155
+2025-06-01 16:34:59,315 - __main__ - INFO -   Samples: 243
+2025-06-01 16:34:59,315 - __main__ - INFO - BERT scores for comp-constant-8b:
+2025-06-01 16:34:59,315 - __main__ - INFO -   Mean: 0.501
+2025-06-01 16:34:59,316 - __main__ - INFO -   Median: 0.505
+2025-06-01 16:34:59,316 - __main__ - INFO -   Std: 0.145
+2025-06-01 16:34:59,316 - __main__ - INFO -   Samples: 126
+2025-06-01 16:34:59,393 - __main__ - INFO - BERT scores plot generated
+2025-06-01 16:34:59,539 - __main__ - INFO - Summarization response length plot generated
+2025-06-01 16:34:59,583 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:34:59,583 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:34:59,810 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:34:59,810 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:34:59,810 - __main__ - INFO - AWS analysis pipeline completed successfully
+2025-06-01 16:36:46,746 - __main__ - INFO - Starting AWS analysis pipeline...
+2025-06-01 16:36:46,746 - __main__ - INFO - Loading data for mode: enclave4b
+2025-06-01 16:36:46,747 - __main__ - INFO - Attempting to load classification data from: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-01 16:36:46,885 - __main__ - INFO - Loaded classification data for enclave4b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:36:46,885 - __main__ - INFO - Successfully loaded classification data for enclave4b: 1000 rows
+2025-06-01 16:36:46,886 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-01 16:36:46,909 - __main__ - INFO - Loaded summarization data for enclave4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:36:46,909 - __main__ - INFO - Successfully loaded summarization data for enclave4b: 243 rows
+2025-06-01 16:36:46,911 - __main__ - INFO - Analysis columns for enclave4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:36:46,911 - __main__ - INFO - Successfully loaded toxicity data for enclave4b: 500 rows
+2025-06-01 16:36:46,911 - __main__ - INFO - Loading data for mode: host4b
+2025-06-01 16:36:46,911 - __main__ - INFO - Attempting to load classification data from: remote_experiments/host4b/llama_classification.parquet
+2025-06-01 16:36:47,017 - __main__ - INFO - Loaded classification data for host4b with columns: ['id', 'question', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:36:47,031 - __main__ - INFO - Successfully added subject mapping to 1000 rows
+2025-06-01 16:36:47,032 - __main__ - INFO - Successfully loaded classification data for host4b: 1000 rows
+2025-06-01 16:36:47,032 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/host4b/llama_summaries.parquet
+2025-06-01 16:36:47,057 - __main__ - INFO - Loaded summarization data for host4b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:36:47,057 - __main__ - INFO - Successfully loaded summarization data for host4b: 243 rows
+2025-06-01 16:36:47,159 - __main__ - INFO - Toxic columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:36:47,161 - __main__ - INFO - Analysis columns for host4b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic']
+2025-06-01 16:36:47,163 - __main__ - INFO - Merged toxicity columns for host4b: ['id', 'input', 'response', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens', 'input_analysis', 'response_analysis', 'toxic', 'confidence', 'expected_toxic_analysis']
+2025-06-01 16:36:47,163 - __main__ - INFO - Successfully merged toxicity data for host4b: 1000 rows
+2025-06-01 16:36:47,163 - __main__ - INFO - Loading data for mode: comp-constant-8b
+2025-06-01 16:36:47,163 - __main__ - INFO - Attempting to load classification data from: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-01 16:36:47,242 - __main__ - INFO - Loaded classification data for comp-constant-8b with columns: ['id', 'question', 'subject', 'choices', 'response', 'expected', 'correct', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:36:47,242 - __main__ - INFO - Successfully loaded classification data for comp-constant-8b: 500 rows
+2025-06-01 16:36:47,242 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-01 16:36:47,260 - __main__ - INFO - Loaded summarization data for comp-constant-8b with columns: ['id', 'dialogue', 'response', 'expected', 'score', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:36:47,260 - __main__ - INFO - Successfully loaded summarization data for comp-constant-8b: 126 rows
+2025-06-01 16:36:47,262 - __main__ - INFO - Analysis columns for comp-constant-8b: ['id', 'input', 'response', 'toxic', 'confidence', 'expected_toxic', 'duration', 'token_count', 'tokenize_duration', 'prompt_duration', 'prompt_tokens']
+2025-06-01 16:36:47,262 - __main__ - INFO - Successfully loaded toxicity data for comp-constant-8b: 100 rows
+2025-06-01 16:36:47,465 - __main__ - INFO - Token count comparison plot generated
+2025-06-01 16:36:47,804 - __main__ - INFO - Token distribution plot generated
+2025-06-01 16:36:48,117 - __main__ - INFO - Enclave combined analysis plot generated
+2025-06-01 16:36:48,818 - __main__ - INFO - Enclave merged analysis plot generated
+2025-06-01 16:36:48,830 - __main__ - INFO - classification enclave4b stats - median: 1.40s, mean: 1.26s, samples: 1000
+2025-06-01 16:36:48,830 - __main__ - INFO - classification host4b stats - median: 1.39s, mean: 1.25s, samples: 1000
+2025-06-01 16:36:48,830 - __main__ - INFO - classification comp-constant-8b stats - median: 0.37s, mean: 0.38s, samples: 500
+2025-06-01 16:36:48,845 - __main__ - INFO - summarization enclave4b stats - median: 10.56s, mean: 10.49s, samples: 243
+2025-06-01 16:36:48,845 - __main__ - INFO - summarization host4b stats - median: 10.72s, mean: 10.66s, samples: 243
+2025-06-01 16:36:48,845 - __main__ - INFO - summarization comp-constant-8b stats - median: 2.59s, mean: 2.70s, samples: 126
+2025-06-01 16:36:48,856 - __main__ - INFO - toxicity enclave4b stats - median: 61.70s, mean: 70.12s, samples: 500
+2025-06-01 16:36:48,856 - __main__ - INFO - toxicity host4b stats - median: 34.47s, mean: 32.18s, samples: 1000
+2025-06-01 16:36:48,856 - __main__ - INFO - toxicity comp-constant-8b stats - median: 12.90s, mean: 15.16s, samples: 100
+2025-06-01 16:36:48,979 - __main__ - INFO - Runtime distribution plot generated
+2025-06-01 16:36:49,070 - __main__ - INFO - Timing comparison plot generated
+2025-06-01 16:36:49,122 - __main__ - INFO - Classification accuracy plot generated
+2025-06-01 16:36:49,125 - __main__ - INFO - 
+Accuracy statistics for enclave4b:
+2025-06-01 16:36:49,125 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:36:49,125 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:36:49,125 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:36:49,127 - __main__ - INFO - 
+Accuracy statistics for host4b:
+2025-06-01 16:36:49,127 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:36:49,127 - __main__ - INFO - Significant groups: 6
+2025-06-01 16:36:49,127 - __main__ - INFO - Samples in Others: 0
+2025-06-01 16:36:49,130 - __main__ - INFO - Subjects in 'Others' for comp-constant-8b:
+2025-06-01 16:36:49,130 - __main__ - INFO -   Law & Legal: acc=0.000, n=2
+2025-06-01 16:36:49,130 - __main__ - INFO -   Psychology & Social Sciences: acc=0.333, n=6
+2025-06-01 16:36:49,130 - __main__ - INFO - 
+Accuracy statistics for comp-constant-8b:
+2025-06-01 16:36:49,130 - __main__ - INFO - Total subject groups: 6
+2025-06-01 16:36:49,130 - __main__ - INFO - Significant groups: 4
+2025-06-01 16:36:49,130 - __main__ - INFO - Samples in Others: 8
+2025-06-01 16:36:49,260 - __main__ - INFO - Classification accuracy by subject plot generated
+2025-06-01 16:36:49,357 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-01 16:36:49,367 - __main__ - INFO - BERT scores for enclave4b:
+2025-06-01 16:36:49,367 - __main__ - INFO -   Mean: 0.469
+2025-06-01 16:36:49,367 - __main__ - INFO -   Median: 0.466
+2025-06-01 16:36:49,367 - __main__ - INFO -   Std: 0.284
+2025-06-01 16:36:49,367 - __main__ - INFO -   Samples: 243
+2025-06-01 16:36:49,367 - __main__ - INFO - BERT scores for host4b:
+2025-06-01 16:36:49,367 - __main__ - INFO -   Mean: 0.490
+2025-06-01 16:36:49,367 - __main__ - INFO -   Median: 0.498
+2025-06-01 16:36:49,367 - __main__ - INFO -   Std: 0.155
+2025-06-01 16:36:49,367 - __main__ - INFO -   Samples: 243
+2025-06-01 16:36:49,367 - __main__ - INFO - BERT scores for comp-constant-8b:
+2025-06-01 16:36:49,367 - __main__ - INFO -   Mean: 0.501
+2025-06-01 16:36:49,367 - __main__ - INFO -   Median: 0.505
+2025-06-01 16:36:49,368 - __main__ - INFO -   Std: 0.145
+2025-06-01 16:36:49,368 - __main__ - INFO -   Samples: 126
+2025-06-01 16:36:49,436 - __main__ - INFO - BERT scores plot generated
+2025-06-01 16:36:49,573 - __main__ - INFO - Summarization response length plot generated
+2025-06-01 16:36:49,615 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:36:49,615 - __main__ - INFO - Toxicity rate plot generated
+2025-06-01 16:36:49,840 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:36:49,840 - __main__ - INFO - Combined metrics grid plot generated
+2025-06-01 16:36:49,840 - __main__ - INFO - AWS analysis pipeline completed successfully
