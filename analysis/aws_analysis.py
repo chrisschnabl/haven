@@ -56,20 +56,6 @@ EXPERIMENT_TYPES = {
     "toxicity": "llama_toxic.analysis.parquet"
 }
 
-def setup_plot(ax: plt.Axes, xlabel: str, ylabel: str, ylim: Optional[Tuple[float, float]] = None) -> None:
-    """Configure common plot settings."""
-    ax.set_xlabel(xlabel, fontsize=14)
-    ax.set_ylabel(ylabel, fontsize=14)
-    if ylim:
-        ax.set_ylim(ylim)
-    ax.tick_params(axis='both', labelsize=14)
-    ax.grid(axis="y", alpha=0.3)
-    
-    for spine in ax.spines.values():
-        spine.set_edgecolor('black')
-        spine.set_linewidth(1.5)
-        spine.set_visible(True)
-
 def save_plot(fig: plt.Figure, filename: str) -> None:
     """Save plot with consistent settings."""
     plt.tight_layout()
@@ -77,31 +63,64 @@ def save_plot(fig: plt.Figure, filename: str) -> None:
     plt.close(fig)
     logger.info(f"{filename} plot generated")
 
-def plot_bar_with_annotations(
-    data: pd.DataFrame,
-    x: str,
-    y: str,
-    annotations: List[Tuple[str, str, str]],
-    title: str,
-    ylim: Optional[Tuple[float, float]] = None
-) -> None:
-    """Create a bar plot with annotations."""
-    fig, ax = plt.subplots(figsize=(10, 6))
-    sns.barplot(data=data, x=x, y=y, hue=x, palette="viridis", ax=ax, legend=False)
-    
-    for i, (value_col, count_col, total_col) in enumerate(annotations):
-        for j, row in data.iterrows():
-            ax.text(
-                j, 
-                row[value_col] + 0.01,
-                f"{row[value_col]:.3f}\n({row[count_col]}/{row[total_col]})",
-                ha="center",
-                va="bottom",
-                fontsize=14
-            )
-    
-    setup_plot(ax, "Mode", title, ylim)
-    save_plot(fig, title.lower().replace(" ", "_"))
+def style_axis(ax: plt.Axes, xlabel: str = '', ylabel: str = '', ylim: Optional[Tuple[float, float]] = None, font_size: int = 14) -> None:
+    ax.set_xlabel(xlabel, fontsize=font_size, fontname='Times New Roman')
+    ax.set_ylabel(ylabel, fontsize=font_size, fontname='Times New Roman')
+    if ylim:
+        ax.set_ylim(ylim)
+    ax.tick_params(axis='both', labelsize=font_size, width=1.5, length=5)
+    ax.grid(axis="y", alpha=0.3)
+    for spine in ax.spines.values():
+        spine.set_edgecolor('black')
+        spine.set_linewidth(1.5)
+
+def extract_times_tokens(df: pd.DataFrame, exp_type: str) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
+    if "token_count" in df.columns and "prompt_tokens" in df.columns:
+        prompt_tokens = df['prompt_tokens']
+        response_tokens = df['token_count']
+    else:
+        prompt_tokens = pd.Series(dtype=float)
+        response_tokens = pd.Series(dtype=float)
+    if "duration" in df.columns and "prompt_duration" in df.columns:
+        prompt_times = df['prompt_duration']
+        response_times = df['duration'] - df['prompt_duration']
+        response_times = response_times[response_times > 0]
+        if len(response_times) < len(df) * 0.1:
+            if exp_type == 'classification':
+                response_times = df['duration'] * 0.75
+            elif exp_type == 'summarization':
+                response_times = df['duration'] * 0.85
+    else:
+        prompt_times = pd.Series(dtype=float)
+        response_times = pd.Series(dtype=float)
+    return prompt_times, response_times, prompt_tokens, response_tokens
+
+def get_bins_and_ticks(x_max: float, bin_width: float, is_time: bool) -> Tuple[np.ndarray, List[float]]:
+    bins = np.arange(0, x_max + bin_width, bin_width)
+    x_ticks = [0]
+    tick_count = 5
+    step = x_max / (tick_count - 1)
+    for i in range(1, tick_count):
+        x_ticks.append(i * step)
+    if is_time:
+        x_ticks = [round(tick, 1) for tick in x_ticks]
+    else:
+        x_ticks = [int(round(tick)) for tick in x_ticks]
+    x_ticks = list(dict.fromkeys(x_ticks))
+    return bins, x_ticks
+
+def add_subject_if_missing(df: pd.DataFrame, input_data_path: str = "./input_datasets/classification_pairs.parquet") -> pd.DataFrame:
+    """Add subject column to the dataframe if missing."""
+    if 'subject' not in df.columns:
+        try:
+            input_data = pd.read_parquet(input_data_path)
+            question_to_subject = dict(zip(input_data['question'], input_data['subject']))
+            df['subject'] = df['question'].map(question_to_subject)
+            logger.info(f"Successfully added subject mapping to {len(df)} rows")
+        except Exception as e:
+            logger.warning(f"Could not add subject information: {e}")
+            df['subject'] = 'unknown'
+    return df
 
 def load_aws_data() -> Dict[str, Dict[str, pd.DataFrame]]:
     """Load all datasets for all experiments and modes."""
@@ -162,18 +181,31 @@ def load_aws_data() -> Dict[str, Dict[str, pd.DataFrame]]:
     
     return data
 
-def add_subject_if_missing(df: pd.DataFrame, input_data_path: str = "./input_datasets/classification_pairs.parquet") -> pd.DataFrame:
-    """Add subject column to the dataframe if missing."""
-    if 'subject' not in df.columns:
-        try:
-            input_data = pd.read_parquet(input_data_path)
-            question_to_subject = dict(zip(input_data['question'], input_data['subject']))
-            df['subject'] = df['question'].map(question_to_subject)
-            logger.info(f"Successfully added subject mapping to {len(df)} rows")
-        except Exception as e:
-            logger.warning(f"Could not add subject information: {e}")
-            df['subject'] = 'unknown'
-    return df
+def plot_bar_with_annotations(
+    data: pd.DataFrame,
+    x: str,
+    y: str,
+    annotations: List[Tuple[str, str, str]],
+    title: str,
+    ylim: Optional[Tuple[float, float]] = None
+) -> None:
+    """Create a bar plot with annotations."""
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.barplot(data=data, x=x, y=y, hue=x, palette="viridis", ax=ax, legend=False)
+    
+    for i, (value_col, count_col, total_col) in enumerate(annotations):
+        for j, row in data.iterrows():
+            ax.text(
+                j, 
+                row[value_col] + 0.01,
+                f"{row[value_col]:.3f}\n({row[count_col]}/{row[total_col]})",
+                ha="center",
+                va="bottom",
+                fontsize=14
+            )
+    
+    style_axis(ax, "Mode", title, ylim)
+    save_plot(fig, title.lower().replace(" ", "_"))
 
 def analyze_classification_performance(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     """Analyze classification performance for all models."""
@@ -234,7 +266,7 @@ def analyze_classification_performance(data: Dict[str, Dict[str, pd.DataFrame]])
             ax1.text(i, row["accuracy"] + 0.01,
                     f"{row['accuracy']:.3f}\n({row['correct']}/{row['total_valid']})",
                     ha="center", va="bottom", fontsize=14)
-        setup_plot(ax1, "Mode", "Accuracy", (0, 1.1))
+        style_axis(ax1, "Mode", "Accuracy", (0, 1.1))
         
         # Valid rate plot
         sns.barplot(data=valid_df, x="mode", y="valid_rate", hue="mode", palette="viridis", ax=ax2, legend=False)
@@ -242,7 +274,6 @@ def analyze_classification_performance(data: Dict[str, Dict[str, pd.DataFrame]])
             ax2.text(i, row["valid_rate"] + 0.01,
                     f"{row['valid_rate']:.3f}\n({row['total_valid']}/{row['total_all']})",
                     ha="center", va="bottom", fontsize=14)
-        setup_plot(ax2, "Mode", "Rate of Valid Responses", (0, 1.1))
         
         save_plot(fig, "classification_accuracy_valid_only")
 
@@ -271,7 +302,7 @@ def analyze_summarization_performance(data: Dict[str, Dict[str, pd.DataFrame]]) 
         sns.boxplot(data=all_scores_df, x="mode", y="score", color="white", width=0.3,
                    boxprops=dict(alpha=0.7), ax=ax)
         
-        setup_plot(ax, "Mode", "BERT Score")
+        style_axis(ax, "Mode", "BERT Score")
         save_plot(fig, "summarization_bert_scores")
 
 def analyze_toxicity_performance(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
@@ -315,105 +346,28 @@ def analyze_toxicity_performance(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
         )
 
 def plot_enclave_combined_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
-    """Create a combined figure with token histograms and timing analysis for enclave4b.
-    
-    Generates a 2-row figure with the following structure:
-    - Row 1: Time distributions (both response and prompt times)
-    - Row 2: Token distributions (both response and prompt tokens)
-    
-    Args:
-        data: Dictionary containing experiment data by mode
-    """
-    # Extract enclave4b data
+    """Create a combined figure with token histograms and timing analysis for enclave4b."""
     enclave_data = data.get('enclave4b', {})
     if not enclave_data:
         logger.warning("No enclave4b data available for combined analysis plot")
         return
-    
-    # Make the figure a bit bigger
     fig, axes = plt.subplots(4, 3, figsize=(15, 10))
-    
     row_titles = ['Response Time', 'Response Tokens', 'Prompt Time', 'Prompt Tokens']
-    
-    # Use viridis color palette for columns
     exp_colors = sns.color_palette('viridis', n_colors=3)
-    
-    # Manually set bin widths and x-axis limits for each experiment type and row
     bin_settings = {
-        'classification': {
-            'response_time_bins': 0.2,  # seconds
-            'response_time_max': 5,     # seconds
-            'response_tokens_bins': 0.5, # tokens
-            'response_tokens_max': 10,   # tokens
-            'prompt_time_bins': 2,      # seconds
-            'prompt_time_max': 40,      # seconds
-            'prompt_tokens_bins': 5,    # tokens
-            'prompt_tokens_max': 150    # tokens
-        },
-        'summarization': {
-            'response_time_bins': 2,    # seconds
-            'response_time_max': 30,    # seconds
-            'response_tokens_bins': 2,   # tokens
-            'response_tokens_max': 50,   # tokens
-            'prompt_time_bins': 5,      # seconds
-            'prompt_time_max': 80,      # seconds
-            'prompt_tokens_bins': 20,   # tokens
-            'prompt_tokens_max': 400    # tokens
-        },
-        'toxicity': {
-            'response_time_bins': 5,    # seconds
-            'response_time_max': 150,   # seconds
-            'response_tokens_bins': 10,  # tokens
-            'response_tokens_max': 250,  # tokens
-            'prompt_time_bins': 2,      # seconds
-            'prompt_time_max': 30,      # seconds
-            'prompt_tokens_bins': 20,   # tokens
-            'prompt_tokens_max': 250    # tokens
-        }
+        'classification': {'response_time_bins': 0.2, 'response_time_max': 5, 'response_tokens_bins': 0.5, 'response_tokens_max': 10, 'prompt_time_bins': 2, 'prompt_time_max': 40, 'prompt_tokens_bins': 5, 'prompt_tokens_max': 150},
+        'summarization': {'response_time_bins': 2, 'response_time_max': 30, 'response_tokens_bins': 2, 'response_tokens_max': 50, 'prompt_time_bins': 5, 'prompt_time_max': 80, 'prompt_tokens_bins': 20, 'prompt_tokens_max': 400},
+        'toxicity': {'response_time_bins': 5, 'response_time_max': 150, 'response_tokens_bins': 10, 'response_tokens_max': 250, 'prompt_time_bins': 2, 'prompt_time_max': 30, 'prompt_tokens_bins': 20, 'prompt_tokens_max': 250}
     }
-    
-    # Font size for all
     font_size = 14
-    
-    # Process each experiment type
     for col, exp_type in enumerate(EXPERIMENT_TYPES.keys()):
         df = enclave_data.get(exp_type)
-        
         if df is None:
             for row in range(4):
-                axes[row, col].text(
-                    0.5, 0.5, "No data available",
-                    ha="center", va="center", transform=axes[row, col].transAxes,
-                    fontsize=font_size, fontname='Times New Roman'
-                )
+                axes[row, col].text(0.5, 0.5, "No data available", ha="center", va="center", transform=axes[row, col].transAxes, fontsize=font_size, fontname='Times New Roman')
             continue
-        
-        if "token_count" in df.columns and "prompt_tokens" in df.columns:
-            prompt_tokens = df['prompt_tokens']
-            response_tokens = df['token_count']
-        else:
-            prompt_tokens = pd.Series()
-            response_tokens = pd.Series()
-        
-        if "duration" in df.columns and "prompt_duration" in df.columns:
-            prompt_times = df['prompt_duration']
-            response_times = df['duration'] - df['prompt_duration']
-            response_times = response_times[response_times > 0]
-            if len(response_times) < len(df) * 0.1:
-                if exp_type == 'classification':
-                    response_times = df['duration'] * 0.75
-                elif exp_type == 'summarization':
-                    response_times = df['duration'] * 0.85
-        else:
-            prompt_times = pd.Series()
-            response_times = pd.Series()
-        
-        row_data = [
-            response_times,  # Row 0: Response Time
-            response_tokens, # Row 1: Response Tokens
-            prompt_times,    # Row 2: Prompt Time
-            prompt_tokens    # Row 3: Prompt Tokens
-        ]
+        prompt_times, response_times, prompt_tokens, response_tokens = extract_times_tokens(df, exp_type)
+        row_data = [response_times, response_tokens, prompt_times, prompt_tokens]
         row_settings = [
             {'bins': bin_settings[exp_type]['response_time_bins'], 'max': bin_settings[exp_type]['response_time_max'], 'is_time': True},
             {'bins': bin_settings[exp_type]['response_tokens_bins'], 'max': bin_settings[exp_type]['response_tokens_max'], 'is_time': False},
@@ -421,91 +375,29 @@ def plot_enclave_combined_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> 
             {'bins': bin_settings[exp_type]['prompt_tokens_bins'], 'max': bin_settings[exp_type]['prompt_tokens_max'], 'is_time': False}
         ]
         for row, (data_series, settings) in enumerate(zip(row_data, row_settings)):
+            ax = axes[row, col]
             if data_series.empty:
-                axes[row, col].text(
-                    0.5, 0.5, f"No {row_titles[row].lower()} data",
-                    ha="center", va="center", transform=axes[row, col].transAxes,
-                    fontsize=font_size, fontname='Times New Roman'
-                )
+                ax.text(0.5, 0.5, f"No {row_titles[row].lower()} data", ha="center", va="center", transform=ax.transAxes, fontsize=font_size, fontname='Times New Roman')
                 continue
-            is_time_row = settings['is_time']
             bin_width = settings['bins']
             x_max = settings['max']
-            data_min = max(0, data_series.min() * 0.9)
-            bins = np.arange(0, x_max + bin_width, bin_width)
-            xlabel = 'Time (seconds)' if is_time_row else '# tokens'
-            sns.histplot(
-                data=data_series,
-                bins=bins,
-                color=exp_colors[col],
-                ax=axes[row, col],
-                kde=False,
-                stat="density",
-                linewidth=1.5,
-                alpha=0.7
-            )
+            is_time_row = settings['is_time']
+            bins, x_ticks = get_bins_and_ticks(x_max, bin_width, is_time_row)
+            sns.histplot(data=data_series, bins=bins, color=exp_colors[col], ax=ax, kde=False, stat="density", linewidth=1.5, alpha=0.7)
             median_val = data_series.median()
-            axes[row, col].axvline(
-                median_val,
-                color="red",
-                linestyle="--",
-                linewidth=1.5,
-                label=f"Median: {median_val:.1f}" + ("s" if is_time_row else "")
-            )
-            if axes[row, col].get_legend() is not None:
-                axes[row, col].get_legend().remove()
-            stats_text = (
-                f"Median: {data_series.median():.1f}" + ("s" if is_time_row else "")
-            )
-            axes[row, col].text(
-                0.95, 0.95,
-                stats_text,
-                transform=axes[row, col].transAxes,
-                verticalalignment="top",
-                horizontalalignment="right",
-                bbox=dict(boxstyle="round", facecolor="white", alpha=0.8),
-                fontsize=font_size,
-                fontname='Times New Roman'
-            )
-            axes[row, col].set_xlim(data_min, x_max * 1.02)
-            x_ticks = [data_min]
-            tick_count = 5
-            step = (x_max - data_min) / (tick_count - 1)
-            for i in range(1, tick_count - 1):
-                x_ticks.append(data_min + i * step)
-            x_ticks.append(x_max)
-            if is_time_row:
-                x_ticks = [round(tick, 1) for tick in x_ticks]
-            else:
-                x_ticks = [int(round(tick)) for tick in x_ticks]
-            x_ticks = list(dict.fromkeys(x_ticks))
-            axes[row, col].set_xticks(x_ticks)
-            y_max = axes[row, col].get_ylim()[1]
-            axes[row, col].set_ylim(0, y_max * 1.15)
-            if y_max > 0.5:
-                for patch in axes[row, col].patches:
-                    current_height = patch.get_height()
-                    scale_factor = min(0.5 / y_max, 1.0)
-                    patch.set_height(current_height * scale_factor)
-                axes[row, col].set_ylim(0, 0.5 * 1.15)
-            axes[row, col].set_xlabel(xlabel, fontsize=font_size, fontname='Times New Roman')
-            # Set tick label font size and font
-            plt.setp(axes[row, col].get_xticklabels(), fontsize=font_size, fontname='Times New Roman')
-            plt.setp(axes[row, col].get_yticklabels(), fontsize=font_size, fontname='Times New Roman')
+            ax.axvline(median_val, color="red", linestyle="--", linewidth=1.5, label=f"Median: {median_val:.1f}" + ("s" if is_time_row else ""))
+            if ax.get_legend() is not None:
+                ax.get_legend().remove()
+            ax.text(0.95, 0.95, f"Median: {median_val:.1f}" + ("s" if is_time_row else ""), transform=ax.transAxes, verticalalignment="top", horizontalalignment="right", bbox=dict(boxstyle="round", facecolor="white", alpha=0.8), fontsize=font_size, fontname='Times New Roman')
+            ax.set_xlim(0, x_max * 1.02)
+            ax.set_xticks(x_ticks)
+            y_max = ax.get_ylim()[1]
+            ax.set_ylim(0, min(y_max * 1.15, 0.5 * 1.15) if y_max > 0.5 else y_max * 1.15)
+            style_axis(ax, xlabel='Time (seconds)' if is_time_row else '# tokens', ylabel='Density', font_size=font_size)
         if col < 3:
             axes[0, col].set_title(exp_type.capitalize(), fontsize=font_size, fontname='Times New Roman')
     for row in range(4):
         axes[row, 0].set_ylabel(row_titles[row], fontsize=font_size, fontname='Times New Roman')
-    for row in range(4):
-        for col in range(3):
-            axes[row, col].set_ylabel('Density', fontsize=font_size, fontname='Times New Roman')
-            for spine in axes[row, col].spines.values():
-                spine.set_edgecolor('black')
-                spine.set_linewidth(1.5)
-            axes[row, col].tick_params(axis='both', labelsize=font_size, width=1.5, length=5)
-            for label in axes[row, col].get_xticklabels() + axes[row, col].get_yticklabels():
-                label.set_fontname('Times New Roman')
-                label.set_fontsize(font_size)
     plt.tight_layout()
     fig.subplots_adjust(hspace=0.3)
     save_plot(fig, "enclave_combined_analysis")
@@ -774,9 +666,7 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
     logger.info("Enclave merged analysis plot generated")
 
 def plot_combined_metrics_grid(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
-    """Plot a grid of BERT scores, toxicity rate, and classification accuracy for all modes."""
     fig, axes = plt.subplots(1, 3, figsize=(18, 6))
-    # BERT scores
     all_scores = []
     for mode in EXPERIMENT_MODES:
         df = data[mode].get("summarization")
@@ -788,8 +678,7 @@ def plot_combined_metrics_grid(data: Dict[str, Dict[str, pd.DataFrame]]) -> None
         all_scores_df = pd.concat(all_scores)
         sns.violinplot(data=all_scores_df, x="mode", y="score", palette="viridis", inner=None, ax=axes[0])
         sns.boxplot(data=all_scores_df, x="mode", y="score", color="white", width=0.3, boxprops=dict(alpha=0.7), ax=axes[0])
-        setup_plot(axes[0], "Mode", "BERT Score")
-    # Toxicity rate
+        style_axis(axes[0], "Mode", "BERT Score")
     toxicity_rates = []
     for mode in EXPERIMENT_MODES:
         df = data[mode].get("toxicity")
@@ -802,28 +691,21 @@ def plot_combined_metrics_grid(data: Dict[str, Dict[str, pd.DataFrame]]) -> None
                 toxic_rate = (df["expected_toxic"] == 1).mean()
             else:
                 continue
-            toxicity_rates.append({
-                "mode": MODE_LABELS[mode],
-                "toxic_rate": toxic_rate
-            })
+            toxicity_rates.append({"mode": MODE_LABELS[mode], "toxic_rate": toxic_rate})
     if toxicity_rates:
         tox_df = pd.DataFrame(toxicity_rates)
         sns.barplot(data=tox_df, x="mode", y="toxic_rate", palette="viridis", ax=axes[1])
-        setup_plot(axes[1], "Mode", "Toxicity Rate")
-    # Classification accuracy
+        style_axis(axes[1], "Mode", "Toxicity Rate")
     accuracies = []
     for mode in EXPERIMENT_MODES:
         df = data[mode].get("classification")
         if df is not None and "correct" in df.columns:
             accuracy = df["correct"].mean()
-            accuracies.append({
-                "mode": MODE_LABELS[mode],
-                "accuracy": accuracy
-            })
+            accuracies.append({"mode": MODE_LABELS[mode], "accuracy": accuracy})
     if accuracies:
         acc_df = pd.DataFrame(accuracies)
         sns.barplot(data=acc_df, x="mode", y="accuracy", palette="viridis", ax=axes[2])
-        setup_plot(axes[2], "Mode", "Classification Accuracy")
+        style_axis(axes[2], "Mode", "Classification Accuracy")
     plt.tight_layout()
     save_plot(fig, "combined_metrics_grid")
 
