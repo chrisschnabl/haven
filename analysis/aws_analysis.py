@@ -332,21 +332,16 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
         logger.warning("No enclave4b data available for merged analysis plot")
         return
     
-    # Create figure with two rows and 3 columns (experiment types)
     fig, axes = plt.subplots(2, 3, figsize=(18, 9))
     
-    # Row titles: Time and Tokens
     row_titles = ['Time (seconds)', '# tokens']
     
-    # Use a better color palette with higher contrast
-    prompt_color = '#5975A4'  # Deeper blue
-    response_color = '#5F9E6E'  # Deeper green
+    prompt_color = '#5975A4'
+    response_color = '#5F9E6E'
     
-    # Create custom transparent colors for fill
     prompt_fill = mpl.colors.to_rgba(prompt_color, 0.7)
     response_fill = mpl.colors.to_rgba(response_color, 0.7)
     
-    # Manually set bin widths and x-axis limits for each experiment type and row
     bin_settings = {
         'classification': {
             'time_bins': 0.2,      # seconds
@@ -368,12 +363,10 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
         }
     }
     
-    # Process each experiment type
     for col, exp_type in enumerate(EXPERIMENT_TYPES.keys()):
         df = enclave_data.get(exp_type)
         
         if df is None:
-            # No data for this experiment type
             for row in range(2):
                 axes[row, col].text(
                     0.5, 0.5, "No data available",
@@ -382,7 +375,6 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
                 )
             continue
             
-        # Extract token and timing data
         if "token_count" in df.columns and "prompt_tokens" in df.columns:
             prompt_tokens = df['prompt_tokens']
             response_tokens = df['token_count']
@@ -393,11 +385,9 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
         if "duration" in df.columns and "prompt_duration" in df.columns:
             prompt_times = df['prompt_duration']
             
-            # Calculate response times (total - prompt)
             response_times = df['duration'] - df['prompt_duration']
             response_times = response_times[response_times > 0]
             
-            # Handle limited valid response times
             if len(response_times) < len(df) * 0.1:
                 if exp_type == 'classification':
                     response_times = df['duration'] * 0.75
@@ -407,9 +397,7 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
             prompt_times = pd.Series()
             response_times = pd.Series()
         
-        # Define data for each row
         row_data = [
-            # Row 0: Times (both prompt and response)
             {
                 'prompt': prompt_times,
                 'response': response_times,
@@ -418,7 +406,6 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
                 'xlabel': 'Time (seconds)',
                 'is_time': True
             },
-            # Row 1: Tokens (both prompt and response)
             {
                 'prompt': prompt_tokens,
                 'response': response_tokens,
@@ -429,12 +416,10 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
             }
         ]
         
-        # Plot each row
         for row, data_dict in enumerate(row_data):
             prompt_data = data_dict['prompt']
             response_data = data_dict['response']
             
-            # Skip if no data
             if prompt_data.empty and response_data.empty:
                 axes[row, col].text(
                     0.5, 0.5, f"No data available",
@@ -447,16 +432,12 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
             bin_width = data_dict['bin_width']
             x_max = data_dict['max_val']
             
-            # Create bins starting from 0
             bins = np.arange(0, x_max + bin_width, bin_width)
             
-            # Clear the plot first to avoid overplotting
             axes[row, col].clear()
             
-            # Add light grid lines for readability
             axes[row, col].grid(True, linestyle='--', alpha=0.3)
             
-            # First plot response data (so prompt appears on top)
             if not response_data.empty:
                 response_hist = axes[row, col].hist(
                     response_data,
@@ -470,7 +451,6 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
                     zorder=1
                 )
                 
-                # Add mean line for response
                 response_mean = response_data.mean()
                 axes[row, col].axvline(
                     response_mean,
@@ -481,7 +461,6 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
                     label=f"Response Mean: {response_mean:.1f}" + ("s" if is_time_row else "")
                 )
             
-            # Then plot prompt data
             if not prompt_data.empty:
                 prompt_hist = axes[row, col].hist(
                     prompt_data,
@@ -495,7 +474,6 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
                     zorder=2
                 )
                 
-                # Add mean line for prompt
                 prompt_mean = prompt_data.mean()
                 axes[row, col].axvline(
                     prompt_mean,
@@ -506,74 +484,59 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
                     label=f"Prompt Mean: {prompt_mean:.1f}" + ("s" if is_time_row else "")
                 )
             
-            # Set x-axis limits with some padding
             data_min = 0
             axes[row, col].set_xlim(data_min, x_max * 1.02)
             
-            # Set appropriate ticks
             x_ticks = [0]
-            tick_count = 5  # Number of ticks including min and max
+            tick_count = 5
             step = x_max / (tick_count - 1)
             for i in range(1, tick_count):
                 x_ticks.append(i * step)
             
-            # Round the ticks appropriately
             if is_time_row:
                 x_ticks = [round(tick, 1) for tick in x_ticks]
             else:
                 x_ticks = [int(round(tick)) for tick in x_ticks]
                 
-            # Remove duplicates while preserving order
             x_ticks = list(dict.fromkeys(x_ticks))
             
             axes[row, col].set_xticks(x_ticks)
             
-            # Set y-axis label and limits
             axes[row, col].set_ylabel('Density', fontsize=14, fontname='Times New Roman')
             
-            # Normalize y-axis if needed
             y_max = axes[row, col].get_ylim()[1]
             if y_max > 0.5:
                 axes[row, col].set_ylim(0, 0.5 * 1.15)
             else:
                 axes[row, col].set_ylim(0, y_max * 1.15)
             
-            # Set x-axis label
             axes[row, col].set_xlabel(data_dict['xlabel'], fontsize=14, fontname='Times New Roman')
             
-            # Add legend - position at top center for better visibility
             legend = axes[row, col].legend(
                 loc='upper center', 
                 fontsize=12,
                 framealpha=0.9,
                 edgecolor='gray'
             )
-            # Ensure legend text is consistent
             for text in legend.get_texts():
                 text.set_fontname('Times New Roman')
         
-        # Set column titles
         if col < 3:
             axes[0, col].set_title(exp_type.capitalize(), fontsize=16, fontname='Times New Roman', fontweight='bold')
     
-    # Set row labels
     for row in range(2):
         axes[row, 0].set_ylabel(row_titles[row], fontsize=14, fontname='Times New Roman', fontweight='bold')
     
-    # Set general styling for all subplots
     for row in range(2):
         for col in range(3):
-            # Set all spines to black
             for spine in axes[row, col].spines.values():
                 spine.set_edgecolor('black')
                 spine.set_linewidth(1.5)
                 
-            # Set axis label font size and font
             axes[row, col].tick_params(axis='both', labelsize=12, width=1.5, length=5)
             for label in axes[row, col].get_xticklabels() + axes[row, col].get_yticklabels():
                 label.set_fontname('Times New Roman')
     
-    # Save plot with tight layout
     plt.tight_layout()
     save_plot(fig, "enclave_merged_analysis", output_dir=str(OUTPUT_DIR))
     logger.info("Enclave merged analysis plot generated")
