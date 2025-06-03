@@ -5313,3 +5313,179 @@ Accuracy statistics for Q8_0:
 2025-06-03 14:23:09,902 - __main__ - INFO - Creating merged metrics plot...
 2025-06-03 14:23:10,145 - __main__ - INFO - Merged metrics plot generated
 2025-06-03 14:23:10,145 - __main__ - INFO - Analysis pipeline completed successfully
+2025-06-03 14:41:05,248 - __main__ - INFO - Starting analysis pipeline...
+2025-06-03 14:41:05,387 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:41:05,387 - __main__ - INFO - Loaded classification data for Q2_K: 1000 rows
+2025-06-03 14:41:05,412 - __main__ - INFO - Loaded summarization data for Q2_K: 243 rows
+2025-06-03 14:41:05,413 - __main__ - INFO - Loaded toxicity data for Q2_K: 500 rows
+2025-06-03 14:41:05,511 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:41:05,511 - __main__ - INFO - Loaded classification data for Q4_K_M: 1000 rows
+2025-06-03 14:41:05,536 - __main__ - INFO - Loaded summarization data for Q4_K_M: 243 rows
+2025-06-03 14:41:05,537 - __main__ - INFO - Loaded toxicity data for Q4_K_M: 500 rows
+2025-06-03 14:41:05,655 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:41:05,656 - __main__ - INFO - Loaded classification data for Q8_0: 1000 rows
+2025-06-03 14:41:05,680 - __main__ - INFO - Loaded summarization data for Q8_0: 243 rows
+2025-06-03 14:41:05,682 - __main__ - INFO - Loaded toxicity data for Q8_0: 500 rows
+2025-06-03 14:41:05,682 - __main__ - INFO - Analyzing token counts...
+2025-06-03 14:41:05,859 - __main__ - INFO - Token count comparison plot generated
+2025-06-03 14:41:06,266 - __main__ - INFO - Token distribution plot generated
+2025-06-03 14:41:06,429 - __main__ - INFO - Runtime distribution plot generated
+2025-06-03 14:41:06,429 - __main__ - INFO - Q2_K - classification:
+2025-06-03 14:41:06,429 - __main__ - INFO -   Total time: 1.113s
+2025-06-03 14:41:06,429 - __main__ - INFO -   Prompt time: 3.377s
+2025-06-03 14:41:06,429 - __main__ - INFO -   Response time: -2.264s
+2025-06-03 14:41:06,429 - __main__ - INFO -   Tokenize time: 0.000s
+2025-06-03 14:41:06,429 - __main__ - INFO - Q2_K - summarization:
+2025-06-03 14:41:06,429 - __main__ - INFO -   Total time: 1.578s
+2025-06-03 14:41:06,429 - __main__ - INFO -   Prompt time: 1.146s
+2025-06-03 14:41:06,429 - __main__ - INFO -   Response time: 0.432s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Tokenize time: 0.000s
+2025-06-03 14:41:06,430 - __main__ - INFO - Q2_K - toxicity:
+2025-06-03 14:41:06,430 - __main__ - INFO -   Total time: 10.345s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Prompt time: 0.475s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Response time: 9.869s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Tokenize time: 0.000s
+2025-06-03 14:41:06,430 - __main__ - INFO - Q4_K_M - classification:
+2025-06-03 14:41:06,430 - __main__ - INFO -   Total time: 0.225s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Prompt time: 0.634s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Response time: -0.409s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Tokenize time: 0.000s
+2025-06-03 14:41:06,430 - __main__ - INFO - Q4_K_M - summarization:
+2025-06-03 14:41:06,430 - __main__ - INFO -   Total time: 1.832s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Prompt time: 1.126s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Response time: 0.706s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Tokenize time: 0.000s
+2025-06-03 14:41:06,430 - __main__ - INFO - Q4_K_M - toxicity:
+2025-06-03 14:41:06,430 - __main__ - INFO -   Total time: 5.093s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Prompt time: 0.466s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Response time: 4.627s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Tokenize time: 0.000s
+2025-06-03 14:41:06,430 - __main__ - INFO - Q8_0 - classification:
+2025-06-03 14:41:06,430 - __main__ - INFO -   Total time: 0.399s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Prompt time: 0.750s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Response time: -0.351s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Tokenize time: 0.000s
+2025-06-03 14:41:06,430 - __main__ - INFO - Q8_0 - summarization:
+2025-06-03 14:41:06,430 - __main__ - INFO -   Total time: 2.773s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Prompt time: 1.076s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Response time: 1.697s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Tokenize time: 0.001s
+2025-06-03 14:41:06,430 - __main__ - INFO - Q8_0 - toxicity:
+2025-06-03 14:41:06,430 - __main__ - INFO -   Total time: 9.338s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Prompt time: 0.442s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Response time: 8.896s
+2025-06-03 14:41:06,430 - __main__ - INFO -   Tokenize time: 0.000s
+2025-06-03 14:41:06,506 - __main__ - INFO - Timing comparison plot generated
+2025-06-03 14:41:06,506 - __main__ - INFO - Analyzing classification performance...
+2025-06-03 14:41:06,545 - __main__ - INFO - Classification accuracy plot generated
+2025-06-03 14:41:06,609 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-03 14:41:06,609 - __main__ - INFO - Analyzing summarization performance...
+2025-06-03 14:41:06,661 - __main__ - INFO - Summarization BERT scores plot generated
+2025-06-03 14:41:06,795 - __main__ - INFO - Summarization response length plot generated
+2025-06-03 14:41:06,795 - __main__ - INFO - Analyzing toxicity performance...
+2025-06-03 14:41:06,833 - __main__ - INFO - Toxicity rate plot generated
+2025-06-03 14:41:06,833 - __main__ - WARNING - No toxicity comparison data available
+2025-06-03 14:41:06,833 - __main__ - INFO - Creating merged metrics plot...
+2025-06-03 14:41:06,983 - __main__ - INFO - Merged metrics plot generated
+2025-06-03 14:41:06,983 - __main__ - INFO - Analysis pipeline completed successfully
+2025-06-03 14:43:21,140 - __main__ - INFO - Starting analysis pipeline...
+2025-06-03 14:43:21,285 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:43:21,285 - __main__ - INFO - Loaded classification data for Q2_K: 1000 rows
+2025-06-03 14:43:21,312 - __main__ - INFO - Loaded summarization data for Q2_K: 243 rows
+2025-06-03 14:43:21,313 - __main__ - INFO - Loaded toxicity data for Q2_K: 500 rows
+2025-06-03 14:43:21,412 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:43:21,413 - __main__ - INFO - Loaded classification data for Q4_K_M: 1000 rows
+2025-06-03 14:43:21,437 - __main__ - INFO - Loaded summarization data for Q4_K_M: 243 rows
+2025-06-03 14:43:21,438 - __main__ - INFO - Loaded toxicity data for Q4_K_M: 500 rows
+2025-06-03 14:43:21,634 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:43:21,634 - __main__ - INFO - Loaded classification data for Q8_0: 1000 rows
+2025-06-03 14:43:21,666 - __main__ - INFO - Loaded summarization data for Q8_0: 243 rows
+2025-06-03 14:43:21,667 - __main__ - INFO - Loaded toxicity data for Q8_0: 500 rows
+2025-06-03 14:43:37,924 - __main__ - INFO - Starting analysis pipeline...
+2025-06-03 14:43:38,057 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:43:38,057 - __main__ - INFO - Loaded classification data for Q2_K: 1000 rows
+2025-06-03 14:43:38,081 - __main__ - INFO - Loaded summarization data for Q2_K: 243 rows
+2025-06-03 14:43:38,082 - __main__ - INFO - Loaded toxicity data for Q2_K: 500 rows
+2025-06-03 14:43:38,179 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:43:38,179 - __main__ - INFO - Loaded classification data for Q4_K_M: 1000 rows
+2025-06-03 14:43:38,203 - __main__ - INFO - Loaded summarization data for Q4_K_M: 243 rows
+2025-06-03 14:43:38,204 - __main__ - INFO - Loaded toxicity data for Q4_K_M: 500 rows
+2025-06-03 14:43:38,297 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:43:38,297 - __main__ - INFO - Loaded classification data for Q8_0: 1000 rows
+2025-06-03 14:43:38,324 - __main__ - INFO - Loaded summarization data for Q8_0: 243 rows
+2025-06-03 14:43:38,325 - __main__ - INFO - Loaded toxicity data for Q8_0: 500 rows
+2025-06-03 14:43:38,325 - __main__ - INFO - Analyzing classification performance...
+2025-06-03 14:43:38,499 - __main__ - INFO - Classification accuracy plot generated
+2025-06-03 14:43:38,580 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-03 14:43:38,580 - __main__ - INFO - Analyzing summarization performance...
+2025-06-03 14:43:38,642 - __main__ - INFO - Summarization BERT scores plot generated
+2025-06-03 14:43:38,642 - __main__ - INFO - Analyzing toxicity performance...
+2025-06-03 14:43:38,684 - __main__ - INFO - Toxicity rate plot generated
+2025-06-03 14:43:38,684 - __main__ - WARNING - No toxicity comparison data available
+2025-06-03 14:43:38,684 - __main__ - INFO - Creating merged metrics plot...
+2025-06-03 14:43:38,813 - __main__ - INFO - Merged metrics plot generated
+2025-06-03 14:43:38,813 - __main__ - INFO - Analysis pipeline completed successfully
+2025-06-03 14:46:09,331 - __main__ - INFO - Starting analysis pipeline...
+2025-06-03 14:46:09,468 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:46:09,468 - __main__ - INFO - Loaded classification data for Q2_K: 1000 rows
+2025-06-03 14:46:09,493 - __main__ - INFO - Loaded summarization data for Q2_K: 243 rows
+2025-06-03 14:46:09,494 - __main__ - INFO - Loaded toxicity data for Q2_K: 500 rows
+2025-06-03 14:46:09,596 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:46:09,596 - __main__ - INFO - Loaded classification data for Q4_K_M: 1000 rows
+2025-06-03 14:46:09,621 - __main__ - INFO - Loaded summarization data for Q4_K_M: 243 rows
+2025-06-03 14:46:09,622 - __main__ - INFO - Loaded toxicity data for Q4_K_M: 500 rows
+2025-06-03 14:46:09,718 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:46:09,719 - __main__ - INFO - Loaded classification data for Q8_0: 1000 rows
+2025-06-03 14:46:09,746 - __main__ - INFO - Loaded summarization data for Q8_0: 243 rows
+2025-06-03 14:46:09,747 - __main__ - INFO - Loaded toxicity data for Q8_0: 500 rows
+2025-06-03 14:46:09,747 - __main__ - INFO - Analyzing classification performance...
+2025-06-03 14:46:09,925 - __main__ - INFO - Classification accuracy plot generated
+2025-06-03 14:46:09,998 - __main__ - INFO - Classification accuracy (valid only) plot generated
+2025-06-03 14:46:09,998 - __main__ - INFO - Analyzing summarization performance...
+2025-06-03 14:46:10,052 - __main__ - INFO - Summarization BERT scores plot generated
+2025-06-03 14:46:10,052 - __main__ - INFO - Analyzing toxicity performance...
+2025-06-03 14:46:10,095 - __main__ - INFO - Toxicity rate plot generated
+2025-06-03 14:46:10,095 - __main__ - WARNING - No toxicity comparison data available
+2025-06-03 14:46:10,095 - __main__ - INFO - Creating merged metrics plot...
+2025-06-03 14:46:10,217 - __main__ - INFO - Merged metrics plot generated
+2025-06-03 14:46:10,218 - __main__ - INFO - Analysis pipeline completed successfully
+2025-06-03 14:49:58,651 - __main__ - INFO - Starting analysis pipeline...
+2025-06-03 14:49:58,784 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:49:58,784 - __main__ - INFO - Loaded classification data for Q2_K: 1000 rows
+2025-06-03 14:49:58,808 - __main__ - INFO - Loaded summarization data for Q2_K: 243 rows
+2025-06-03 14:49:58,809 - __main__ - INFO - Loaded toxicity data for Q2_K: 500 rows
+2025-06-03 14:49:58,906 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:49:58,906 - __main__ - INFO - Loaded classification data for Q4_K_M: 1000 rows
+2025-06-03 14:49:58,930 - __main__ - INFO - Loaded summarization data for Q4_K_M: 243 rows
+2025-06-03 14:49:58,931 - __main__ - INFO - Loaded toxicity data for Q4_K_M: 500 rows
+2025-06-03 14:49:59,026 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:49:59,027 - __main__ - INFO - Loaded classification data for Q8_0: 1000 rows
+2025-06-03 14:49:59,053 - __main__ - INFO - Loaded summarization data for Q8_0: 243 rows
+2025-06-03 14:49:59,055 - __main__ - INFO - Loaded toxicity data for Q8_0: 500 rows
+2025-06-03 14:49:59,055 - __main__ - INFO - Analyzing classification performance...
+2025-06-03 14:49:59,225 - __main__ - INFO - classification_accuracy plot generated
+2025-06-03 14:49:59,293 - __main__ - INFO - classification_accuracy_valid_only plot generated
+2025-06-03 14:49:59,294 - __main__ - INFO - Analyzing summarization performance...
+2025-06-03 14:49:59,349 - __main__ - INFO - summarization_bert_scores plot generated
+2025-06-03 14:49:59,350 - __main__ - INFO - Analyzing toxicity performance...
+2025-06-03 14:50:53,957 - __main__ - INFO - Starting analysis pipeline...
+2025-06-03 14:50:54,093 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:50:54,094 - __main__ - INFO - Loaded classification data for Q2_K: 1000 rows
+2025-06-03 14:50:54,118 - __main__ - INFO - Loaded summarization data for Q2_K: 243 rows
+2025-06-03 14:50:54,119 - __main__ - INFO - Loaded toxicity data for Q2_K: 500 rows
+2025-06-03 14:50:54,220 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:50:54,220 - __main__ - INFO - Loaded classification data for Q4_K_M: 1000 rows
+2025-06-03 14:50:54,244 - __main__ - INFO - Loaded summarization data for Q4_K_M: 243 rows
+2025-06-03 14:50:54,245 - __main__ - INFO - Loaded toxicity data for Q4_K_M: 500 rows
+2025-06-03 14:50:54,342 - __main__ - WARNING - Could not add subject information: [Errno 2] No such file or directory: './input_datasets/classification_pairs.parquet'
+2025-06-03 14:50:54,343 - __main__ - INFO - Loaded classification data for Q8_0: 1000 rows
+2025-06-03 14:50:54,368 - __main__ - INFO - Loaded summarization data for Q8_0: 243 rows
+2025-06-03 14:50:54,370 - __main__ - INFO - Loaded toxicity data for Q8_0: 500 rows
+2025-06-03 14:50:54,370 - __main__ - INFO - Analyzing classification performance...
+2025-06-03 14:50:54,540 - __main__ - INFO - classification_accuracy plot generated
+2025-06-03 14:50:54,614 - __main__ - INFO - classification_accuracy_valid_only plot generated
+2025-06-03 14:50:54,614 - __main__ - INFO - Analyzing summarization performance...
+2025-06-03 14:50:54,667 - __main__ - INFO - summarization_bert_scores plot generated
+2025-06-03 14:50:54,667 - __main__ - INFO - Analyzing toxicity performance...
+2025-06-03 14:50:54,711 - __main__ - INFO - toxicity_rate plot generated
+2025-06-03 14:50:54,711 - __main__ - INFO - Analysis pipeline completed successfully
