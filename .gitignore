@@ -6,3 +6,6 @@ results/
 model/.DS_Store
 
 *.log
+__pycache__/
+ipynb_checkpoints/
+.venv/

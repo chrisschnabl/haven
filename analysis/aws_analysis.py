@@ -8,6 +8,9 @@ from typing import Dict, List, Tuple, Optional
 import re
 import logging
 from datetime import datetime
+from shared_plot_helpers import (
+    set_plot_style, save_plot, style_axis, extract_times_tokens, get_bins_and_ticks, plot_bar_with_annotations, add_subject_if_missing
+)
 
 # Configure logging
 logging.basicConfig(
@@ -55,72 +58,6 @@ EXPERIMENT_TYPES = {
     "summarization": "llama_summaries.parquet",
     "toxicity": "llama_toxic.analysis.parquet"
 }
-
-def save_plot(fig: plt.Figure, filename: str) -> None:
-    """Save plot with consistent settings."""
-    plt.tight_layout()
-    fig.savefig(OUTPUT_DIR / f"{filename}.pdf", dpi=300)
-    plt.close(fig)
-    logger.info(f"{filename} plot generated")
-
-def style_axis(ax: plt.Axes, xlabel: str = '', ylabel: str = '', ylim: Optional[Tuple[float, float]] = None, font_size: int = 14) -> None:
-    ax.set_xlabel(xlabel, fontsize=font_size, fontname='Times New Roman')
-    ax.set_ylabel(ylabel, fontsize=font_size, fontname='Times New Roman')
-    if ylim:
-        ax.set_ylim(ylim)
-    ax.tick_params(axis='both', labelsize=font_size, width=1.5, length=5)
-    ax.grid(axis="y", alpha=0.3)
-    for spine in ax.spines.values():
-        spine.set_edgecolor('black')
-        spine.set_linewidth(1.5)
-
-def extract_times_tokens(df: pd.DataFrame, exp_type: str) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
-    if "token_count" in df.columns and "prompt_tokens" in df.columns:
-        prompt_tokens = df['prompt_tokens']
-        response_tokens = df['token_count']
-    else:
-        prompt_tokens = pd.Series(dtype=float)
-        response_tokens = pd.Series(dtype=float)
-    if "duration" in df.columns and "prompt_duration" in df.columns:
-        prompt_times = df['prompt_duration']
-        response_times = df['duration'] - df['prompt_duration']
-        response_times = response_times[response_times > 0]
-        if len(response_times) < len(df) * 0.1:
-            if exp_type == 'classification':
-                response_times = df['duration'] * 0.75
-            elif exp_type == 'summarization':
-                response_times = df['duration'] * 0.85
-    else:
-        prompt_times = pd.Series(dtype=float)
-        response_times = pd.Series(dtype=float)
-    return prompt_times, response_times, prompt_tokens, response_tokens
-
-def get_bins_and_ticks(x_max: float, bin_width: float, is_time: bool) -> Tuple[np.ndarray, List[float]]:
-    bins = np.arange(0, x_max + bin_width, bin_width)
-    x_ticks = [0]
-    tick_count = 5
-    step = x_max / (tick_count - 1)
-    for i in range(1, tick_count):
-        x_ticks.append(i * step)
-    if is_time:
-        x_ticks = [round(tick, 1) for tick in x_ticks]
-    else:
-        x_ticks = [int(round(tick)) for tick in x_ticks]
-    x_ticks = list(dict.fromkeys(x_ticks))
-    return bins, x_ticks
-
-def add_subject_if_missing(df: pd.DataFrame, input_data_path: str = "./input_datasets/classification_pairs.parquet") -> pd.DataFrame:
-    """Add subject column to the dataframe if missing."""
-    if 'subject' not in df.columns:
-        try:
-            input_data = pd.read_parquet(input_data_path)
-            question_to_subject = dict(zip(input_data['question'], input_data['subject']))
-            df['subject'] = df['question'].map(question_to_subject)
-            logger.info(f"Successfully added subject mapping to {len(df)} rows")
-        except Exception as e:
-            logger.warning(f"Could not add subject information: {e}")
-            df['subject'] = 'unknown'
-    return df
 
 def load_aws_data() -> Dict[str, Dict[str, pd.DataFrame]]:
     """Load all datasets for all experiments and modes."""
@@ -181,32 +118,6 @@ def load_aws_data() -> Dict[str, Dict[str, pd.DataFrame]]:
     
     return data
 
-def plot_bar_with_annotations(
-    data: pd.DataFrame,
-    x: str,
-    y: str,
-    annotations: List[Tuple[str, str, str]],
-    title: str,
-    ylim: Optional[Tuple[float, float]] = None
-) -> None:
-    """Create a bar plot with annotations."""
-    fig, ax = plt.subplots(figsize=(10, 6))
-    sns.barplot(data=data, x=x, y=y, hue=x, palette="viridis", ax=ax, legend=False)
-    
-    for i, (value_col, count_col, total_col) in enumerate(annotations):
-        for j, row in data.iterrows():
-            ax.text(
-                j, 
-                row[value_col] + 0.01,
-                f"{row[value_col]:.3f}\n({row[count_col]}/{row[total_col]})",
-                ha="center",
-                va="bottom",
-                fontsize=14
-            )
-    
-    style_axis(ax, "Mode", title, ylim)
-    save_plot(fig, title.lower().replace(" ", "_"))
-
 def analyze_classification_performance(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     """Analyze classification performance for all models."""
     logger.info("Analyzing classification performance...")
@@ -235,7 +146,8 @@ def analyze_classification_performance(data: Dict[str, Dict[str, pd.DataFrame]])
             "accuracy",
             [("accuracy", "correct", "total")],
             "Classification Accuracy",
-            (0, 1.1)
+            (0, 1.1),
+            output_dir=str(OUTPUT_DIR)
         )
     
     # Valid responses only
@@ -275,7 +187,7 @@ def analyze_classification_performance(data: Dict[str, Dict[str, pd.DataFrame]])
                     f"{row['valid_rate']:.3f}\n({row['total_valid']}/{row['total_all']})",
                     ha="center", va="bottom", fontsize=14)
         
-        save_plot(fig, "classification_accuracy_valid_only")
+        save_plot(fig, "classification_accuracy_valid_only", output_dir=str(OUTPUT_DIR))
 
 def analyze_summarization_performance(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     """Analyze summarization performance for all models."""
@@ -303,7 +215,7 @@ def analyze_summarization_performance(data: Dict[str, Dict[str, pd.DataFrame]]) 
                    boxprops=dict(alpha=0.7), ax=ax)
         
         style_axis(ax, "Mode", "BERT Score")
-        save_plot(fig, "summarization_bert_scores")
+        save_plot(fig, "summarization_bert_scores", output_dir=str(OUTPUT_DIR))
 
 def analyze_toxicity_performance(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     """Analyze toxicity detection performance for all models."""
@@ -342,7 +254,8 @@ def analyze_toxicity_performance(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
             "toxic_rate",
             [("toxic_rate", "toxic_count", "total_samples")],
             "Toxicity Rate",
-            (0, max(pd.DataFrame(toxicity_rates)["toxic_rate"]) * 1.2)
+            (0, max(pd.DataFrame(toxicity_rates)["toxic_rate"]) * 1.2),
+            output_dir=str(OUTPUT_DIR)
         )
 
 def plot_enclave_combined_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
@@ -400,7 +313,7 @@ def plot_enclave_combined_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> 
         axes[row, 0].set_ylabel(row_titles[row], fontsize=font_size, fontname='Times New Roman')
     plt.tight_layout()
     fig.subplots_adjust(hspace=0.3)
-    save_plot(fig, "enclave_combined_analysis")
+    save_plot(fig, "enclave_combined_analysis", output_dir=str(OUTPUT_DIR))
     logger.info("Enclave combined analysis plot generated")
 
 def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
@@ -662,7 +575,7 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
     
     # Save plot with tight layout
     plt.tight_layout()
-    save_plot(fig, "enclave_merged_analysis")
+    save_plot(fig, "enclave_merged_analysis", output_dir=str(OUTPUT_DIR))
     logger.info("Enclave merged analysis plot generated")
 
 def plot_combined_metrics_grid(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
@@ -707,11 +620,12 @@ def plot_combined_metrics_grid(data: Dict[str, Dict[str, pd.DataFrame]]) -> None
         sns.barplot(data=acc_df, x="mode", y="accuracy", palette="viridis", ax=axes[2])
         style_axis(axes[2], "Mode", "Classification Accuracy")
     plt.tight_layout()
-    save_plot(fig, "combined_metrics_grid")
+    save_plot(fig, "combined_metrics_grid", output_dir=str(OUTPUT_DIR))
 
 def run_aws_analysis() -> None:
     """Execute the complete AWS analysis pipeline."""
     logger.info("Starting AWS analysis pipeline...")
+    set_plot_style()
     data = load_aws_data()
     analyze_classification_performance(data)
     analyze_summarization_performance(data)

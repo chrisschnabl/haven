@@ -4,9 +4,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Optional, Tuple
 import re
 import logging
+from shared_plot_helpers import (
+    set_plot_style, save_plot, plot_bar_with_annotations, add_subject_if_missing
+)
 
 # Configure logging
 logging.basicConfig(
@@ -68,48 +71,6 @@ def setup_plot(ax: plt.Axes, xlabel: str, ylabel: str, ylim: Optional[Tuple[floa
         spine.set_linewidth(1.5)
         spine.set_visible(True)
 
-def save_plot(fig: plt.Figure, filename: str) -> None:
-    """Save plot with consistent settings."""
-    plt.tight_layout()
-    fig.savefig(OUTPUT_DIR / f"{filename}.pdf", dpi=300)
-    plt.close(fig)
-    logger.info(f"{filename} plot generated")
-
-def plot_bar_with_annotations(
-    data: pd.DataFrame,
-    x: str,
-    y: str,
-    annotations: List[Tuple[str, str, str]],
-    title: str,
-    ylim: Optional[Tuple[float, float]] = None
-) -> None:
-    """Create a bar plot with annotations.
-    
-    Args:
-        data: DataFrame containing the data to plot
-        x: Column name for x-axis
-        y: Column name for y-axis
-        annotations: List of tuples (value_col, count_col, total_col) for annotations
-        title: Plot title
-        ylim: Optional y-axis limits
-    """
-    fig, ax = plt.subplots(figsize=(10, 6))
-    sns.barplot(data=data, x=x, y=y, hue=x, palette="viridis", ax=ax, legend=False)
-    
-    for i, (value_col, count_col, total_col) in enumerate(annotations):
-        for j, row in data.iterrows():
-            ax.text(
-                j, 
-                row[value_col] + 0.01,
-                f"{row[value_col]:.3f}\n({row[count_col]}/{row[total_col]})",
-                ha="center",
-                va="bottom",
-                fontsize=14
-            )
-    
-    setup_plot(ax, "Model", title, ylim)
-    save_plot(fig, title.lower().replace(" ", "_"))
-
 def load_data() -> Dict[str, Dict[str, pd.DataFrame]]:
     """Load all datasets for all models and experiments."""
     data = {}
@@ -132,19 +93,6 @@ def load_data() -> Dict[str, Dict[str, pd.DataFrame]]:
                 data[model_name][exp_type] = None
     
     return data
-
-def add_subject_if_missing(df: pd.DataFrame, input_data_path: str = "./input_datasets/classification_pairs.parquet") -> pd.DataFrame:
-    """Add subject column to the dataframe if missing."""
-    if 'subject' not in df.columns:
-        try:
-            input_data = pd.read_parquet(input_data_path)
-            question_to_subject = dict(zip(input_data['question'], input_data['subject']))
-            df['subject'] = df['question'].map(question_to_subject)
-            logger.info(f"Successfully added subject mapping to {len(df)} rows")
-        except Exception as e:
-            logger.warning(f"Could not add subject information: {e}")
-            df['subject'] = 'unknown'
-    return df
 
 def analyze_classification_performance(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     """Analyze classification performance for all models."""
@@ -174,7 +122,8 @@ def analyze_classification_performance(data: Dict[str, Dict[str, pd.DataFrame]])
             "accuracy",
             [("accuracy", "correct", "total")],
             "Classification Accuracy",
-            (0, 1.1)
+            (0, 1.1),
+            output_dir=str(OUTPUT_DIR)
         )
     
     # Valid responses only
@@ -215,7 +164,7 @@ def analyze_classification_performance(data: Dict[str, Dict[str, pd.DataFrame]])
                     ha="center", va="bottom", fontsize=14)
         setup_plot(ax2, "Model", "Rate of Valid Responses", (0, 1.1))
         
-        save_plot(fig, "classification_accuracy_valid_only")
+        save_plot(fig, "classification_accuracy_valid_only", output_dir=str(OUTPUT_DIR))
 
 def analyze_summarization_performance(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     """Analyze summarization performance for all models."""
@@ -243,7 +192,7 @@ def analyze_summarization_performance(data: Dict[str, Dict[str, pd.DataFrame]]) 
                    boxprops=dict(alpha=0.7), ax=ax)
         
         setup_plot(ax, "Model", "BERT Score")
-        save_plot(fig, "summarization_bert_scores")
+        save_plot(fig, "summarization_bert_scores", output_dir=str(OUTPUT_DIR))
 
 def analyze_toxicity_performance(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     """Analyze toxicity detection performance for all models."""
@@ -279,7 +228,8 @@ def analyze_toxicity_performance(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
             "toxic_rate",
             [("toxic_rate", "toxic_count", "total_samples")],
             "Toxicity Rate",
-            (0, max(pd.DataFrame(toxicity_rates)["toxic_rate"]) * 1.2)
+            (0, max(pd.DataFrame(toxicity_rates)["toxic_rate"]) * 1.2),
+            output_dir=str(OUTPUT_DIR)
         )
     
     # Toxicity propagation
@@ -338,12 +288,13 @@ def analyze_toxicity_performance(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
         ax.set_xticklabels(comparison_df["model"])
         ax.legend(fontsize=14)
         
-        save_plot(fig, "toxicity_propagation")
+        save_plot(fig, "toxicity_propagation", output_dir=str(OUTPUT_DIR))
 
 def run_analysis() -> None:
     """Execute the complete analysis pipeline."""
     logger.info("Starting analysis pipeline...")
     
+    set_plot_style()
     data = load_data()
     analyze_classification_performance(data)
     analyze_summarization_performance(data)
