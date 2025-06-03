@@ -852,188 +852,6 @@ def plot_classification_performance(data: Dict[str, Dict[str, pd.DataFrame]]) ->
     plt.close(fig)
     logger.info("Classification accuracy plot generated")
 
-def plot_classification_accuracy_by_subject(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
-    """Plot classification accuracy by subject for each mode.
-    
-    Args:
-        data: Dictionary containing mode data by experiment type
-    """
-    # Collect accuracy data by subject
-    subject_accuracies = []
-    
-    # Define subject groupings
-    subject_groups = {
-        'High School Sciences': {
-            'high school biology', 'high school chemistry', 'high school physics',
-            'high school computer science'
-        },
-        'High School Mathematics': {
-            'high school mathematics', 'high school statistics'
-        },
-        'High School Humanities': {
-            'high school us history', 'high school world history', 'high school government',
-            'high school literature', 'high school economics'
-        },
-        'Psychology & Social Sciences': {
-            'professional psychology', 'high school psychology', 'psychology',
-            'human sexuality', 'sociology', 'anthropology'
-        },
-        'Philosophy & Ethics': {
-            'moral disputes', 'philosophy', 'formal logic', 'moral scenarios',
-            'professional ethics', 'security ethics'
-        },
-        'Business & Economics': {
-            'business ethics', 'macroeconomics', 'microeconomics', 'accounting',
-            'finance', 'marketing', 'management'
-        },
-        'Computer Science & Engineering': {
-            'computer science', 'computer security', 'machine learning',
-            'electrical engineering', 'mechanical engineering'
-        },
-        'Medicine & Biology': {
-            'medicine', 'anatomy', 'biology', 'nutrition', 'medical ethics'
-        },
-        'Law & Legal': {
-            'professional law', 'international law', 'jurisprudence',
-            'constitutional law'
-        }
-    }
-    
-    # Define minimum samples required for statistical significance
-    MIN_SAMPLES = 25  # Lowered from 30
-    MIN_ACCURACY = 0.35  # Lowered from 0.4
-    
-    for mode in EXPERIMENT_MODES:
-        mode_data = data.get(mode, {})
-        if mode_data.get("classification") is not None:
-            df = mode_data["classification"]
-            if all(col in df.columns for col in ["correct", "subject"]):
-                # Group subjects
-                def map_subject_to_group(subject):
-                    subject = subject.lower()
-                    for group, subjects in subject_groups.items():
-                        if subject in subjects:
-                            return group
-                    return 'Miscellaneous'
-                
-                df['grouped_subject'] = df['subject'].apply(map_subject_to_group)
-                
-                # Calculate accuracy by grouped subject
-                subject_stats = df.groupby('grouped_subject').agg(
-                    accuracy=('correct', 'mean'),
-                    count=('correct', 'count')
-                ).reset_index()
-                
-                # Keep all subjects that meet either threshold
-                significant_subjects = subject_stats[
-                    (subject_stats['count'] >= MIN_SAMPLES) | 
-                    (subject_stats['accuracy'] >= MIN_ACCURACY)
-                ].copy()
-                
-                others = subject_stats[
-                    ~subject_stats['grouped_subject'].isin(significant_subjects['grouped_subject'])
-                ].copy()
-                
-                # Calculate combined stats for "Others"
-                if not others.empty:
-                    others_total = df[df['grouped_subject'].isin(others['grouped_subject'])]['correct'].count()
-                    others_correct = df[df['grouped_subject'].isin(others['grouped_subject'])]['correct'].sum()
-                    others_accuracy = others_correct / others_total if others_total > 0 else 0
-                    
-                    others_combined = pd.DataFrame({
-                        'grouped_subject': ['Others'],
-                        'accuracy': [others_accuracy],
-                        'count': [others_total]
-                    })
-                    
-                    # Log what's in "Others"
-                    logger.info(f"Subjects in 'Others' for {mode}:")
-                    for _, row in others.iterrows():
-                        logger.info(f"  {row['grouped_subject']}: acc={row['accuracy']:.3f}, n={row['count']}")
-                else:
-                    others_combined = pd.DataFrame()
-                
-                # Combine categories and add mode
-                final_stats = pd.concat([
-                    significant_subjects,
-                    others_combined if not others.empty else pd.DataFrame()
-                ])
-                
-                if not final_stats.empty:
-                    final_stats['mode'] = mode
-                    subject_accuracies.append(final_stats)
-                
-                # Log statistics
-                logger.info(f"\nAccuracy statistics for {mode}:")
-                logger.info(f"Total subject groups: {len(subject_stats)}")
-                logger.info(f"Significant groups: {len(significant_subjects)}")
-                logger.info(f"Samples in Others: {others_total if not others.empty else 0}")
-    
-    if not subject_accuracies:
-        logger.warning("No subject accuracy data available")
-        return
-    
-    # Combine all data
-    accuracy_df = pd.concat(subject_accuracies, ignore_index=True)
-    
-    if accuracy_df.empty:
-        logger.warning("No data to plot after filtering")
-        return
-    
-    # Create heatmap with explicit NaN handling
-    pivot_df = accuracy_df.pivot(index="grouped_subject", columns="mode", values="accuracy")
-    
-    # Sort subjects by average accuracy across modes, ignoring NaN
-    avg_accuracy = pivot_df.mean(axis=1, skipna=True)
-    pivot_df = pivot_df.loc[avg_accuracy.sort_values(ascending=False).index]
-    
-    # Create figure
-    fig, ax = plt.subplots(figsize=(12, len(pivot_df) * 0.6 + 2))
-    
-    # Create custom colormap that uses white for NaN values
-    cmap = sns.color_palette("viridis", as_cmap=True)
-    cmap.set_bad('white', 1.0)
-    
-    # Create heatmap with NaN values shown
-    sns.heatmap(
-        pivot_df,
-        annot=True,
-        cmap=cmap,
-        fmt=".3f",
-        ax=ax,
-        vmin=0,
-        vmax=1,
-        cbar_kws={'label': 'Accuracy'},
-        mask=False  # Don't mask any values, including NaN
-    )
-    
-    # Add sample size annotations
-    sample_sizes = accuracy_df.pivot(index="grouped_subject", columns="mode", values="count")
-    sample_sizes = sample_sizes.reindex(pivot_df.index)  # Match the order of pivot_df
-    
-    for i in range(len(pivot_df.index)):
-        for j in range(len(pivot_df.columns)):
-            count = sample_sizes.iloc[i, j]
-            if pd.notna(count):  # Only add text if we have a valid count
-                ax.text(
-                    j + 0.5, i + 0.7,
-                    f'n={int(count)}',
-                    ha='center',
-                    va='center',
-                    color='white',
-                    fontsize=8
-                )
-    
-    # Customize plot
-    ax.set_title("Classification Accuracy by Subject Group and Mode")
-    ax.set_xlabel("Mode")
-    ax.set_ylabel("Subject Group")
-    
-    # Adjust layout and save
-    plt.tight_layout()
-    fig.savefig(CLASSIFICATION_CHARTS / "classification_accuracy_by_subject.pdf", dpi=300, bbox_inches='tight')
-    plt.close(fig)
-    logger.info("Classification accuracy by subject plot generated")
 
 def plot_classification_accuracy_valid_only(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     """Plot classification accuracy considering only valid responses (A, B, C, D).
@@ -1041,7 +859,6 @@ def plot_classification_accuracy_valid_only(data: Dict[str, Dict[str, pd.DataFra
     Args:
         data: Dictionary containing mode data by experiment type
     """
-    # Collect accuracy data for valid responses only
     accuracies = []
     
     for mode in EXPERIMENT_MODES:
@@ -2132,10 +1949,8 @@ def plot_classification_accuracy_by_subject(data: Dict[str, Dict[str, pd.DataFra
     Args:
         data: Dictionary containing mode data by experiment type
     """
-    # Collect accuracy data by subject
     subject_accuracies = []
     
-    # Define subject groupings
     subject_groups = {
         'High School Sciences': {
             'high school biology', 'high school chemistry', 'high school physics',

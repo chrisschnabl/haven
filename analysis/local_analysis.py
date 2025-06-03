@@ -512,10 +512,7 @@ def analyze_classification_performance(data: Dict[str, Dict[str, pd.DataFrame]])
     # 1. Overall accuracy comparison
     plot_classification_accuracy(data)
     
-    # 2. Accuracy by subject
-    plot_classification_accuracy_by_subject(data)
-    
-    # 3. Accuracy for valid responses only
+    # 2. Accuracy for valid responses only
     plot_classification_accuracy_valid_only(data)
 
 def plot_classification_accuracy(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:

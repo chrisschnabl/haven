@@ -5271,3 +5271,45 @@ Accuracy statistics for Q8_0:
 2025-06-01 15:35:35,481 - __main__ - INFO - Creating merged metrics plot...
 2025-06-01 15:35:35,594 - __main__ - INFO - Merged metrics plot generated
 2025-06-01 15:35:35,594 - __main__ - INFO - Analysis pipeline completed successfully
+2025-06-03 14:20:01,667 - __main__ - INFO - Starting analysis pipeline...
+2025-06-03 14:20:01,687 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q2_K.gguf/llama_classification.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q2_K.gguf/llama_classification.parquet'
+2025-06-03 14:20:01,687 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q2_K.gguf/llama_summaries.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q2_K.gguf/llama_summaries.parquet'
+2025-06-03 14:20:01,687 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q2_K.gguf/llama3_7b.parquet_analysis.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q2_K.gguf/llama3_7b.parquet_analysis.parquet'
+2025-06-03 14:20:01,687 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf/llama_classification.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf/llama_classification.parquet'
+2025-06-03 14:20:01,688 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf/llama_summaries.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf/llama_summaries.parquet'
+2025-06-03 14:20:01,688 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf/llama3_7b.parquet_analysis.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf/llama3_7b.parquet_analysis.parquet'
+2025-06-03 14:20:01,688 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_0.gguf/llama_classification.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_0.gguf/llama_classification.parquet'
+2025-06-03 14:20:01,688 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_0.gguf/llama_summaries.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_0.gguf/llama_summaries.parquet'
+2025-06-03 14:20:01,688 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_0.gguf/llama3_7b.parquet_analysis.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_0.gguf/llama3_7b.parquet_analysis.parquet'
+2025-06-03 14:20:01,688 - __main__ - INFO - Analyzing token counts...
+2025-06-03 14:20:01,688 - __main__ - WARNING - No token count data available
+2025-06-03 14:20:01,688 - __main__ - INFO - Analyzing classification performance...
+2025-06-03 14:20:01,688 - __main__ - WARNING - No classification data available
+2025-06-03 14:20:01,688 - __main__ - INFO - Analyzing summarization performance...
+2025-06-03 14:20:01,688 - __main__ - WARNING - No summarization data available
+2025-06-03 14:20:01,688 - __main__ - INFO - Analyzing toxicity performance...
+2025-06-03 14:20:01,688 - __main__ - WARNING - No toxicity data available
+2025-06-03 14:20:01,688 - __main__ - INFO - Creating merged metrics plot...
+2025-06-03 14:20:01,952 - __main__ - INFO - Merged metrics plot generated
+2025-06-03 14:20:01,952 - __main__ - INFO - Analysis pipeline completed successfully
+2025-06-03 14:23:09,857 - __main__ - INFO - Starting analysis pipeline...
+2025-06-03 14:23:09,901 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q2_K.gguf/llama_classification.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q2_K.gguf/llama_classification.parquet'
+2025-06-03 14:23:09,901 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q2_K.gguf/llama_summaries.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q2_K.gguf/llama_summaries.parquet'
+2025-06-03 14:23:09,901 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q2_K.gguf/llama3_7b.parquet_analysis.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q2_K.gguf/llama3_7b.parquet_analysis.parquet'
+2025-06-03 14:23:09,901 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf/llama_classification.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf/llama_classification.parquet'
+2025-06-03 14:23:09,901 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf/llama_summaries.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf/llama_summaries.parquet'
+2025-06-03 14:23:09,901 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf/llama3_7b.parquet_analysis.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf/llama3_7b.parquet_analysis.parquet'
+2025-06-03 14:23:09,901 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_0.gguf/llama_classification.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_0.gguf/llama_classification.parquet'
+2025-06-03 14:23:09,902 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_0.gguf/llama_summaries.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_0.gguf/llama_summaries.parquet'
+2025-06-03 14:23:09,902 - __main__ - WARNING - Could not load quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_0.gguf/llama3_7b.parquet_analysis.parquet: [Errno 2] No such file or directory: 'quantization_ablation_model/Meta-Llama-3-8B-Instruct.Q8_0.gguf/llama3_7b.parquet_analysis.parquet'
+2025-06-03 14:23:09,902 - __main__ - INFO - Analyzing token counts...
+2025-06-03 14:23:09,902 - __main__ - WARNING - No token count data available
+2025-06-03 14:23:09,902 - __main__ - INFO - Analyzing classification performance...
+2025-06-03 14:23:09,902 - __main__ - WARNING - No classification data available
+2025-06-03 14:23:09,902 - __main__ - INFO - Analyzing summarization performance...
+2025-06-03 14:23:09,902 - __main__ - WARNING - No summarization data available
+2025-06-03 14:23:09,902 - __main__ - INFO - Analyzing toxicity performance...
+2025-06-03 14:23:09,902 - __main__ - WARNING - No toxicity data available
+2025-06-03 14:23:09,902 - __main__ - INFO - Creating merged metrics plot...
+2025-06-03 14:23:10,145 - __main__ - INFO - Merged metrics plot generated
+2025-06-03 14:23:10,145 - __main__ - INFO - Analysis pipeline completed successfully

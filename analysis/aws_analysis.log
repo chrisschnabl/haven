@@ -19196,3 +19196,41 @@ Accuracy statistics for comp-constant-8b:
 2025-06-01 16:36:49,840 - __main__ - INFO - Combined metrics grid plot generated
 2025-06-01 16:36:49,840 - __main__ - INFO - Combined metrics grid plot generated
 2025-06-01 16:36:49,840 - __main__ - INFO - AWS analysis pipeline completed successfully
+2025-06-03 14:17:13,767 - __main__ - INFO - Starting AWS analysis pipeline...
+2025-06-03 14:17:13,768 - __main__ - INFO - Loading data for mode: enclave4b
+2025-06-03 14:17:13,768 - __main__ - INFO - Attempting to load classification data from: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-03 14:17:13,768 - __main__ - WARNING - File not found: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-03 14:17:13,768 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-03 14:17:13,768 - __main__ - WARNING - File not found: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-03 14:17:13,768 - __main__ - WARNING - Missing toxicity analysis file: remote_experiments/enclave4b/llama_toxic.analysis.parquet
+2025-06-03 14:17:13,768 - __main__ - INFO - Loading data for mode: host4b
+2025-06-03 14:17:13,768 - __main__ - INFO - Attempting to load classification data from: remote_experiments/host4b/llama_classification.parquet
+2025-06-03 14:17:13,768 - __main__ - WARNING - File not found: remote_experiments/host4b/llama_classification.parquet
+2025-06-03 14:17:13,768 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/host4b/llama_summaries.parquet
+2025-06-03 14:17:13,768 - __main__ - WARNING - File not found: remote_experiments/host4b/llama_summaries.parquet
+2025-06-03 14:17:13,768 - __main__ - WARNING - Missing toxicity base file: remote_experiments/host4b/llama_toxic.parquet
+2025-06-03 14:17:13,768 - __main__ - INFO - Loading data for mode: comp-constant-8b
+2025-06-03 14:17:13,768 - __main__ - INFO - Attempting to load classification data from: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-03 14:17:13,768 - __main__ - WARNING - File not found: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-03 14:17:13,768 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-03 14:17:13,768 - __main__ - WARNING - File not found: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-03 14:17:13,768 - __main__ - WARNING - Missing toxicity analysis file: remote_experiments/comp-constant-8b/llama3_8b_8bit_toxicity.analysis.parquet
+2025-06-03 14:19:52,001 - __main__ - INFO - Starting AWS analysis pipeline...
+2025-06-03 14:19:52,001 - __main__ - INFO - Loading data for mode: enclave4b
+2025-06-03 14:19:52,001 - __main__ - INFO - Attempting to load classification data from: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-03 14:19:52,001 - __main__ - WARNING - File not found: remote_experiments/enclave4b/llama_classification.parquet
+2025-06-03 14:19:52,001 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-03 14:19:52,001 - __main__ - WARNING - File not found: remote_experiments/enclave4b/llama_summaries.parquet
+2025-06-03 14:19:52,001 - __main__ - WARNING - Missing toxicity analysis file: remote_experiments/enclave4b/llama_toxic.analysis.parquet
+2025-06-03 14:19:52,001 - __main__ - INFO - Loading data for mode: host4b
+2025-06-03 14:19:52,001 - __main__ - INFO - Attempting to load classification data from: remote_experiments/host4b/llama_classification.parquet
+2025-06-03 14:19:52,001 - __main__ - WARNING - File not found: remote_experiments/host4b/llama_classification.parquet
+2025-06-03 14:19:52,001 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/host4b/llama_summaries.parquet
+2025-06-03 14:19:52,001 - __main__ - WARNING - File not found: remote_experiments/host4b/llama_summaries.parquet
+2025-06-03 14:19:52,001 - __main__ - WARNING - Missing toxicity base file: remote_experiments/host4b/llama_toxic.parquet
+2025-06-03 14:19:52,001 - __main__ - INFO - Loading data for mode: comp-constant-8b
+2025-06-03 14:19:52,001 - __main__ - INFO - Attempting to load classification data from: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-03 14:19:52,001 - __main__ - WARNING - File not found: remote_experiments/comp-constant-8b/llama_classification.parquet
+2025-06-03 14:19:52,001 - __main__ - INFO - Attempting to load summarization data from: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-03 14:19:52,002 - __main__ - WARNING - File not found: remote_experiments/comp-constant-8b/llama_summaries.parquet
+2025-06-03 14:19:52,002 - __main__ - WARNING - Missing toxicity analysis file: remote_experiments/comp-constant-8b/llama3_8b_8bit_toxicity.analysis.parquet
