@@ -4,3 +4,5 @@ target/
 *.ot
 results/
 model/.DS_Store
+
+*.log
