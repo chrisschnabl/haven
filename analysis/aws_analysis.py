@@ -308,9 +308,9 @@ def plot_enclave_combined_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> 
             ax.set_ylim(0, min(y_max * 1.15, 0.5 * 1.15) if y_max > 0.5 else y_max * 1.15)
             style_axis(ax, xlabel='Time (seconds)' if is_time_row else '# tokens', ylabel='Density', font_size=font_size)
         if col < 3:
-            axes[0, col].set_title(exp_type.capitalize(), fontsize=font_size, fontname='Times New Roman')
+            axes[0, col].set_title(exp_type.capitalize(), fontsize=font_size, fontname='Times New Roman', fontweight='bold')
     for row in range(4):
-        axes[row, 0].set_ylabel(row_titles[row], fontsize=font_size, fontname='Times New Roman')
+        axes[row, 0].set_ylabel(row_titles[row], fontsize=font_size, fontname='Times New Roman', labelpad=18)
     plt.tight_layout()
     fig.subplots_adjust(hspace=0.3)
     save_plot(fig, "enclave_combined_analysis", output_dir=str(OUTPUT_DIR))
@@ -522,10 +522,13 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
                 text.set_fontname('Times New Roman')
         
         if col < 3:
-            axes[0, col].set_title(exp_type.capitalize(), fontsize=16, fontname='Times New Roman', fontweight='bold')
+            if exp_type == "summarization":
+                axes[0, col].set_title("Summarisation", fontsize=16, fontname='Times New Roman', fontweight='bold')
+            else:
+                axes[0, col].set_title(exp_type.capitalize(), fontsize=16, fontname='Times New Roman', fontweight='bold')
     
     for row in range(2):
-        axes[row, 0].set_ylabel(row_titles[row], fontsize=14, fontname='Times New Roman', fontweight='bold')
+        axes[row, 0].set_ylabel(row_titles[row], fontsize=14, fontname='Times New Roman', fontweight='bold', labelpad=18)
     
     for row in range(2):
         for col in range(3):
@@ -585,6 +588,147 @@ def plot_combined_metrics_grid(data: Dict[str, Dict[str, pd.DataFrame]]) -> None
     plt.tight_layout()
     save_plot(fig, "combined_metrics_grid", output_dir=str(OUTPUT_DIR))
 
+def plot_token_distribution(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
+    """Plot token distribution for each model and experiment.
+    
+    Args:
+        data: Dictionary containing model data by experiment type
+    """
+    logger.info("Generating token distribution plots...")
+    
+    num_modes = len(EXPERIMENT_MODES)
+    fig, axes = plt.subplots(num_modes, 3, figsize=(17, 3 * num_modes))
+    
+    # Ensure axes is 2D even with 1 mode
+    if num_modes == 1:
+        axes = axes.reshape(1, -1)
+    
+    # Set fixed max for toxicity plots
+    max_toxicity_tokens = 250
+    
+    # Axis limits for each column
+    xlims = [(0, 8), (0, 65), (0, 250)]
+    ylims = [(0, 0.5), (0, 0.15), (0, 0.05)]  # Adjusted for density values
+    
+    # Consistent color palette: blue, green, purple
+    exp_colors = ['#4C72B0', '#55A868', '#8172B2']
+    
+    # Create distributions for each mode and experiment
+    for row, mode in enumerate(EXPERIMENT_MODES):
+        mode_data = data.get(mode, {})
+        for col, exp_type in enumerate(EXPERIMENT_TYPES.keys()):
+            df = mode_data.get(exp_type)
+            ax = axes[row, col]
+            color = exp_colors[col]
+            
+            if df is not None and "token_count" in df.columns:
+                if exp_type == "toxicity":
+                    bin_width = 5
+                    bins = np.arange(0, max_toxicity_tokens + bin_width, bin_width)
+                    sns.histplot(
+                        data=df,
+                        x="token_count",
+                        bins=bins,
+                        color=color,
+                        ax=ax,
+                        linewidth=1.5,
+                        stat="density"
+                    )
+                else:
+                    sns.histplot(
+                        data=df,
+                        x="token_count",
+                        bins=30,
+                        color=color,
+                        ax=ax,
+                        linewidth=1.5,
+                        stat="density"
+                    )
+                
+                mean_tokens = df["token_count"].mean()
+                ax.axvline(
+                    mean_tokens,
+                    color="red",
+                    linestyle="--",
+                    linewidth=1.5
+                )
+                
+                stats_text = f"Median: {df['token_count'].median():.1f}"
+                
+                ax.text(
+                    0.95, 0.95,
+                    stats_text,
+                    transform=ax.transAxes,
+                    verticalalignment="top",
+                    horizontalalignment="right",
+                    bbox=dict(boxstyle="round", facecolor="white", alpha=0.8),
+                    fontsize=14,
+                    fontname='Times New Roman'
+                )
+            else:
+                ax.text(
+                    0.5, 0.5,
+                    "No data available",
+                    ha="center",
+                    va="center",
+                    transform=ax.transAxes,
+                    fontsize=14,
+                    fontname='Times New Roman'
+                )
+            
+            # Set consistent axis limits
+            ax.set_xlim(xlims[col])
+            ax.set_ylim(ylims[col])
+            
+            # Style axis
+            for spine in ax.spines.values():
+                spine.set_edgecolor('black')
+                spine.set_linewidth(1.5)
+            
+            # Set column titles
+            if row == 0:
+                if exp_type == "summarization":
+                    ax.set_title("Summarisation", fontsize=14, fontname='Times New Roman', fontweight='bold')
+                else:
+                    ax.set_title(exp_type.capitalize(), fontsize=14, fontname='Times New Roman', fontweight='bold')
+            
+            # Set row labels
+            if col == 0:
+                ax.set_ylabel(MODE_LABELS.get(mode, mode), fontsize=14, fontname='Times New Roman')
+            else:
+                ax.set_ylabel("")
+            
+            # Set axis label font size and font
+            ax.tick_params(axis='both', labelsize=14, width=1.5, length=6)
+            for label in ax.get_xticklabels() + ax.get_yticklabels():
+                label.set_fontname('Times New Roman')
+    
+    # Set x/y labels for all subplots
+    for col in range(3):
+        for row in range(num_modes):
+            axes[row, col].set_xlabel('# tokens', fontsize=14, fontname='Times New Roman')
+            axes[row, col].set_ylabel('Density', fontsize=14, fontname='Times New Roman')
+    
+    # Add row descriptions just outside the right edge of the last axis in each row using annotate
+    row_labels = ['(i)', '(ii)', '(iii)']
+    for row in range(num_modes):
+        ax = axes[row, -1]
+        ax.annotate(
+            row_labels[row],
+            xy=(1.02, 0.5),
+            xycoords='axes fraction',
+            fontsize=14,
+            fontname='Times New Roman',
+            ha='left',
+            va='center',
+            annotation_clip=False
+        )
+    
+    plt.tight_layout(pad=0.7)
+    fig.subplots_adjust(top=0.92, right=0.95)
+    save_plot(fig, "token_distribution", output_dir=str(OUTPUT_DIR))
+    logger.info("Token distribution plot generated")
+
 def run_aws_analysis() -> None:
     """Execute the complete AWS analysis pipeline."""
     logger.info("Starting AWS analysis pipeline...")
@@ -596,6 +740,7 @@ def run_aws_analysis() -> None:
     plot_enclave_combined_analysis(data)
     plot_enclave_merged_analysis(data)
     plot_combined_metrics_grid(data)
+    plot_token_distribution(data)
     logger.info("AWS analysis pipeline completed successfully")
 
 if __name__ == "__main__":
