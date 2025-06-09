@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 plt.style.use('default')
 sns.set_style("whitegrid")
 plt.rcParams.update({
-    'figure.figsize': (12, 8),
+    'figure.figsize': (6, 4),
     'axes.titlesize': 16,
     'axes.labelsize': 14,
     'figure.facecolor': 'white',
@@ -264,7 +264,7 @@ def plot_enclave_combined_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> 
     if not enclave_data:
         logger.warning("No enclave4b data available for combined analysis plot")
         return
-    fig, axes = plt.subplots(4, 3, figsize=(15, 10))
+    fig, axes = plt.subplots(4, 3, figsize=(12, 8))
     row_titles = ['Response Time', 'Response Tokens', 'Prompt Time', 'Prompt Tokens']
     exp_colors = sns.color_palette('viridis', n_colors=3)
     bin_settings = {
@@ -302,10 +302,23 @@ def plot_enclave_combined_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> 
             if ax.get_legend() is not None:
                 ax.get_legend().remove()
             ax.text(0.95, 0.95, f"Median: {median_val:.1f}" + ("s" if is_time_row else ""), transform=ax.transAxes, verticalalignment="top", horizontalalignment="right", bbox=dict(boxstyle="round", facecolor="white", alpha=0.8), fontsize=font_size, fontname='Times New Roman')
-            ax.set_xlim(0, x_max * 1.02)
+            
+            # Set x-axis limits with higher minimum for lower rows in first column
+            if col == 0 and row >= 2:  # Lower two rows in first column
+                data_min = max(0, data_series.min() - 5)  # Use a margin of 5
+                ax.set_xlim(data_min, x_max * 1.02)
+            else:
+                ax.set_xlim(0, x_max * 1.02)
+            
             ax.set_xticks(x_ticks)
             y_max = ax.get_ylim()[1]
-            ax.set_ylim(0, min(y_max * 1.15, 0.5 * 1.15) if y_max > 0.5 else y_max * 1.15)
+            
+            
+            if col == 0 and row < 2:  # Upper two rows in first column
+                ax.set_ylim(0, max(y_max * 1.15, 0.8))  # Set higher y-max
+            else:
+                ax.set_ylim(0, min(y_max * 1.15, 0.5 * 1.15) if y_max > 0.5 else y_max * 1.15)
+            
             style_axis(ax, xlabel='Time (seconds)' if is_time_row else '# tokens', ylabel='Density', font_size=font_size)
         if col < 3:
             axes[0, col].set_title(exp_type.capitalize(), fontsize=font_size, fontname='Times New Roman', fontweight='bold')
@@ -332,7 +345,7 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
         logger.warning("No enclave4b data available for merged analysis plot")
         return
     
-    fig, axes = plt.subplots(2, 3, figsize=(18, 9))
+    fig, axes = plt.subplots(2, 3, figsize=(12, 6))
     
     row_titles = ['Time (seconds)', '# tokens']
     
@@ -545,7 +558,7 @@ def plot_enclave_merged_analysis(data: Dict[str, Dict[str, pd.DataFrame]]) -> No
     logger.info("Enclave merged analysis plot generated")
 
 def plot_combined_metrics_grid(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
-    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+    fig, axes = plt.subplots(1, 3, figsize=(12, 4))
     all_scores = []
     for mode in EXPERIMENT_MODES:
         df = data[mode].get("summarization")
@@ -597,7 +610,7 @@ def plot_token_distribution(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     logger.info("Generating token distribution plots...")
     
     num_modes = len(EXPERIMENT_MODES)
-    fig, axes = plt.subplots(num_modes, 3, figsize=(17, 3 * num_modes))
+    fig, axes = plt.subplots(num_modes, 3, figsize=(10, 2.1 * num_modes))
     
     # Ensure axes is 2D even with 1 mode
     if num_modes == 1:
@@ -608,7 +621,8 @@ def plot_token_distribution(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
     
     # Axis limits for each column
     xlims = [(0, 8), (0, 65), (0, 250)]
-    ylims = [(0, 0.5), (0, 0.15), (0, 0.05)]  # Adjusted for density values
+    # Custom y-limits: higher for first column, smaller for first two columns
+    ylims = [(0, 1), (0, 0.12), (0, 0.035)]
     
     # Consistent color palette: blue, green, purple
     exp_colors = ['#4C72B0', '#55A868', '#8172B2']
@@ -633,6 +647,16 @@ def plot_token_distribution(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
                         ax=ax,
                         linewidth=1.5,
                         stat="density"
+                    )
+                elif exp_type == "classification":
+                    sns.histplot(
+                        data=df,
+                        x="token_count",
+                        bins=30,
+                        color=color,
+                        ax=ax,
+                        linewidth=1.5,
+                        stat="probability"
                     )
                 else:
                     sns.histplot(
@@ -678,7 +702,11 @@ def plot_token_distribution(data: Dict[str, Dict[str, pd.DataFrame]]) -> None:
             
             # Set consistent axis limits
             ax.set_xlim(xlims[col])
-            ax.set_ylim(ylims[col])
+            # For classification, always set y-axis to (0, 1)
+            if col == 0:
+                ax.set_ylim(0, 1)
+            else:
+                ax.set_ylim(ylims[col])
             
             # Style axis
             for spine in ax.spines.values():

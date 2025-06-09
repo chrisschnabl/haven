@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 plt.style.use('default')
 sns.set_style("whitegrid")
 plt.rcParams.update({
-    'figure.figsize': (12, 8),
+    'figure.figsize': (8, 6),
     'axes.titlesize': 16,
     'axes.labelsize': 14,
     'figure.facecolor': 'white',
@@ -146,7 +146,7 @@ def analyze_classification_performance(data: Dict[str, Dict[str, pd.DataFrame]])
     
     if valid_accuracies:
         valid_df = pd.DataFrame(valid_accuracies)
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
         
         # Accuracy plot
         sns.barplot(data=valid_df, x="model", y="accuracy", hue="model", palette="viridis", ax=ax1, legend=False)
@@ -185,7 +185,7 @@ def analyze_summarization_performance(data: Dict[str, Dict[str, pd.DataFrame]]) 
     
     if all_scores:
         all_scores_df = pd.concat(all_scores)
-        fig, ax = plt.subplots(figsize=(12, 6))
+        fig, ax = plt.subplots(figsize=(8, 4))
         
         sns.violinplot(data=all_scores_df, x="model", y="score", palette="viridis", inner=None, ax=ax)
         sns.boxplot(data=all_scores_df, x="model", y="score", color="white", width=0.3,
