@@ -51,10 +51,10 @@ uv run aws_analysis.py
 ### AWS Analysis
 
 
-- [Enclave Combined Analysis](analysis/aws-analysis-2025-06-09-17-05-33/enclave_combined_analysis.pdf)
-- [Token Distribution](analysis/aws-analysis-2025-06-09-17-05-33/token_distribution.pdf)
+- ![Enclave Combined Analysis](analysis/aws-analysis-2025-06-09-17-05-33/enclave_combined_analysis.png)
+- ![Token Distribution](analysis/aws-analysis-2025-06-09-17-05-33/token_distribution.png)
 
 ### Local Analysis
 
 
-- [Classification Accuracy](analysis/local-analysis-2025-06-09-16-52-38/classification_accuracy_valid_only.pdf)
+- ![Classification Accuracy](analysis/local-analysis-2025-06-09-16-52-38/classification_accuracy_valid_only.png)
